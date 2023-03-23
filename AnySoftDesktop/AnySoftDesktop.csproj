@@ -15,7 +15,21 @@
 
     <ItemGroup>
       <Folder Include="Models" />
+      <Folder Include="Resources\Images" />
       <Folder Include="Services" />
+      <Folder Include="Views\Tabs" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="Resources\Images\logoExpanded.svg" />
+      <None Remove="Resources\Images\logoMinimized.svg" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="Resources\Images\logoExpanded.png" />
+      <Resource Include="Resources\Images\logoExpanded.png" />
+      <None Remove="Resources\Images\logoMinimized.png" />
+      <Resource Include="Resources\Images\logoMinimized.png" />
     </ItemGroup>
 
 </Project>
