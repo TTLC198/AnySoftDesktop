@@ -9,6 +9,7 @@
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         xmlns:converters="clr-namespace:AnySoftDesktop.Utils.Converters"
         xmlns:s="https://github.com/canton7/Stylet"
+        xmlns:usersControls="clr-namespace:AnySoftDesktop.UsersControls"
         Background="{DynamicResource MaterialDesignPaper}"
         FontFamily="{DynamicResource MaterialDesignFont}"
         Style="{DynamicResource MaterialDesignRoot}"
@@ -18,217 +19,310 @@
         ResizeMode="NoResize"
         WindowStyle="None"
         WindowStartupLocation="CenterScreen"
+        WindowState="{Binding IsWindowMaximized, Converter={x:Static converters:BoolToMaximizedStateConverter.Instance}}"
         Title="{x:Static AnySoftDesktop:App.Name}"
         mc:Ignorable="d">
-    <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition
-                Width="Auto" />
-            <ColumnDefinition
-                Width="*" />
-        </Grid.ColumnDefinitions>
-        <!--Left Navbar-->
-        <Grid
-            Grid.Column="0">
-            <Grid.RowDefinitions>
-                <RowDefinition
-                    Height="Auto" />
-                <RowDefinition
-                    Height="*" />
-                <RowDefinition
-                    Height="Auto" />
-            </Grid.RowDefinitions>
-            <Image
-                Grid.Row="0"
-                Margin="4"
-                VerticalAlignment="Center"
-                Width="Auto"
-                Height="72">
-                <Image.Style>
-                    <Style
-                        TargetType="{x:Type Image}">
-                        <Setter
-                            Property="Source"
-                            Value="../Resources/Images/logoMinimized.png" />
-                        <Style.Triggers>
-                            <DataTrigger
-                                Binding="{Binding IsMenuExpanded}" Value="True">
-                                <Setter
-                                    Property="Source"
-                                    Value="../Resources/Images/logoExpanded.png" />
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </Image.Style>
-            </Image>
-            <ItemsControl
-                Grid.Row="1"
-                ItemsSource="{Binding Tabs}"
-                TextElement.Foreground="{DynamicResource PrimaryHueDarkBrush}">
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <Border BorderThickness="0,0,3,0">
-                            <Border.Style>
-                                <Style TargetType="{x:Type Border}">
+    <materialDesign:DialogHost
+        x:Name="DialogHost"
+        CloseOnClickAway="True"
+        Style="{DynamicResource MaterialDesignEmbeddedDialogHost}"
+        DialogBackground="{DynamicResource PrimaryHueMidBrush}"
+        DialogTheme="Light"
+        DialogMargin="10">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition
+                    Width="Auto" />
+                <ColumnDefinition
+                    Width="*" />
+            </Grid.ColumnDefinitions>
+            <!--Left Navbar-->
+            <Grid
+                Grid.Column="0">
+                <Grid.RowDefinitions>
+                    <RowDefinition
+                        Height="Auto" />
+                    <RowDefinition
+                        Height="*" />
+                    <RowDefinition
+                        Height="Auto" />
+                </Grid.RowDefinitions>
+                <Image
+                    Grid.Row="0"
+                    Margin="10"
+                    VerticalAlignment="Center"
+                    Width="Auto"
+                    Height="50">
+                    <Image.Style>
+                        <Style
+                            TargetType="{x:Type Image}">
+                            <Setter
+                                Property="Source"
+                                Value="../Resources/Images/logoMinimized.png" />
+                            <Style.Triggers>
+                                <DataTrigger
+                                    Binding="{Binding IsMenuExpanded}" Value="True">
+                                    <Setter
+                                        Property="Source"
+                                        Value="../Resources/Images/logoExpanded.png" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Image.Style>
+                </Image>
+                <ItemsControl
+                    Grid.Row="1"
+                    ItemsSource="{Binding Tabs}"
+                    TextElement.Foreground="{DynamicResource PrimaryHueDarkBrush}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border BorderThickness="0,0,3,0">
+                                <Border.Style>
+                                    <Style TargetType="{x:Type Border}">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsSelected}" Value="True">
+                                                <Setter Property="BorderBrush"
+                                                        Value="{DynamicResource SecondaryHueMidBrush}" />
+                                                <Setter Property="TextElement.Foreground"
+                                                        Value="{DynamicResource SecondaryHueMidBrush}" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Border.Style>
+                                <Button
+                                    Height="Auto"
+                                    Margin="4"
+                                    Padding="8"
+                                    Command="{s:Action ActivateTab}"
+                                    Style="{DynamicResource MaterialDesignFlatDarkButton}"
+                                    CommandParameter="{Binding}"
+                                    ToolTip="{Binding Name}">
+                                    <materialDesign:PackIcon
+                                        Width="50"
+                                        Height="50"
+                                        Kind="{Binding Converter={x:Static converters:TabsToIconConverter.Instance}}" />
+                                </Button>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+                <DockPanel
+                    Grid.Row="2"
+                    LastChildFill="False">
+                    <Button
+                        Width="74"
+                        Height="Auto"
+                        Margin="4"
+                        Padding="8"
+                        Command="{s:Action ToggleMenu}"
+                        Style="{DynamicResource MaterialDesignFlatSecondaryButton}"
+                        ToolTip="Expand menu"
+                        DockPanel.Dock="Left">
+                        <materialDesign:PackIcon
+                            Width="50"
+                            Height="50">
+                            <materialDesign:PackIcon.Style>
+                                <Style
+                                    TargetType="materialDesign:PackIcon">
                                     <Style.Triggers>
-                                        <DataTrigger Binding="{Binding IsSelected}" Value="True">
-                                            <Setter Property="BorderBrush"
-                                                    Value="{DynamicResource SecondaryHueMidBrush}" />
-                                            <Setter Property="TextElement.Foreground"
-                                                    Value="{DynamicResource SecondaryHueMidBrush}" />
+                                        <DataTrigger
+                                            Binding="{Binding IsMenuExpanded}"
+                                            Value="True">
+                                            <Setter
+                                                Property="Kind"
+                                                Value="MenuOpen" />
                                         </DataTrigger>
                                     </Style.Triggers>
+                                    <Setter
+                                        Property="Kind"
+                                        Value="Menu" />
                                 </Style>
-                            </Border.Style>
-                            <Button
-                                Height="Auto"
-                                Margin="4"
-                                Padding="8"
-                                Command="{s:Action ActivateTab}"
-                                Style="{DynamicResource MaterialDesignFlatDarkButton}"
-                                CommandParameter="{Binding}"
-                                ToolTip="{Binding Name}">
-                                <materialDesign:PackIcon
-                                    Width="24"
-                                    Height="24"
-                                    Kind="{Binding Converter={x:Static converters:TabsToIconConverter.Instance}}" />
-                            </Button>
-                        </Border>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
-            <Button
-                Grid.Row="2"
-                Height="Auto"
-                Margin="4"
-                Padding="8"
-                Command="{s:Action ToggleMenu}"
-                Style="{DynamicResource MaterialDesignFlatSecondaryButton}"
-                ToolTip="Expand menu">
-                <materialDesign:PackIcon
-                    Width="50"
-                    Height="50"
-                    Kind="MenuOpen" />
-            </Button>
-        </Grid>
-        <Grid
-            Grid.Column="1">
-            <Grid.RowDefinitions>
-                <RowDefinition
-                    Height="Auto" />
-                <RowDefinition
-                    Height="*" />
-            </Grid.RowDefinitions>
-            <!--Top navbar-->
+                            </materialDesign:PackIcon.Style>
+                        </materialDesign:PackIcon>
 
-            <!--  Active settings tab  -->
-            <materialDesign:Transitioner
-                Grid.Row="1"
-                ItemsSource="{Binding Tabs}"
-                SelectedItem="{Binding ActiveTab, Mode=OneWay}">
-                <materialDesign:Transitioner.Resources>
-                    <Style TargetType="{x:Type materialDesign:TransitionerSlide}">
-                        <Setter Property="BackwardWipe">
-                            <Setter.Value>
-                                <materialDesign:SlideWipe Direction="Down" Duration="0:0:0.2" />
-                            </Setter.Value>
-                        </Setter>
-                        <Setter Property="ForwardWipe">
-                            <Setter.Value>
-                                <materialDesign:SlideWipe Direction="Up" Duration="0:0:0.2" />
-                            </Setter.Value>
-                        </Setter>
-                    </Style>
-                </materialDesign:Transitioner.Resources>
-                <materialDesign:Transitioner.ItemTemplate>
-                    <DataTemplate>
-                        <ScrollViewer
-                            Padding="4"
-                            Background="{DynamicResource MaterialDesignCardBackground}"
+                    </Button>
+                </DockPanel>
+            </Grid>
+            <Grid
+                Grid.Column="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition
+                        Height="Auto" />
+                    <RowDefinition
+                        Height="*" />
+                </Grid.RowDefinitions>
+                <!--Top navbar-->
+                <DockPanel
+                    Height="72"
+                    Grid.Row="0"
+                    LastChildFill="False"
+                    MouseDown="HeaderBorder_OnMouseDown"
+                    Background="{DynamicResource MaterialDesignPaper}">
+                    <usersControls:SearchBar
+                        Margin="12, 0, 0, 0"
+                        VerticalAlignment="Center"
+                        VerticalContentAlignment="Center">
 
-                            HorizontalScrollBarVisibility="Disabled"
-                            VerticalScrollBarVisibility="Auto">
-                            <ContentControl s:View.Model="{Binding}" />
-                        </ScrollViewer>
-                    </DataTemplate>
-                </materialDesign:Transitioner.ItemTemplate>
-            </materialDesign:Transitioner>
-            <DockPanel
-                Height="72"
-                Grid.Row="0"
-                LastChildFill="False"
-                MouseDown="HeaderBorder_OnMouseDown">
-                <!--Window controls-->
-                <Grid
-                    DockPanel.Dock="Right"
-                    Margin="2, 0, 0, 0">
-                    <Grid.RowDefinitions>
-                        <RowDefinition
-                            Height="*" />
-                        <RowDefinition
-                            Height="*" />
-                    </Grid.RowDefinitions>
+                    </usersControls:SearchBar>
+                    <!--Window controls-->
+                    <Grid
+                        VerticalAlignment="Center"
+                        DockPanel.Dock="Right"
+                        Margin="2, 0, 0, 0">
+                        <Grid.RowDefinitions>
+                            <RowDefinition
+                                Height="*" />
+                            <RowDefinition
+                                Height="*" />
+                            <RowDefinition
+                                Height="*" />
+                        </Grid.RowDefinitions>
+                        <Button
+                            Grid.Row="0"
+                            Height="Auto"
+                            Width="Auto"
+                            Margin="1"
+                            Padding="1"
+                            Click="CloseButton_OnClick"
+                            Style="{DynamicResource MaterialDesignFlatDarkButton}"
+                            ToolTip="Close application">
+                            <materialDesign:PackIcon
+                                Width="20"
+                                Height="20"
+                                Kind="WindowClose" />
+                        </Button>
+                        <Button
+                            Grid.Row="1"
+                            Height="Auto"
+                            Width="Auto"
+                            Margin="1"
+                            Padding="1"
+                            Command="{s:Action ToggleMaximized}"
+                            Style="{DynamicResource MaterialDesignFlatDarkButton}"
+                            ToolTip="Maximize">
+                            <materialDesign:PackIcon
+                                Width="20"
+                                Height="20">
+                                <materialDesign:PackIcon.Style>
+                                    <Style
+                                        TargetType="materialDesign:PackIcon">
+                                        <Style.Triggers>
+                                            <DataTrigger
+                                                Binding="{Binding WindowState, RelativeSource={RelativeSource AncestorType=Window}}"
+                                                Value="Normal">
+                                                <Setter
+                                                    Property="Kind"
+                                                    Value="WindowMaximize" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                        <Setter
+                                            Property="Kind"
+                                            Value="WindowRestore" />
+                                    </Style>
+                                </materialDesign:PackIcon.Style>
+                            </materialDesign:PackIcon>
+                        </Button>
+                        <Button
+                            Grid.Row="2"
+                            Height="Auto"
+                            Width="Auto"
+                            Margin="1"
+                            Padding="1"
+                            Click="HideButton_OnClick"
+                            Style="{DynamicResource MaterialDesignFlatDarkButton}"
+                            ToolTip="Hide application">
+                            <materialDesign:PackIcon
+                                Width="20"
+                                Height="20"
+                                Kind="WindowMinimize" />
+                        </Button>
+                    </Grid>
+                    <!--Notification button-->
                     <Button
-                        Grid.Row="0"
                         Height="Auto"
                         Width="Auto"
-                        Margin="1"
-                        Padding="2"
-                        Click="Close_OnClick"
+                        Margin="2"
+                        Padding="4"
                         Style="{DynamicResource MaterialDesignFlatDarkButton}"
-                        ToolTip="Close application">
+                        ToolTip="Notifications"
+                        DockPanel.Dock="Right"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Visibility="{Binding IsAuthorized, Converter={x:Static converters:BoolToVisibleConverter.Instance}}">
                         <materialDesign:PackIcon
-                            Width="30"
-                            Height="30"
-                            Kind="WindowClose" />
+                            Width="40"
+                            Height="40"
+                            Kind="BellBadgeOutline" />
                     </Button>
+                    <!--Favorites button-->
                     <Button
-                        Grid.Row="1"
                         Height="Auto"
                         Width="Auto"
-                        Margin="1"
-                        Padding="2"
+                        Margin="2"
+                        Padding="4"
                         Style="{DynamicResource MaterialDesignFlatDarkButton}"
-                        ToolTip="Maximize">
+                        ToolTip="Favorites"
+                        DockPanel.Dock="Right"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Visibility="{Binding IsAuthorized, Converter={x:Static converters:BoolToVisibleConverter.Instance}}">
                         <materialDesign:PackIcon
-                            Width="30"
-                            Height="30"
-                            Kind="WindowMaximize" />
+                            Width="40"
+                            Height="40"
+                            Kind="HeartOutline" />
                     </Button>
-                </Grid>
-                <!--Notification button-->
-                <Button
-                    Height="Auto"
-                    Width="Auto"
-                    Margin="2"
-                    Padding="4"
-                    Style="{DynamicResource MaterialDesignFlatDarkButton}"
-                    ToolTip="Notifications"
-                    DockPanel.Dock="Right"
-                    HorizontalAlignment="Center"
-                    VerticalAlignment="Center">
-                    <materialDesign:PackIcon
-                        Width="40"
-                        Height="40"
-                        Kind="BellBadgeOutline" />
-                </Button>
-                <!--Favorites button-->
-                <Button
-                    Height="Auto"
-                    Width="Auto"
-                    Margin="2"
-                    Padding="4"
-                    Style="{DynamicResource MaterialDesignFlatDarkButton}"
-                    ToolTip="Favorites"
-                    DockPanel.Dock="Right"
-                    HorizontalAlignment="Center"
-                    VerticalAlignment="Center">
-                    <materialDesign:PackIcon
-                        Width="40"
-                        Height="40"
-                        Kind="HeartOutline" />
-                </Button>
-            </DockPanel>
+                    <!--Login button-->
+                    <Button
+                        Height="Auto"
+                        Width="Auto"
+                        Margin="2"
+                        Padding="4"
+                        Style="{DynamicResource MaterialDesignFlatDarkButton}"
+                        Command="{s:Action OpenLoginPage}"
+                        ToolTip="Login"
+                        DockPanel.Dock="Right"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Visibility="{Binding IsAuthorized, Converter={x:Static converters:InverseBoolToVisibleConverter.Instance}}">
+                        <materialDesign:PackIcon
+                            Width="40"
+                            Height="40"
+                            Kind="LoginVariant" />
+                    </Button>
+                </DockPanel>
+                <!--  Active settings tab  -->
+                <materialDesign:Transitioner
+                    Grid.Row="1"
+                    ItemsSource="{Binding Tabs}"
+                    SelectedItem="{Binding ActiveTab, Mode=OneWay}">
+                    <materialDesign:Transitioner.Resources>
+                        <Style TargetType="{x:Type materialDesign:TransitionerSlide}">
+                            <Setter Property="BackwardWipe">
+                                <Setter.Value>
+                                    <materialDesign:SlideWipe Direction="Down" Duration="0:0:0.2" />
+                                </Setter.Value>
+                            </Setter>
+                            <Setter Property="ForwardWipe">
+                                <Setter.Value>
+                                    <materialDesign:SlideWipe Direction="Up" Duration="0:0:0.2" />
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </materialDesign:Transitioner.Resources>
+                    <materialDesign:Transitioner.ItemTemplate>
+                        <DataTemplate>
+                            <ScrollViewer
+                                Padding="4"
+                                Background="{DynamicResource MaterialDesignCardBackground}"
+
+                                HorizontalScrollBarVisibility="Disabled"
+                                VerticalScrollBarVisibility="Auto">
+                                <ContentControl s:View.Model="{Binding}" />
+                            </ScrollViewer>
+                        </DataTemplate>
+                    </materialDesign:Transitioner.ItemTemplate>
+                </materialDesign:Transitioner>
+            </Grid>
         </Grid>
-    </Grid>
+    </materialDesign:DialogHost>
 </Window>
