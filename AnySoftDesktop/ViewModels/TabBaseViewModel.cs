@@ -2,7 +2,7 @@
 
 namespace AnySoftDesktop.ViewModels;
 
-public class TabBaseViewModel : PropertyChangedBase, ITabViewModel
+public abstract class TabBaseViewModel : PropertyChangedBase, ITabViewModel
 {
     public int Order { get; }
 
