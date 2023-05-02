@@ -7,6 +7,7 @@
     <Color x:Key="TertiaryColor">#66FCF1</Color>
     <Color x:Key="AccentColor">#C5C6C7</Color>
     <Color x:Key="TextColor">#FFFFFF</Color>
+    <Color x:Key="SearchBarColor">#3E3E46</Color>
     
     <!--Brushes-->
     <SolidColorBrush x:Key="PrimaryHueLightBrush" Color="{DynamicResource BackgroundColor}" />
@@ -17,5 +18,11 @@
     <SolidColorBrush x:Key="PrimaryHueDarkForegroundBrush" Color="{DynamicResource TextColor}" />
     <SolidColorBrush x:Key="SecondaryHueMidBrush" Color="{DynamicResource TertiaryColor}" />
     <SolidColorBrush x:Key="SecondaryHueMidForegroundBrush" Color="{DynamicResource TextColor}" />
+    <SolidColorBrush x:Key="SearchBarColorBrush" Color="{DynamicResource SearchBarColor}" />
+    
+    <FontFamily
+        x:Key="Outfit">
+        pack://application:,,,/Resources/Fonts/#Outfit-Regular
+    </FontFamily>
     
 </ResourceDictionary>
