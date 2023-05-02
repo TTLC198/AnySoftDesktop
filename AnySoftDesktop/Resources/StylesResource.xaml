@@ -8,6 +8,7 @@
     <Color x:Key="AccentColor">#C5C6C7</Color>
     <Color x:Key="TextColor">#FFFFFF</Color>
     <Color x:Key="SearchBarColor">#3E3E46</Color>
+    <Color x:Key="UiElementsColor">#262626</Color>
     
     <!--Brushes-->
     <SolidColorBrush x:Key="PrimaryHueLightBrush" Color="{DynamicResource BackgroundColor}" />
@@ -19,6 +20,7 @@
     <SolidColorBrush x:Key="SecondaryHueMidBrush" Color="{DynamicResource TertiaryColor}" />
     <SolidColorBrush x:Key="SecondaryHueMidForegroundBrush" Color="{DynamicResource TextColor}" />
     <SolidColorBrush x:Key="SearchBarColorBrush" Color="{DynamicResource SearchBarColor}" />
+    <SolidColorBrush x:Key="UiElementsColorBrush" Color="{DynamicResource UiElementsColor}" />
     
     <FontFamily
         x:Key="Outfit">
