@@ -1,5 +1,6 @@
 ﻿using System.Windows;
 using AnySoftDesktop.ViewModels;
+using AnySoftDesktop.ViewModels.Framework;
 using Stylet;
 using StyletIoC;
 
@@ -12,6 +13,13 @@ public class Bootstrapper : Bootstrapper<MainWindowViewModel>
     protected override void ConfigureIoC(IStyletIoCBuilder builder)
     {
         base.ConfigureIoC(builder);
+        
+        builder.Bind<DialogManager>().ToSelf().InSingletonScope();
+        
+        builder.Bind<IViewModelFactory>().ToAbstractFactory();
+        builder.Bind<MainWindowViewModel>().ToSelf().InSingletonScope();
+        builder.Bind<LoginViewModel>().ToSelf().InSingletonScope();
+        builder.Bind<ITabViewModel>().ToAllImplementations().InSingletonScope();
     }
     
     protected override void Launch()
