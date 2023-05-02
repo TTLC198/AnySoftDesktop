@@ -20,6 +20,8 @@ namespace AnySoftDesktop
         public static string Name { get; } = Assembly.GetName().Name!;
 
         public static Version Version { get; } = Assembly.GetName().Version!;
+        
+        public static string ApiUrl { get; } = "https://localhost:5001/api";
 
         public static string VersionString { get; } = "v" + Version.ToString(3).Trim();
 
@@ -31,11 +33,6 @@ namespace AnySoftDesktop
 
         public static string GitHubProjectUrl { get; } = 
             "https://github.com/TTLC198/AnySoftDesktop";
-
-        /*
-         public static string GitHubAutoUpdateConfigUrl { get; } =
-            "https://raw.githubusercontent.com/TTLC198/AnySoftDesktop/master/appcast.xml";
-        */
     }
 
     public partial class App
