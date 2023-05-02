@@ -14,7 +14,9 @@ public class TabsToIconConverter : IValueConverter
 
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture) => value switch
     {
-        LibraryTabViewModel => PackIconKind.Library,
+        DashboardTabViewModel => PackIconKind.ViewDashboard,
+        LibraryTabViewModel => PackIconKind.Package,
+        SettingsTabViewModel => PackIconKind.Settings,
         _ => PackIconKind.QuestionMark
     };
 
