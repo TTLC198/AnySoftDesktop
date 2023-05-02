@@ -1,5 +1,7 @@
 ﻿using System.ComponentModel;
+using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
 
 namespace AnySoftDesktop.UsersControls;
 
@@ -10,16 +12,27 @@ public partial class TextBoxWithPlaceholder : UserControl
     {
         get; set;
     }
-    
-    [Description("Textbox placeholder"), Category("Appearance")]
-    public string? Placeholder
+
+    [Description("Textbox Text"), Category("Text")]
+    public string Text
     {
-        get; set;
+        get => (string)GetValue(TextProperty);
+        set => SetValue(TextProperty, value);
     }
+
+    public static readonly DependencyProperty TextProperty =
+        DependencyProperty.Register(
+            nameof(Text),
+            typeof(string), 
+            typeof(TextBoxWithPlaceholder),
+            new UIPropertyMetadata(""));
+    
+    [Description("Textbox Placeholder"), Category("Placeholder")]
+    public string Placeholder
+    { get; set; }
 
     public TextBoxWithPlaceholder()
     {
         InitializeComponent();
-        this.DataContext = this;
     }
 }
