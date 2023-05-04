@@ -4,9 +4,106 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:AnySoftDesktop.Views"
+             xmlns:usersControls="clr-namespace:AnySoftDesktop.UsersControls"
+             xmlns:s="https://github.com/canton7/Stylet"
+             xmlns:tabs="clr-namespace:AnySoftDesktop.ViewModels.Tabs"
+             xmlns:converters="clr-namespace:AnySoftDesktop.Utils.Converters"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              mc:Ignorable="d"
-             d:DesignHeight="300" d:DesignWidth="300">
-    <Grid>
-        
+             d:DesignHeight="300" d:DesignWidth="300"
+             d:DataContext="{d:DesignInstance Type=tabs:DashboardTabViewModel}">
+    <UserControl.Resources>
+        <Style
+            TargetType="Button">
+            <Setter
+                Property="Background"
+                Value="Transparent" />
+            <Setter
+                Property="BorderThickness"
+                Value="0" />
+            <Style.Triggers>
+                <Trigger
+                    Property="IsMouseOver"
+                    Value="True">
+                    <Setter
+                        Property="Background">
+                        <Setter.Value>
+                            <SolidColorBrush
+                                Color="{StaticResource PrimaryColor}"
+                                Opacity="0.3" />
+                        </Setter.Value>
+                    </Setter>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </UserControl.Resources>
+    <Grid
+        Loaded="{s:Action OnViewFullyLoaded}">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition
+                    Width="*" />
+                <ColumnDefinition
+                    Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <Grid
+                Grid.Column="0">
+                <Grid>
+                    <ItemsControl ItemsSource="{Binding Items}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel Orientation="Horizontal" />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Image
+                                    HorizontalAlignment="Stretch"
+                                    VerticalAlignment="Stretch"
+                                    Source="{Binding Image, Converter={x:Static converters:UrlToImageConverter.Instance}}">
+                                    <Image.Style>
+                                        <Style TargetType="Image">
+                                            <Setter
+                                                Property="Visibility"
+                                                Value="Collapsed" />
+                                            <Style.Triggers>
+                                                <DataTrigger
+                                                    Binding="{Binding IsSelected}"
+                                                    Value="True">
+                                                    <Setter
+                                                        Property="Visibility"
+                                                        Value="Visible" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Image.Style>
+                                </Image>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                    <DockPanel
+                        HorizontalAlignment="Stretch"
+                        LastChildFill="False">
+                        <Button
+                            Padding="-1"
+                            Command="{s:Action ShiftLeft}"
+                            DockPanel.Dock="Left">
+                            <materialDesign:PackIcon
+                                Width="20"
+                                Height="20"
+                                Kind="MenuLeft" />
+                        </Button>
+                        <Button
+                            Command="{s:Action ShiftRight}"
+                            DockPanel.Dock="Right">
+                            <materialDesign:PackIcon
+                                Width="20"
+                                Height="20"
+                                Kind="MenuRight" />
+                        </Button>
+                    </DockPanel>
+                </Grid>
+            </Grid>
+        </Grid>
     </Grid>
 </UserControl>
