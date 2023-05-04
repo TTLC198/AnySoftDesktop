@@ -1,0 +1,137 @@
+﻿<UserControl x:Class="AnySoftDesktop.UsersControls.ImageCarousel"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:AnySoftDesktop.UsersControls"
+             xmlns:s="https://github.com/canton7/Stylet"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:converters="clr-namespace:AnySoftDesktop.Utils.Converters"
+             mc:Ignorable="d"
+             d:DesignHeight="300" d:DesignWidth="300"
+             Background="Transparent">
+    <UserControl.Resources>
+        <Style
+            x:Key="SliderButtonsStyle"
+            TargetType="{x:Type Button}">
+            <Setter
+                Property="Background"
+                Value="Transparent" />
+            <Setter
+                Property="BorderThickness"
+                Value="0" />
+            <Style.Triggers>
+                <Trigger
+                    Property="IsMouseOver"
+                    Value="True">
+                    <Setter
+                        Property="Background">
+                        <Setter.Value>
+                            <SolidColorBrush
+                                Color="{StaticResource TertiaryColor}"
+                                Opacity="0.2" />
+                        </Setter.Value>
+                    </Setter>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </UserControl.Resources>
+    <Grid>
+        <materialDesign:Transitioner
+            Background="Transparent"
+            ItemsSource="{Binding Images, RelativeSource={RelativeSource AncestorType=UserControl}}"
+            SelectedItem="{Binding SelectedImage, RelativeSource={RelativeSource AncestorType=UserControl}}"
+            AutoApplyTransitionOrigins="False">
+            <materialDesign:Transitioner.Resources>
+                <Style TargetType="{x:Type materialDesign:TransitionerSlide}">
+                    <Setter Property="BackwardWipe">
+                        <Setter.Value>
+                            <materialDesign:SlideWipe Direction="Left" Duration="0:0:0.3" />
+                        </Setter.Value>
+                    </Setter>
+                    <Setter Property="ForwardWipe">
+                        <Setter.Value>
+                            <materialDesign:SlideWipe Direction="Right" Duration="0:0:0.3" />
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </materialDesign:Transitioner.Resources>
+            <materialDesign:Transitioner.ItemTemplate>
+                <DataTemplate>
+                    <Border 
+                        CornerRadius="15"
+                        HorizontalAlignment="Stretch"
+                        VerticalAlignment="Stretch">
+                        <Border.Background>
+                            <ImageBrush
+                                Stretch="UniformToFill"
+                                ImageSource="{Binding ., Converter={x:Static converters:UrlToImageConverter.Instance}}"/>
+                        </Border.Background>
+                        <!--<Image
+                            Stretch="UniformToFill"
+                            Width="{Binding ActualWidth, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Border}}"
+                            Source="{Binding ., Converter={x:Static converters:UrlToImageConverter.Instance}}" />-->
+                    </Border>
+
+                </DataTemplate>
+            </materialDesign:Transitioner.ItemTemplate>
+        </materialDesign:Transitioner>
+        <DockPanel
+            HorizontalAlignment="Stretch"
+            VerticalAlignment="Stretch"
+            LastChildFill="False">
+            <Button
+                Click="LeftButton_OnClick"
+                DockPanel.Dock="Left">
+                <Button.Style>
+                    <Style
+                        BasedOn="{StaticResource SliderButtonsStyle}"
+                        TargetType="{x:Type Button}">
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="{x:Type Button}">
+                                    <Border
+                                        Background="{TemplateBinding Background}"
+                                        BorderThickness="0"
+                                        CornerRadius="15, 0, 0, 15">
+                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </Button.Style>
+                <materialDesign:PackIcon
+                    Width="20"
+                    Height="20"
+                    Kind="MenuLeft" />
+            </Button>
+            <Button
+                Click="RightButton_OnClick"
+                DockPanel.Dock="Right">
+                <Button.Style>
+                    <Style
+                        BasedOn="{StaticResource SliderButtonsStyle}"
+                        TargetType="{x:Type Button}">
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="{x:Type Button}">
+                                    <Border
+                                        Background="{TemplateBinding Background}"
+                                        BorderThickness="0"
+                                        CornerRadius="0, 15, 15, 0">
+                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </Button.Style>
+                <materialDesign:PackIcon
+                    Width="20"
+                    Height="20"
+                    Kind="MenuRight" />
+            </Button>
+        </DockPanel>
+    </Grid>
+</UserControl>
