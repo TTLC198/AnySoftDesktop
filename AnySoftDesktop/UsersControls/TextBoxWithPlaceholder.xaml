@@ -30,7 +30,7 @@
                             <VisualBrush x:Key="CueBannerBrush" AlignmentX="Left" AlignmentY="Center" Stretch="None">
                                 <VisualBrush.Visual>
                                     <Label
-                                        Content="{Binding Placeholder, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                        Content="{Binding TextPlaceholder, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                         FontFamily="{StaticResource Outfit}"
                                         FontSize="18">
                                         <Label.Style>
@@ -84,7 +84,7 @@
                         </Style.Triggers>
                         <Setter
                             Property="Background"
-                            Value="{Binding Background}" />
+                            Value="{Binding Background, RelativeSource={RelativeSource AncestorType=UserControl}}" />
                         <Setter
                             Property="Foreground"
                             Value="{StaticResource PrimaryHueDarkBrush}" />

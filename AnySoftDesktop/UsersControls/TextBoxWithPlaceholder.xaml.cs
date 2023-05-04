@@ -22,13 +22,13 @@ public partial class TextBoxWithPlaceholder : UserControl
 
     public static readonly DependencyProperty TextProperty =
         DependencyProperty.Register(
-            "Text",
+            nameof(Text),
             typeof(string), 
             typeof(TextBoxWithPlaceholder),
             new UIPropertyMetadata(""));
     
-    [Description("Textbox Placeholder"), Category("Text")]
-    public string Placeholder
+    [Description("Textbox TextPlaceholder")]
+    public string TextPlaceholder
     {
         get => (string)GetValue(PlaceholderProperty);
         set => SetValue(PlaceholderProperty, value);
@@ -36,7 +36,7 @@ public partial class TextBoxWithPlaceholder : UserControl
 
     public static readonly DependencyProperty PlaceholderProperty =
         DependencyProperty.Register(
-            "Placeholder",
+            nameof(TextPlaceholder),
             typeof(string), 
             typeof(TextBoxWithPlaceholder),
             new UIPropertyMetadata(""));

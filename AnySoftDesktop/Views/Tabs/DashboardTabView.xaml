@@ -65,7 +65,7 @@
                     </Grid.RowDefinitions>
                     <usersControls:ImageCarousel
                         Grid.Column="0"
-                        MinHeight="250"
+                        MinHeight="350"
                         Images="{Binding MainProduct.Images}"
                         SelectedImage="{Binding MainProduct.Images[0]}" />
                     <Border

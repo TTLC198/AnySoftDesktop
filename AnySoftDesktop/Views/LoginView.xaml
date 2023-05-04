@@ -52,19 +52,19 @@
             Margin="5">
             <usersControls:TextBoxWithPlaceholder
                 Margin="5"
-                Placeholder="Enter login"
+                TextPlaceholder="Enter login"
                 CornerRadius="0" 
                 Background="{DynamicResource UiElementsColorBrush}"
                 Text="{Binding UserCredentials.Login, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
             <usersControls:TextBoxWithPlaceholder
                 Margin="5"
-                Placeholder="Enter email"
+                TextPlaceholder="Enter email"
                 CornerRadius="0" 
                 Background="{DynamicResource UiElementsColorBrush}"
                 Text="{Binding UserCredentials.Email, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
             <usersControls:TextBoxWithPlaceholder
                 Margin="5"
-                Placeholder="Enter password"
+                TextPlaceholder="Enter password"
                 CornerRadius="0" 
                 Background="{DynamicResource UiElementsColorBrush}"
                 Text="{Binding UserCredentials.Password, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
