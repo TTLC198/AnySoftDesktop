@@ -10,6 +10,7 @@ using System.Text.Json;
 using System.Threading;
 using AnySoftDesktop.Models;
 using AnySoftDesktop.Services;
+using AnySoftDesktop.Utils;
 using AnySoftDesktop.ViewModels.Framework;
 using Microsoft.IdentityModel.Tokens;
 using RPM_Project_Backend.Domain;
@@ -39,10 +40,6 @@ public class LoginViewModel : DialogScreen<ApplicationUser?>
     {
         var validationContext = new ValidationContext(UserCredentials, null, null);
         var results = new List<ValidationResult>();
-        var options = new JsonSerializerOptions
-        {
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-        };
 
         if (Validator.TryValidateObject(UserCredentials, validationContext, results, true))
         {
@@ -54,7 +51,7 @@ public class LoginViewModel : DialogScreen<ApplicationUser?>
                 using (var cancellationTokenSource = new CancellationTokenSource(timeoutAfter))
                 {
                     var responseStream = await getTokenRequest.Content.ReadAsStreamAsync(cancellationTokenSource.Token);
-                    tokenString = await JsonSerializer.DeserializeAsync<string>(responseStream, options, cancellationToken: cancellationTokenSource.Token);
+                    tokenString = await JsonSerializer.DeserializeAsync<string>(responseStream, CustomJsonSerializerOptions.Options, cancellationToken: cancellationTokenSource.Token);
                     var handler = new JwtSecurityTokenHandler();
                     var token = handler.ReadJwtToken(tokenString);
                     userId = token.Payload.Claims.First(cl => cl.Type == "id").Value;
@@ -65,7 +62,7 @@ public class LoginViewModel : DialogScreen<ApplicationUser?>
                 {
                     using var cancellationTokenSource = new CancellationTokenSource(timeoutAfter);
                     var responseStream = await getUserRequest.Content.ReadAsStreamAsync(cancellationTokenSource.Token);
-                    var responseUserResult = await JsonSerializer.DeserializeAsync<UserResponseDto>(responseStream, options, cancellationToken: cancellationTokenSource.Token);
+                    var responseUserResult = await JsonSerializer.DeserializeAsync<UserResponseDto>(responseStream, CustomJsonSerializerOptions.Options, cancellationToken: cancellationTokenSource.Token);
                     if (responseUserResult != null)
                         Close(new ApplicationUser
                         {
