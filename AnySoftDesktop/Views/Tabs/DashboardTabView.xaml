@@ -9,8 +9,10 @@
              xmlns:tabs="clr-namespace:AnySoftDesktop.ViewModels.Tabs"
              xmlns:converters="clr-namespace:AnySoftDesktop.Utils.Converters"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             Background="{DynamicResource MaterialDesignPaper}"
+             FontFamily="{DynamicResource MaterialDesignFont}"
              mc:Ignorable="d"
-             d:DesignHeight="300" d:DesignWidth="300"
+             d:DesignHeight="300" d:DesignWidth="800"
              d:DataContext="{d:DesignInstance Type=tabs:DashboardTabViewModel}">
     <UserControl.Resources>
         <Style
@@ -39,71 +41,81 @@
     </UserControl.Resources>
     <Grid
         Loaded="{s:Action OnViewFullyLoaded}">
-        <Grid>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition
-                    Width="*" />
-                <ColumnDefinition
-                    Width="Auto" />
-            </Grid.ColumnDefinitions>
-            <Grid
-                Grid.Column="0">
-                <Grid>
-                    <ItemsControl ItemsSource="{Binding Items}">
-                        <ItemsControl.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <StackPanel Orientation="Horizontal" />
-                            </ItemsPanelTemplate>
-                        </ItemsControl.ItemsPanel>
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate>
-                                <Image
-                                    HorizontalAlignment="Stretch"
-                                    VerticalAlignment="Stretch"
-                                    Source="{Binding Image, Converter={x:Static converters:UrlToImageConverter.Instance}}">
-                                    <Image.Style>
-                                        <Style TargetType="Image">
-                                            <Setter
-                                                Property="Visibility"
-                                                Value="Collapsed" />
-                                            <Style.Triggers>
-                                                <DataTrigger
-                                                    Binding="{Binding IsSelected}"
-                                                    Value="True">
-                                                    <Setter
-                                                        Property="Visibility"
-                                                        Value="Visible" />
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </Image.Style>
-                                </Image>
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
-                    <DockPanel
-                        HorizontalAlignment="Stretch"
-                        LastChildFill="False">
-                        <Button
-                            Padding="-1"
-                            Command="{s:Action ShiftLeft}"
-                            DockPanel.Dock="Left">
-                            <materialDesign:PackIcon
-                                Width="20"
-                                Height="20"
-                                Kind="MenuLeft" />
-                        </Button>
-                        <Button
-                            Command="{s:Action ShiftRight}"
-                            DockPanel.Dock="Right">
-                            <materialDesign:PackIcon
-                                Width="20"
-                                Height="20"
-                                Kind="MenuRight" />
-                        </Button>
-                    </DockPanel>
+        <ScrollViewer>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition
+                        Height="Auto" />
+                    <RowDefinition
+                        Height="Auto" />
+                </Grid.RowDefinitions>
+                <!--First product-->
+                <Grid
+                    Grid.Row="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition
+                            Width="3*" />
+                        <ColumnDefinition
+                            Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition
+                            Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <usersControls:ImageCarousel
+                        Grid.Column="0"
+                        MinHeight="250"
+                        Images="{Binding MainProduct.Images}"
+                        SelectedImage="{Binding MainProduct.Images[0]}" />
+                    <Border
+                        Grid.Column="1"
+                        Grid.Row="0"
+                        Margin="15, 0, 0, 0"
+                        CornerRadius="15"
+                        BorderThickness="0">
+                        <Border.Background>
+                            <ImageBrush
+                                Stretch="UniformToFill"
+                                ImageSource="{Binding MainProduct.Images[0], Converter={x:Static converters:UrlToImageConverter.Instance}}" />
+                        </Border.Background>
+                        <StackPanel
+                            Margin="10"
+                            Orientation="Vertical"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center">
+                            <TextBlock
+                                Margin="3, 7"
+                                FontSize="20"
+                                Foreground="{DynamicResource SecondaryHueMidBrush}"
+                                Text="{Binding MainProduct.Name}" />
+                            <TextBlock
+                                Margin="3, 7"
+                                FontSize="14"
+                                TextWrapping="Wrap"
+                                Foreground="{DynamicResource PrimaryHueDarkBrush}"
+                                Text="{Binding MainProduct.Description}" />
+                            <Button>
+                                <Button.Content>
+                                    <Border
+                                        BorderThickness="0"
+                                        CornerRadius="10"
+                                        Padding="5">
+                                        <Border.Background>
+                                            <SolidColorBrush
+                                                Color="{DynamicResource UiElementsColor}"
+                                                Opacity="0.3" />
+                                        </Border.Background>
+                                        <Label
+                                            FontSize="10"
+                                            Foreground="{DynamicResource PrimaryHueDarkBrush}"
+                                            Content="Learn more..." />
+                                    </Border>
+                                </Button.Content>
+                            </Button>
+                        </StackPanel>
+                    </Border>
                 </Grid>
             </Grid>
-        </Grid>
+        </ScrollViewer>
     </Grid>
 </UserControl>

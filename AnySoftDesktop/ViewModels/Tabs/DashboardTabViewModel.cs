@@ -28,27 +28,15 @@ public class DashboardTabViewModel : TabBaseViewModel, INotifyPropertyChanged
             OnPropertyChanged();
         }
     }
+    
+    private ProductResponseDto _mainProduct = new();
 
-    private ProductResponseDto _product = new ProductResponseDto();
-
-    public ProductResponseDto Product
+    public ProductResponseDto MainProduct
     {
-        get => _product;
+        get => _mainProduct;
         set
         {
-            _product = value;
-            OnPropertyChanged();
-        }
-    }
-
-    private ObservableCollection<ItemCarousel> _items;
-
-    public ObservableCollection<ItemCarousel> Items
-    {
-        get => _items;
-        set
-        {
-            _items = value;
+            _mainProduct = value;
             OnPropertyChanged();
         }
     }
@@ -62,31 +50,24 @@ public class DashboardTabViewModel : TabBaseViewModel, INotifyPropertyChanged
         await UpdateProducts();
     }
 
-    private void SelectFirstItem()
-    {
-        foreach (var item in Items)
-        {
-            item.IsSelected = item == Items[0];
-        }
-    }
-
+    /*
     public void ShiftLeft()
     {
-        // Moves the first game to the end
-        var first = Items[0];
-        Items.RemoveAt(0);
-        Items.Add(first);
-        SelectFirstItem();
+        var index = Products.IndexOf(SelectedProduct);
+        SelectedProduct = 
+            index == 0 
+                ? Products.Last() 
+                : Products[index - 1];
     }
 
     public void ShiftRight()
     {
-        // Moves the last game to the beginning
-        var last = Items[^1];
-        Items.RemoveAt(Items.Count - 1);
-        Items.Insert(0, last);
-        SelectFirstItem();
-    }
+        var index = Products.IndexOf(SelectedProduct);
+        SelectedProduct = 
+            index == Products.Count 
+                ? Products.First() 
+                : Products[index + 1];
+    }*/
 
     public async Task UpdateProducts()
     {
@@ -100,13 +81,7 @@ public class DashboardTabViewModel : TabBaseViewModel, INotifyPropertyChanged
                 var products = await JsonSerializer.DeserializeAsync<IEnumerable<ProductResponseDto>>(responseStream,
                     CustomJsonSerializerOptions.Options, cancellationToken: cancellationTokenSource.Token);
                 Products = new ObservableCollection<ProductResponseDto>(products!);
-                Product = Products.First();
-                Items = new ObservableCollection<ItemCarousel>(
-                    Product.Images
-                        .Select(i => new ItemCarousel()
-                        {
-                            Image = i
-                        }));
+                MainProduct = Products.First();
             }
         }
     }
