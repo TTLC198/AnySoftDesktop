@@ -5,15 +5,15 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:AnySoftDesktop.UsersControls"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:sys="clr-namespace:System;assembly=mscorlib"
              mc:Ignorable="d"
              MinWidth="366"
              MinHeight="36"
              MaxHeight="42"
              Background="Transparent">
     <Border
-        DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"
-        Background="{Binding Background}"
-        CornerRadius="{Binding CornerRadius}">
+        Background="{Binding Background, RelativeSource={RelativeSource AncestorType=UserControl}}"
+        CornerRadius="{Binding CornerRadius, RelativeSource={RelativeSource AncestorType=UserControl}}">
         <DockPanel
             Margin="5, 0, 0, 0"
             LastChildFill="True">
@@ -25,17 +25,17 @@
                 FontSize="18"
                 Text="{Binding Text, RelativeSource={RelativeSource AncestorType=UserControl}}">
                 <TextBox.Style>
-                    <Style TargetType="TextBox" xmlns:sys="clr-namespace:System;assembly=mscorlib">
+                    <Style TargetType="TextBox">
                         <Style.Resources>
                             <VisualBrush x:Key="CueBannerBrush" AlignmentX="Left" AlignmentY="Center" Stretch="None">
                                 <VisualBrush.Visual>
-                                    <TextBlock
-                                        Text="{Binding Placeholder, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                    <Label
+                                        Content="{Binding Placeholder, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                         FontFamily="{StaticResource Outfit}"
                                         FontSize="18">
-                                        <TextBlock.Style>
+                                        <Label.Style>
                                             <Style
-                                                TargetType="TextBlock">
+                                                TargetType="Label">
                                                 <Style.Triggers>
                                                     <DataTrigger
                                                         Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Border},Path=IsMouseOver}"
@@ -49,8 +49,8 @@
                                                     Property="Foreground"
                                                     Value="{StaticResource PrimaryHueDarkBrush}" />
                                             </Style>
-                                        </TextBlock.Style>
-                                    </TextBlock>
+                                        </Label.Style>
+                                    </Label>
                                 </VisualBrush.Visual>
                             </VisualBrush>
                         </Style.Resources>
