@@ -1,12 +1,16 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
+using System.Runtime.CompilerServices;
+using AnySoftDesktop.Models;
 using AnySoftDesktop.Utils;
 using AnySoftDesktop.ViewModels.Framework;
+using RPM_Project_Backend.Domain;
 using Stylet;
 
 namespace AnySoftDesktop.ViewModels;
 
-public class MainWindowViewModel : Screen
+public class MainWindowViewModel : Screen, INotifyPropertyChanged
 {
     private readonly IViewModelFactory _viewModelFactory;
     private readonly DialogManager _dialogManager;
@@ -17,6 +21,20 @@ public class MainWindowViewModel : Screen
     public bool IsMenuExpanded { get; set; }
     public bool IsWindowMaximized { get; set; }
     public bool IsAuthorized { get; set; }
+    
+    public string SearchString { get; set; }
+
+    private ApplicationUser _currentUser = new ApplicationUser();
+
+    public ApplicationUser CurrentUser
+    {
+        get => _currentUser;
+        set
+        {
+            _currentUser = value;
+            OnPropertyChanged();
+        }
+    }
 
     public MainWindowViewModel(IReadOnlyList<ITabViewModel> tabs, IViewModelFactory viewModelFactory, DialogManager dialogManager)
     {
@@ -49,7 +67,19 @@ public class MainWindowViewModel : Screen
     {
         if (!IsAuthorized)
         {
-            await _dialogManager.ShowDialogAsync(_viewModelFactory.CreateLoginViewModel());
+            var user = await _dialogManager.ShowDialogAsync(_viewModelFactory.CreateLoginViewModel());
+            if (user is not null)
+            {
+                IsAuthorized = true;
+                CurrentUser = user;
+            }
         }
+    }
+    
+    public event PropertyChangedEventHandler? PropertyChanged;
+
+    protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+    {
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 }

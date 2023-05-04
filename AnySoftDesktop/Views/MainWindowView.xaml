@@ -26,8 +26,8 @@
         x:Name="DialogHost"
         CloseOnClickAway="True"
         Style="{DynamicResource MaterialDesignEmbeddedDialogHost}"
-        DialogBackground="{DynamicResource PrimaryHueMidBrush}"
-        DialogTheme="Light"
+        DialogBackground="Transparent"
+        DialogTheme="Inherit"
         DialogMargin="10">
         <Grid>
             <Grid.ColumnDefinitions>
@@ -51,6 +51,7 @@
                     Grid.Row="0"
                     Margin="10"
                     VerticalAlignment="Center"
+                    HorizontalAlignment="Left"
                     Width="Auto"
                     Height="50">
                     <Image.Style>
@@ -72,8 +73,7 @@
                 </Image>
                 <ItemsControl
                     Grid.Row="1"
-                    ItemsSource="{Binding Tabs}"
-                    TextElement.Foreground="{DynamicResource PrimaryHueDarkBrush}">
+                    ItemsSource="{Binding Tabs}">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
                             <Border BorderThickness="0,0,3,0">
@@ -83,65 +83,144 @@
                                             <DataTrigger Binding="{Binding IsSelected}" Value="True">
                                                 <Setter Property="BorderBrush"
                                                         Value="{DynamicResource SecondaryHueMidBrush}" />
-                                                <Setter Property="TextElement.Foreground"
-                                                        Value="{DynamicResource SecondaryHueMidBrush}" />
                                             </DataTrigger>
                                         </Style.Triggers>
+                                        <Setter Property="BorderBrush"
+                                                Value="Transparent" />
                                     </Style>
                                 </Border.Style>
-                                <Button
-                                    Height="Auto"
-                                    Margin="4"
-                                    Padding="8"
-                                    Command="{s:Action ActivateTab}"
-                                    Style="{DynamicResource MaterialDesignFlatDarkButton}"
-                                    CommandParameter="{Binding}"
-                                    ToolTip="{Binding Name}">
-                                    <materialDesign:PackIcon
-                                        Width="50"
-                                        Height="50"
-                                        Kind="{Binding Converter={x:Static converters:TabsToIconConverter.Instance}}" />
-                                </Button>
+                                <DockPanel
+                                    LastChildFill="True">
+                                    <Button
+                                        Height="Auto"
+                                        Margin="4"
+                                        Padding="8"
+                                        Command="{s:Action ActivateTab}"
+                                        CommandParameter="{Binding}"
+                                        ToolTip="{Binding Name}"
+                                        HorizontalAlignment="Left"
+                                        DockPanel.Dock="Left">
+                                        <Button.Style>
+                                            <Style
+                                                TargetType="Button"
+                                                BasedOn="{StaticResource MaterialDesignFlatDarkButton}">
+                                                <Style.Triggers>
+                                                    <DataTrigger
+                                                        Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}, Path=DataContext.IsMenuExpanded}"
+                                                        Value="True">
+                                                        <Setter
+                                                            Property="Content">
+                                                            <Setter.Value>
+                                                                <StackPanel
+                                                                    Orientation="Horizontal">
+                                                                    <StackPanel.Style>
+                                                                        <Style>
+                                                                            <Style.Triggers>
+                                                                                <DataTrigger
+                                                                                    Binding="{Binding IsSelected}"
+                                                                                    Value="True">
+                                                                                    <Setter
+                                                                                        Property="TextElement.Foreground"
+                                                                                        Value="{DynamicResource SecondaryHueMidBrush}" />
+                                                                                </DataTrigger>
+                                                                            </Style.Triggers>
+                                                                            <Setter Property="TextElement.Foreground"
+                                                                                Value="{DynamicResource PrimaryHueDarkBrush}" />
+                                                                        </Style>
+                                                                    </StackPanel.Style>
+                                                                    <materialDesign:PackIcon
+                                                                        Width="50"
+                                                                        Height="50"
+                                                                        Kind="{Binding Converter={x:Static converters:TabsToIconConverter.Instance}}" />
+                                                                    <TextBlock
+                                                                        Margin="6, 0"
+                                                                        FontSize="24"
+                                                                        Text="{Binding Name}"
+                                                                        VerticalAlignment="Center" />
+                                                                </StackPanel>
+                                                            </Setter.Value>
+                                                        </Setter>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                                <Setter
+                                                    Property="Content">
+                                                    <Setter.Value>
+                                                        <materialDesign:PackIcon
+                                                            Width="50"
+                                                            Height="50"
+                                                            Kind="{Binding Converter={x:Static converters:TabsToIconConverter.Instance}}">
+                                                            <materialDesign:PackIcon.Style>
+                                                                <Style>
+                                                                    <Style.Triggers>
+                                                                        <DataTrigger Binding="{Binding IsSelected}"
+                                                                            Value="True">
+                                                                            <Setter Property="TextElement.Foreground"
+                                                                                Value="{DynamicResource SecondaryHueMidBrush}" />
+                                                                        </DataTrigger>
+                                                                    </Style.Triggers>
+                                                                    <Setter Property="TextElement.Foreground"
+                                                                            Value="{DynamicResource PrimaryHueDarkBrush}" />
+                                                                </Style>
+                                                            </materialDesign:PackIcon.Style>
+                                                        </materialDesign:PackIcon>
+                                                    </Setter.Value>
+                                                </Setter>
+                                            </Style>
+                                        </Button.Style>
+                                    </Button>
+                                </DockPanel>
                             </Border>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
-                <DockPanel
+                <Button
                     Grid.Row="2"
-                    LastChildFill="False">
-                    <Button
-                        Width="74"
-                        Height="Auto"
-                        Margin="4"
-                        Padding="8"
-                        Command="{s:Action ToggleMenu}"
-                        Style="{DynamicResource MaterialDesignFlatSecondaryButton}"
-                        ToolTip="Expand menu"
-                        DockPanel.Dock="Left">
-                        <materialDesign:PackIcon
-                            Width="50"
-                            Height="50">
-                            <materialDesign:PackIcon.Style>
-                                <Style
-                                    TargetType="materialDesign:PackIcon">
-                                    <Style.Triggers>
-                                        <DataTrigger
-                                            Binding="{Binding IsMenuExpanded}"
-                                            Value="True">
-                                            <Setter
-                                                Property="Kind"
-                                                Value="MenuOpen" />
-                                        </DataTrigger>
-                                    </Style.Triggers>
+                    Height="Auto"
+                    Margin="4"
+                    Padding="8"
+                    Command="{s:Action ToggleMenu}"
+                    ToolTip="Expand menu"
+                    HorizontalAlignment="Left">
+                    <Button.Style>
+                        <Style
+                            TargetType="Button"
+                            BasedOn="{StaticResource MaterialDesignFlatSecondaryButton}">
+                            <Style.Triggers>
+                                <DataTrigger
+                                    Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}, Path=DataContext.IsMenuExpanded}"
+                                    Value="True">
                                     <Setter
-                                        Property="Kind"
-                                        Value="Menu" />
-                                </Style>
-                            </materialDesign:PackIcon.Style>
-                        </materialDesign:PackIcon>
-
-                    </Button>
-                </DockPanel>
+                                        Property="Content">
+                                        <Setter.Value>
+                                            <StackPanel
+                                                Orientation="Horizontal">
+                                                <materialDesign:PackIcon
+                                                    Width="50"
+                                                    Height="50"
+                                                    Kind="MenuOpen" />
+                                                <TextBlock
+                                                    Margin="6, 0"
+                                                    FontSize="24"
+                                                    Foreground="{DynamicResource PrimaryHueDarkBrush}"
+                                                    Text="Close"
+                                                    VerticalAlignment="Center" />
+                                            </StackPanel>
+                                        </Setter.Value>
+                                    </Setter>
+                                </DataTrigger>
+                            </Style.Triggers>
+                            <Setter
+                                Property="Content">
+                                <Setter.Value>
+                                    <materialDesign:PackIcon
+                                        Width="50"
+                                        Height="50"
+                                        Kind="Menu" />
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </Button.Style>
+                </Button>
             </Grid>
             <Grid
                 Grid.Column="1">
@@ -237,14 +316,27 @@
                                 Kind="WindowMinimize" />
                         </Button>
                     </Grid>
-                    <!--Notification button-->
+                    <Ellipse
+                        Height="40"
+                        Width="40"
+                        Margin="6"
+                        DockPanel.Dock="Right"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Visibility="{Binding IsAuthorized, Converter={x:Static converters:BoolToVisibleConverter.Instance}}">
+                        <Ellipse.Fill>
+                            <ImageBrush
+                                ImageSource="{Binding CurrentUser.Image, Converter={x:Static converters:UrlToImageConverter.Instance}}" />
+                        </Ellipse.Fill>
+                    </Ellipse>
+                    <!--Shopping Cart button-->
                     <Button
                         Height="Auto"
                         Width="Auto"
                         Margin="2"
                         Padding="4"
                         Style="{DynamicResource MaterialDesignFlatDarkButton}"
-                        ToolTip="Notifications"
+                        ToolTip="Shopping Cart"
                         DockPanel.Dock="Right"
                         HorizontalAlignment="Center"
                         VerticalAlignment="Center"
@@ -252,24 +344,7 @@
                         <materialDesign:PackIcon
                             Width="40"
                             Height="40"
-                            Kind="BellBadgeOutline" />
-                    </Button>
-                    <!--Favorites button-->
-                    <Button
-                        Height="Auto"
-                        Width="Auto"
-                        Margin="2"
-                        Padding="4"
-                        Style="{DynamicResource MaterialDesignFlatDarkButton}"
-                        ToolTip="Favorites"
-                        DockPanel.Dock="Right"
-                        HorizontalAlignment="Center"
-                        VerticalAlignment="Center"
-                        Visibility="{Binding IsAuthorized, Converter={x:Static converters:BoolToVisibleConverter.Instance}}">
-                        <materialDesign:PackIcon
-                            Width="40"
-                            Height="40"
-                            Kind="HeartOutline" />
+                            Kind="Cart" />
                     </Button>
                     <!--Login button-->
                     <Button
