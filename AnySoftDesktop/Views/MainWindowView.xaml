@@ -367,6 +367,7 @@
                 </DockPanel>
                 <!--  Active settings tab  -->
                 <materialDesign:Transitioner
+                    Margin="12, 0, 0, 0"
                     Grid.Row="1"
                     ItemsSource="{Binding Tabs}"
                     SelectedItem="{Binding ActiveTab, Mode=OneWay}">
