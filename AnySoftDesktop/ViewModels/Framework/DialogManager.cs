@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -15,7 +16,7 @@ public class DialogManager : IDisposable
 
     // Cache and re-use dialog screen views, as creating them is incredibly slow
     private readonly Dictionary<Type, UIElement> _dialogScreenViewCache = new();
-    private readonly SemaphoreSlim _dialogLock = new(1, 1);
+    private readonly SemaphoreSlim _dialogLock = new(1, 2);
 
     public DialogManager(IViewManager viewManager)
     {
@@ -65,8 +66,14 @@ public class DialogManager : IDisposable
 
                 dialogScreen.Closed -= OnScreenClosed;
             }
-
+            
             dialogScreen.Closed += OnScreenClosed;
+        }
+        
+        if (_dialogScreenViewCache.Count > 1)
+        {
+            DialogHost.CloseDialogCommand.Execute(null,null);
+            dialogScreen.Close(dialogScreen.DialogResult!);
         }
 
         await _dialogLock.WaitAsync();

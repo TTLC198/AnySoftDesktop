@@ -1,4 +1,5 @@
 ﻿using System;
+using AnySoftDesktop.Models;
 using Stylet;
 
 namespace AnySoftDesktop.ViewModels.Framework;
