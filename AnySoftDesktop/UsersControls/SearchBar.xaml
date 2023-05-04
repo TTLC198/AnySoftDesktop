@@ -17,8 +17,10 @@
             LastChildFill="True">
             <Button
                 Height="Auto"
-                Margin="12"
+                Margin="10"
                 Padding="0"
+                VerticalContentAlignment="Center"
+                VerticalAlignment="Center"
                 Style="{DynamicResource MaterialDesignFlatDarkButton}">
                 <materialDesign:PackIcon
                     Width="24"
@@ -43,9 +45,11 @@
             <TextBox
                 BorderThickness="0"
                 VerticalAlignment="Center"
+                VerticalContentAlignment="Center"
                 HorizontalAlignment="Stretch"
                 FontFamily="{StaticResource Outfit}"
-                FontSize="18">
+                FontSize="18"
+                Text="{Binding SearchText, RelativeSource={RelativeSource AncestorType=UserControl}}">
                 <TextBox.Style>
                     <Style TargetType="TextBox" xmlns:sys="clr-namespace:System;assembly=mscorlib">
                         <Style.Resources>
