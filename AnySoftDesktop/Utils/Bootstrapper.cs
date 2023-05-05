@@ -1,6 +1,7 @@
 ﻿using System.Windows;
 using AnySoftDesktop.ViewModels;
 using AnySoftDesktop.ViewModels.Framework;
+using AnySoftDesktop.ViewModels.Tabs;
 using Stylet;
 using StyletIoC;
 
@@ -20,6 +21,10 @@ public class Bootstrapper : Bootstrapper<MainWindowViewModel>
         builder.Bind<MainWindowViewModel>().ToSelf().InSingletonScope();
         builder.Bind<LoginViewModel>().ToSelf().InSingletonScope();
         builder.Bind<ITabViewModel>().ToAllImplementations().InSingletonScope();
+        
+        builder.Bind<DashboardTabViewModel>().ToSelf().InSingletonScope();
+        builder.Bind<LibraryTabViewModel>().ToSelf().InSingletonScope();
+        builder.Bind<SettingsTabViewModel>().ToSelf().InSingletonScope();
     }
     
     protected override void Launch()
