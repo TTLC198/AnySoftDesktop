@@ -71,6 +71,7 @@
                         </Style>
                     </Image.Style>
                 </Image>
+                <!--Right Tabs Navbar-->
                 <ItemsControl
                     Grid.Row="1"
                     ItemsSource="{Binding Tabs}">
@@ -237,12 +238,129 @@
                     LastChildFill="False"
                     MouseDown="HeaderBorder_OnMouseDown"
                     Background="{DynamicResource MaterialDesignPaper}">
-                    <usersControls:SearchBar
+                    <!--Search bar-->
+                    <Border
+                        MinWidth="366"
+                        Height="46"
                         Margin="12, 0, 0, 0"
                         VerticalAlignment="Center"
-                        VerticalContentAlignment="Center">
-
-                    </usersControls:SearchBar>
+                        Background="{StaticResource SearchBarColorBrush}"
+                        CornerRadius="15">
+                        <DockPanel
+                            LastChildFill="True">
+                            <Button
+                                Height="Auto"
+                                Margin="10"
+                                Padding="0"
+                                VerticalContentAlignment="Center"
+                                VerticalAlignment="Center"
+                                Style="{DynamicResource MaterialDesignFlatDarkButton}"
+                                Command="{s:Action OpenSearchPage}">
+                                <materialDesign:PackIcon
+                                    Width="24"
+                                    Height="24"
+                                    Kind="Search">
+                                    <materialDesign:PackIcon.Style>
+                                        <Style
+                                            TargetType="materialDesign:PackIcon">
+                                            <Style.Triggers>
+                                                <DataTrigger
+                                                    Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Border, AncestorLevel=2},Path=IsMouseOver}"
+                                                    Value="True">
+                                                    <Setter
+                                                        Property="Foreground"
+                                                        Value="{StaticResource SecondaryHueMidBrush}" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </materialDesign:PackIcon.Style>
+                                </materialDesign:PackIcon>
+                            </Button>
+                            <TextBox
+                                BorderThickness="0"
+                                VerticalAlignment="Center"
+                                VerticalContentAlignment="Center"
+                                HorizontalAlignment="Stretch"
+                                FontFamily="{StaticResource Outfit}"
+                                FontSize="18"
+                                Text="{Binding SearchString}">
+                                <TextBox.Style>
+                                    <Style TargetType="TextBox" xmlns:sys="clr-namespace:System;assembly=mscorlib">
+                                        <Style.Resources>
+                                            <VisualBrush
+                                                x:Key="CueBannerBrush"
+                                                AlignmentX="Left"
+                                                AlignmentY="Center"
+                                                Stretch="None">
+                                                <VisualBrush.Visual>
+                                                    <Label
+                                                        Content="Search"
+                                                        FontFamily="{StaticResource Outfit}"
+                                                        FontSize="18">
+                                                        <Label.Style>
+                                                            <Style
+                                                                TargetType="Label">
+                                                                <Style.Triggers>
+                                                                    <!--TODO не работает анимация на лэйбле-->
+                                                                    <DataTrigger
+                                                                        Binding="{Binding RelativeSource={RelativeSource AncestorType=Border},Path=IsMouseOver}"
+                                                                        Value="True">
+                                                                        <Setter
+                                                                            Property="Foreground"
+                                                                            Value="{StaticResource SecondaryHueMidBrush}" />
+                                                                    </DataTrigger>
+                                                                </Style.Triggers>
+                                                                <Setter
+                                                                    Property="Foreground"
+                                                                    Value="{StaticResource PrimaryHueDarkBrush}" />
+                                                            </Style>
+                                                        </Label.Style>
+                                                    </Label>
+                                                </VisualBrush.Visual>
+                                            </VisualBrush>
+                                        </Style.Resources>
+                                        <Style.Triggers>
+                                            <Trigger Property="Text" Value="{x:Static sys:String.Empty}">
+                                                <Setter Property="Background" Value="{StaticResource CueBannerBrush}" />
+                                            </Trigger>
+                                            <Trigger Property="Text" Value="{x:Null}">
+                                                <Setter Property="Background" Value="{StaticResource CueBannerBrush}" />
+                                            </Trigger>
+                                            <DataTrigger
+                                                Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Border, AncestorLevel=2},Path=IsMouseOver}"
+                                                Value="True">
+                                                <DataTrigger.EnterActions>
+                                                    <BeginStoryboard>
+                                                        <Storyboard>
+                                                            <ColorAnimation
+                                                                Storyboard.TargetProperty="Foreground.(SolidColorBrush.Color)"
+                                                                To="{StaticResource TertiaryColor}"
+                                                                Duration="0:0:2" />
+                                                        </Storyboard>
+                                                    </BeginStoryboard>
+                                                </DataTrigger.EnterActions>
+                                                <Setter
+                                                    Property="Foreground"
+                                                    Value="{StaticResource SecondaryHueMidBrush}" />
+                                                <Setter
+                                                    Property="CaretBrush"
+                                                    Value="{StaticResource SecondaryHueMidBrush}" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                        <Setter
+                                            Property="Background"
+                                            Value="{StaticResource SearchBarColorBrush}" />
+                                        <Setter
+                                            Property="Foreground"
+                                            Value="{StaticResource PrimaryHueDarkBrush}" />
+                                        <Setter
+                                            Property="CaretBrush"
+                                            Value="{StaticResource PrimaryHueDarkBrush}" />
+                                    </Style>
+                                </TextBox.Style>
+                            </TextBox>
+                        </DockPanel>
+                    </Border>
                     <!--Window controls-->
                     <Grid
                         VerticalAlignment="Center"
@@ -316,6 +434,7 @@
                                 Kind="WindowMinimize" />
                         </Button>
                     </Grid>
+                    <!--User profile icon-->
                     <Ellipse
                         Height="40"
                         Width="40"

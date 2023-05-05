@@ -22,7 +22,7 @@ public class MainWindowViewModel : Screen, INotifyPropertyChanged
     public bool IsWindowMaximized { get; set; }
     public bool IsAuthorized { get; set; }
     
-    public string SearchString { get; set; }
+    public string? SearchString { get; set; }
 
     private ApplicationUser _currentUser = new ApplicationUser();
 
@@ -74,6 +74,23 @@ public class MainWindowViewModel : Screen, INotifyPropertyChanged
                 CurrentUser = user;
             }
         }
+    }
+
+    public async void OpenSearchPage()
+    {
+        var searchString = SearchString;
+        // Deactivate previously selected tab
+        if (ActiveTab is not null)
+            ActiveTab.IsSelected = false;
+        
+        var settingsTab = Tabs
+            .FirstOrDefault(t => t.Name == "Dashboard");
+        
+        if (settingsTab is null)
+            return;
+
+        ActiveTab = settingsTab;
+        settingsTab.IsSelected = true;
     }
     
     public event PropertyChangedEventHandler? PropertyChanged;
