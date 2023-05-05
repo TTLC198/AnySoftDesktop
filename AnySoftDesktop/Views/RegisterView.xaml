@@ -57,6 +57,30 @@
                 FontSize="18"
                 materialDesign:ValidationAssist.Background="Transparent"
                 materialDesign:TextFieldAssist.HasClearButton="True"
+                Text="{Binding UserImagePath}">
+                <TextBox.InputBindings>
+                    <MouseBinding Command="{s:Action OpenFileDialog}" MouseAction="LeftClick" />
+                </TextBox.InputBindings>
+                <materialDesign:ValidationAssist.HorizontalAlignment>
+                    Right
+                </materialDesign:ValidationAssist.HorizontalAlignment>
+                <materialDesign:HintAssist.Hint>
+                    <StackPanel Orientation="Horizontal">
+                        <materialDesign:PackIcon
+                            Kind="FoldersImage"
+                            VerticalAlignment="Center" />
+                        <TextBlock
+                            Margin="4, 0"
+                            Text="User Avatar" />
+                    </StackPanel>
+                </materialDesign:HintAssist.Hint>
+            </TextBox>
+            <TextBox
+                Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                Margin="5"
+                FontSize="18"
+                materialDesign:ValidationAssist.Background="Transparent"
+                materialDesign:TextFieldAssist.HasClearButton="True"
                 Text="{Binding UserCredentials.Login, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
                 <materialDesign:ValidationAssist.HorizontalAlignment>
                     Right
@@ -121,7 +145,7 @@
                 </materialDesign:HintAssist.Hint>
             </PasswordBox>
             <Grid
-                Margin="5"
+                Margin="5, 25, 5, 5"
                 HorizontalAlignment="Stretch">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition
