@@ -46,12 +46,12 @@
                 <Style TargetType="{x:Type materialDesign:TransitionerSlide}">
                     <Setter Property="BackwardWipe">
                         <Setter.Value>
-                            <materialDesign:SlideWipe Direction="Left" Duration="0:0:0.3" />
+                            <materialDesign:SlideWipe Direction="Right" Duration="0:0:0.3" />
                         </Setter.Value>
                     </Setter>
                     <Setter Property="ForwardWipe">
                         <Setter.Value>
-                            <materialDesign:SlideWipe Direction="Right" Duration="0:0:0.3" />
+                            <materialDesign:SlideWipe Direction="Left" Duration="0:0:0.3" />
                         </Setter.Value>
                     </Setter>
                 </Style>
@@ -67,10 +67,6 @@
                                 Stretch="UniformToFill"
                                 ImageSource="{Binding ., Converter={x:Static converters:UrlToImageConverter.Instance}}"/>
                         </Border.Background>
-                        <!--<Image
-                            Stretch="UniformToFill"
-                            Width="{Binding ActualWidth, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Border}}"
-                            Source="{Binding ., Converter={x:Static converters:UrlToImageConverter.Instance}}" />-->
                     </Border>
 
                 </DataTemplate>
