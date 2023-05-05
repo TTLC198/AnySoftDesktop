@@ -50,25 +50,6 @@ public class DashboardTabViewModel : TabBaseViewModel, INotifyPropertyChanged
         await UpdateProducts();
     }
 
-    /*
-    public void ShiftLeft()
-    {
-        var index = Products.IndexOf(SelectedProduct);
-        SelectedProduct = 
-            index == 0 
-                ? Products.Last() 
-                : Products[index - 1];
-    }
-
-    public void ShiftRight()
-    {
-        var index = Products.IndexOf(SelectedProduct);
-        SelectedProduct = 
-            index == Products.Count 
-                ? Products.First() 
-                : Products[index + 1];
-    }*/
-
     public async Task UpdateProducts()
     {
         var getProductsRequest = await WebApiService.GetCall("api/products");
@@ -80,8 +61,8 @@ public class DashboardTabViewModel : TabBaseViewModel, INotifyPropertyChanged
                 var responseStream = await getProductsRequest.Content.ReadAsStreamAsync(cancellationTokenSource.Token);
                 var products = await JsonSerializer.DeserializeAsync<IEnumerable<ProductResponseDto>>(responseStream,
                     CustomJsonSerializerOptions.Options, cancellationToken: cancellationTokenSource.Token);
-                Products = new ObservableCollection<ProductResponseDto>(products!);
-                MainProduct = Products.First();
+                MainProduct = products.First();
+                Products = new ObservableCollection<ProductResponseDto>(products.Skip(1));
             }
         }
     }
