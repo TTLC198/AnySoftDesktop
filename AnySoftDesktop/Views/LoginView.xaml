@@ -7,6 +7,7 @@
              xmlns:viewModels="clr-namespace:AnySoftDesktop.ViewModels"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:s="https://github.com/canton7/Stylet"
+             xmlns:validation="clr-namespace:AnySoftDesktop.Utils.Validation"
              d:DataContext="{d:DesignInstance Type=viewModels:LoginViewModel}"
              mc:Ignorable="d"
              d:DesignHeight="400"
@@ -57,8 +58,17 @@
                 Margin="5"
                 FontSize="18"
                 materialDesign:ValidationAssist.Background="Transparent"
-                materialDesign:TextFieldAssist.HasClearButton="True"
-                Text="{Binding UserCredentials.Login, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                materialDesign:TextFieldAssist.HasClearButton="True">
+                <TextBox.Text>
+                    <Binding
+                        Path="UserCredentials.Login"
+                        UpdateSourceTrigger="PropertyChanged">
+                        <Binding.ValidationRules>
+                            <validation:NotEmptyValidationRule
+                                ValidatesOnTargetUpdated="True"/>
+                        </Binding.ValidationRules>
+                    </Binding>
+                </TextBox.Text>
                 <materialDesign:ValidationAssist.HorizontalAlignment>
                     Right
                 </materialDesign:ValidationAssist.HorizontalAlignment>
@@ -69,7 +79,7 @@
                             VerticalAlignment="Center" />
                         <TextBlock
                             Margin="4, 0"
-                            Text="Login or Email" />
+                            Text="Login" />
                     </StackPanel>
                 </materialDesign:HintAssist.Hint>
             </TextBox>
@@ -78,8 +88,17 @@
                 Margin="5"
                 FontSize="18"
                 materialDesign:ValidationAssist.Background="Transparent"
-                materialDesign:TextFieldAssist.HasClearButton="True"
-                materialDesign:PasswordBoxAssist.Password="{Binding UserCredentials.Password, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                materialDesign:TextFieldAssist.HasClearButton="True">
+                <materialDesign:PasswordBoxAssist.Password>
+                    <Binding
+                        Path="UserCredentials.Password"
+                        UpdateSourceTrigger="PropertyChanged">
+                        <Binding.ValidationRules>
+                            <validation:NotEmptyValidationRule
+                                ValidatesOnTargetUpdated="True"/>
+                        </Binding.ValidationRules>
+                    </Binding>
+                </materialDesign:PasswordBoxAssist.Password>
                 <PasswordBox.Resources>
                     <Style TargetType="materialDesign:PackIcon" BasedOn="{StaticResource {x:Type materialDesign:PackIcon}}">
                         <Setter Property="VerticalAlignment" Value="Bottom" />
@@ -100,7 +119,7 @@
                 </materialDesign:HintAssist.Hint>
             </PasswordBox>
             <Grid
-                Margin="5"
+                Margin="5, 25, 5, 5"
                 HorizontalAlignment="Stretch">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition
