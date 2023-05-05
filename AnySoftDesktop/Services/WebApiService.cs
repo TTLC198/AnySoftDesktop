@@ -31,18 +31,50 @@ public class WebApiService
         }
     } 
     
-    public static async Task<HttpResponseMessage> PostCall<T>(string url, T model) where T : class
+    public static async Task<HttpResponseMessage> PostCall<T>(
+        string url,
+        T model,
+        string? authorizationToken = null,
+        string? contentType = null) where T : class
     {
         var apiUrl = App.ApiUrl + url;
         ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
         try
         {
             using var client = new HttpClient();
+            if (authorizationToken is not null)
+                client.DefaultRequestHeaders.Add("Authorization", $"Bearer {authorizationToken}");
             client.BaseAddress = new Uri(apiUrl);  
             client.Timeout = TimeSpan.FromSeconds(900);  
             client.DefaultRequestHeaders.Accept.Clear();  
-            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));  
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(contentType ??= "application/json"));  
             var response = await client.PostAsJsonAsync(apiUrl, model);  
+            return response;
+        }
+        catch
+        {
+            throw;
+        }
+    }  
+    
+    public static async Task<HttpResponseMessage> PostCall(
+        string url,
+        MultipartFormDataContent content,
+        string? authorizationToken = null,
+        string? contentType = null)
+    {
+        var apiUrl = App.ApiUrl + url;
+        ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+        try
+        {
+            using var client = new HttpClient();
+            if (authorizationToken is not null)
+                client.DefaultRequestHeaders.Add("Authorization", $"Bearer {authorizationToken}");
+            client.BaseAddress = new Uri(apiUrl);  
+            client.Timeout = TimeSpan.FromSeconds(900);  
+            client.DefaultRequestHeaders.Accept.Clear();  
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(contentType ??= "application/json"));  
+            var response = await client.PostAsync(apiUrl, content);  
             return response;
         }
         catch
