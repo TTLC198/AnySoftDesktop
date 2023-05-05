@@ -99,6 +99,8 @@ public class LoginViewModel : DialogScreen<ApplicationUser?>
     } 
     public async void AccountRegister()
     {
-
+        Close(null);
+        var registerViewModel = _viewModelFactory.CreateRegisterViewModel();
+        await _dialogManager.ShowDialogAsync(registerViewModel);
     }
 }
