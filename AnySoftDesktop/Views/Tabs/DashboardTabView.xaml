@@ -3,12 +3,10 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:local="clr-namespace:AnySoftDesktop.Views"
              xmlns:usersControls="clr-namespace:AnySoftDesktop.UsersControls"
              xmlns:s="https://github.com/canton7/Stylet"
              xmlns:tabs="clr-namespace:AnySoftDesktop.ViewModels.Tabs"
              xmlns:converters="clr-namespace:AnySoftDesktop.Utils.Converters"
-             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              Background="{DynamicResource MaterialDesignPaper}"
              FontFamily="{DynamicResource MaterialDesignFont}"
              TextElement.FontFamily="{StaticResource Outfit}"
@@ -16,153 +14,159 @@
              d:DesignHeight="300"
              d:DesignWidth="800"
              d:DataContext="{d:DesignInstance Type=tabs:DashboardTabViewModel}">
-    <Grid
+    <UserControl.Resources>
+        <Style
+            TargetType="Button"
+            BasedOn="{StaticResource MaterialDesignFlatSecondaryDarkBgButton}"/>
+    </UserControl.Resources>
+    <StackPanel
+        Orientation="Vertical"
         Loaded="{s:Action OnViewFullyLoaded}">
-        <ScrollViewer
-            Background="Transparent">
-            <StackPanel
-                Orientation="Vertical">
-                <!--First product-->
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition
-                            Width="3*" />
-                        <ColumnDefinition
-                            Width="*" />
-                    </Grid.ColumnDefinitions>
-                    <Grid.RowDefinitions>
-                        <RowDefinition
-                            Height="Auto" />
-                    </Grid.RowDefinitions>
-                    <usersControls:ImageCarousel
-                        Grid.Column="0"
-                        MinHeight="350"
-                        Images="{Binding MainProduct.Images}"
-                        SelectedImage="{Binding MainProduct.Images[0]}" />
-                    <Border
-                        Grid.Column="1"
-                        Grid.Row="0"
-                        Margin="15, 0, 0, 0"
-                        CornerRadius="15"
-                        BorderThickness="0">
-                        <Border.Background>
-                            <ImageBrush
-                                Stretch="UniformToFill"
-                                ImageSource="{Binding MainProduct.Images[0], Converter={x:Static converters:UrlToImageConverter.Instance}}" />
-                        </Border.Background>
-                        <StackPanel
-                            Margin="10"
-                            Orientation="Vertical"
-                            HorizontalAlignment="Center"
-                            VerticalAlignment="Center">
-                            <TextBlock
-                                Margin="3, 7"
-                                FontSize="20"
-                                Foreground="{DynamicResource SecondaryHueMidBrush}"
-                                Text="{Binding MainProduct.Name}" />
-                            <TextBlock
-                                Margin="3, 7"
-                                FontSize="14"
-                                TextWrapping="Wrap"
-                                Foreground="{DynamicResource PrimaryHueDarkBrush}"
-                                Text="{Binding MainProduct.Description}" />
-                            <Button
-                                FontSize="12"
-                                Foreground="{DynamicResource PrimaryHueDarkBrush}"
-                                Content="Learn more..."/>
-                        </StackPanel>
-                    </Border>
-                </Grid>
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition
-                            Width="2*" />
-                        <ColumnDefinition
-                            Width="*" />
-                    </Grid.ColumnDefinitions>
-                    <!--Products list-->
-                    <ItemsControl
-                        Grid.Column="0"
-                        ItemsSource="{Binding Products}">
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate>
-                                <Grid
-                                    Margin="0, 15, 0, 0">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="3*" />
-                                        <ColumnDefinition Width="*" />
-                                    </Grid.ColumnDefinitions>
-                                    <Grid
-                                        Grid.Column="0">
-                                        <StackPanel
-                                            Margin="15"
-                                            ZIndex="1"
-                                            HorizontalAlignment="Left"
-                                            VerticalAlignment="Top">
-                                            <ItemsControl
-                                                HorizontalContentAlignment="Left"
-                                                ItemsSource="{Binding Genres}">
-                                                <ItemsControl.ItemsPanel>
-                                                    <ItemsPanelTemplate>
-                                                        <StackPanel Orientation="Horizontal"/>
-                                                    </ItemsPanelTemplate>
-                                                </ItemsControl.ItemsPanel>
-                                                <ItemsControl.ItemTemplate>
-                                                    <DataTemplate>
-                                                        <Button
-                                                            Margin="2, 0"
-                                                            FontSize="8"
-                                                            Foreground="{DynamicResource PrimaryHueDarkBrush}"
-                                                            Content="{Binding Name}"/>
-                                                    </DataTemplate>
-                                                </ItemsControl.ItemTemplate>
-                                            </ItemsControl>
-                                        </StackPanel>
-                                        <usersControls:ImageCarousel
-                                            Grid.Column="0"
-                                            MinHeight="250"
-                                            Images="{Binding Images}"
-                                            SelectedImage="{Binding Images[0]}" />
-                                    </Grid>
-                                    <Border
-                                        Grid.Column="1"
-                                        Grid.Row="0"
-                                        Margin="15, 0, 0, 0"
-                                        CornerRadius="15"
-                                        BorderThickness="0">
-                                        <Border.Background>
-                                            <ImageBrush
-                                                Stretch="UniformToFill"
-                                                ImageSource="{Binding Images[0], Converter={x:Static converters:UrlToImageConverter.Instance}}" />
-                                        </Border.Background>
-                                        <StackPanel
-                                            Margin="10"
-                                            Orientation="Vertical"
-                                            HorizontalAlignment="Center"
-                                            VerticalAlignment="Center">
-                                            <TextBlock
-                                                Margin="3, 7"
-                                                FontSize="20"
-                                                Foreground="{DynamicResource SecondaryHueMidBrush}"
-                                                Text="{Binding Name}" />
-                                            <TextBlock
-                                                Margin="3, 7"
-                                                FontSize="14"
-                                                TextWrapping="Wrap"
-                                                Foreground="{DynamicResource PrimaryHueDarkBrush}"
-                                                Text="{Binding Description}" />
-                                            <Button
-                                                FontSize="10"
-                                                Foreground="{DynamicResource PrimaryHueDarkBrush}"
-                                                Content="Learn more..."/>
-                                        </StackPanel>
-                                    </Border>
-                                </Grid>
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
-                </Grid>
-            </StackPanel>
-        </ScrollViewer>
-    </Grid>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition
+                    Width="3*" />
+                <ColumnDefinition
+                    Width="*" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition
+                    Height="Auto" />
+            </Grid.RowDefinitions>
+            <usersControls:ImageCarousel
+                Grid.Column="0"
+                MinHeight="350"
+                Images="{Binding MainProduct.Images}"
+                SelectedImage="{Binding MainProduct.Images[0]}" />
+            <Border
+                Grid.Column="1"
+                Grid.Row="0"
+                Margin="15, 0, 0, 0"
+                CornerRadius="15"
+                BorderThickness="0">
+                <Border.Background>
+                    <ImageBrush
+                        Stretch="UniformToFill"
+                        ImageSource="{Binding MainProduct.Images[0], Converter={x:Static converters:UrlToImageConverter.Instance}}" />
+                </Border.Background>
+                <DockPanel
+                    Margin="10"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    LastChildFill="False">
+                    <TextBlock
+                        DockPanel.Dock="Top"
+                        Margin="5, 7"
+                        FontSize="20"
+                        Foreground="{DynamicResource PrimaryHueMidBrush}"
+                        Text="{Binding MainProduct.Name}" />
+                    <TextBlock
+                        DockPanel.Dock="Top"
+                        Margin="5, 7"
+                        FontSize="14"
+                        TextWrapping="Wrap"
+                        Foreground="{DynamicResource PrimaryHueDarkBrush}"
+                        Text="{Binding MainProduct.Description}" />
+                    <Button
+                        DockPanel.Dock="Bottom"
+                        FontSize="12"
+                        Content="Learn more..." />
+                </DockPanel>
+            </Border>
+        </Grid>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition
+                    Width="2*" />
+                <ColumnDefinition
+                    Width="*" />
+            </Grid.ColumnDefinitions>
+            <!--Products list-->
+            <ItemsControl
+                Grid.Column="0"
+                ItemsSource="{Binding Products}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Grid
+                            Margin="0, 15, 0, 0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="2*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Grid
+                                Grid.Column="0">
+                                <StackPanel
+                                    Margin="15"
+                                    ZIndex="1"
+                                    HorizontalAlignment="Left"
+                                    VerticalAlignment="Top">
+                                    <!--Genres-->
+                                    <ItemsControl
+                                        HorizontalContentAlignment="Left"
+                                        ItemsSource="{Binding Genres}">
+                                        <ItemsControl.ItemsPanel>
+                                            <ItemsPanelTemplate>
+                                                <StackPanel Orientation="Horizontal" />
+                                            </ItemsPanelTemplate>
+                                        </ItemsControl.ItemsPanel>
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate>
+                                                <Button
+                                                    Style="{StaticResource MaterialDesignFlatButton}"
+                                                    Margin="4, 0"
+                                                    Padding="1"
+                                                    FontSize="12"
+                                                    Foreground="{DynamicResource PrimaryHueMidBrush}"
+                                                    Content="{Binding Name}" />
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                </StackPanel>
+                                <usersControls:ImageCarousel
+                                    Grid.Column="0"
+                                    MinHeight="250"
+                                    Images="{Binding Images}"
+                                    SelectedImage="{Binding Images[0]}" />
+                            </Grid>
+                            <Border
+                                Grid.Column="1"
+                                Grid.Row="0"
+                                Margin="15, 0, 0, 0"
+                                CornerRadius="15"
+                                BorderThickness="0">
+                                <Border.Background>
+                                    <ImageBrush
+                                        Stretch="UniformToFill"
+                                        ImageSource="{Binding Images[0], Converter={x:Static converters:UrlToImageConverter.Instance}}" />
+                                </Border.Background>
+                                <DockPanel
+                                    Margin="10"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Top"
+                                    LastChildFill="False">
+                                    <TextBlock
+                                        DockPanel.Dock="Top"
+                                        Margin="5, 7"
+                                        FontSize="20"
+                                        Foreground="{DynamicResource PrimaryHueMidBrush}"
+                                        Text="{Binding Name}" />
+                                    <TextBlock
+                                        DockPanel.Dock="Top"
+                                        Margin="5, 7"
+                                        FontSize="14"
+                                        TextWrapping="Wrap"
+                                        Foreground="{DynamicResource PrimaryHueDarkBrush}"
+                                        Text="{Binding Description}" />
+                                    <Button
+                                        DockPanel.Dock="Bottom"
+                                        FontSize="10"
+                                        Content="Learn more..." />
+                                </DockPanel>
+                            </Border>
+                        </Grid>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </Grid>
+    </StackPanel>
 </UserControl>
