@@ -65,15 +65,12 @@ public class MainWindowViewModel : Screen, INotifyPropertyChanged
 
     public async void OpenLoginPage()
     {
-        if (!IsAuthorized)
-        {
-            var user = await _dialogManager.ShowDialogAsync(_viewModelFactory.CreateLoginViewModel());
-            if (user is not null)
-            {
-                IsAuthorized = true;
-                CurrentUser = user;
-            }
-        }
+        if (IsAuthorized) return;
+        var user = await _dialogManager.ShowDialogAsync(_viewModelFactory.CreateLoginViewModel());
+        
+        if (user is null) return;
+        IsAuthorized = true;
+        CurrentUser = user;
     }
 
     public async void OpenSearchPage()

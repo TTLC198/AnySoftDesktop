@@ -6,6 +6,7 @@
              xmlns:viewModels="clr-namespace:AnySoftDesktop.ViewModels"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:s="https://github.com/canton7/Stylet"
+             xmlns:validation="clr-namespace:AnySoftDesktop.Utils.Validation"
              d:DataContext="{d:DesignInstance Type=viewModels:RegisterViewModel}"
              mc:Ignorable="d"
              d:DesignHeight="400"
@@ -80,8 +81,18 @@
                 Margin="5"
                 FontSize="18"
                 materialDesign:ValidationAssist.Background="Transparent"
-                materialDesign:TextFieldAssist.HasClearButton="True"
-                Text="{Binding UserCredentials.Login, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                materialDesign:TextFieldAssist.HasClearButton="True">
+                <TextBox.Text>
+                    <Binding
+                        Path="UserCredentials.Login"
+                        UpdateSourceTrigger="PropertyChanged"
+                        ValidatesOnExceptions="True" >
+                        <Binding.ValidationRules>
+                            <validation:NotEmptyValidationRule
+                                ValidatesOnTargetUpdated="False"/>
+                        </Binding.ValidationRules>
+                    </Binding>
+                </TextBox.Text>
                 <materialDesign:ValidationAssist.HorizontalAlignment>
                     Right
                 </materialDesign:ValidationAssist.HorizontalAlignment>
@@ -101,8 +112,18 @@
                 Margin="5"
                 FontSize="18"
                 materialDesign:ValidationAssist.Background="Transparent"
-                materialDesign:TextFieldAssist.HasClearButton="True"
-                Text="{Binding UserCredentials.Email, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                materialDesign:TextFieldAssist.HasClearButton="True">
+                <TextBox.Text>
+                    <Binding
+                        Path="UserCredentials.Email"
+                        UpdateSourceTrigger="PropertyChanged"
+                        ValidatesOnExceptions="True" >
+                        <Binding.ValidationRules>
+                            <validation:NotEmptyValidationRule
+                                ValidatesOnTargetUpdated="False"/>
+                        </Binding.ValidationRules>
+                    </Binding>
+                </TextBox.Text>
                 <materialDesign:ValidationAssist.HorizontalAlignment>
                     Right
                 </materialDesign:ValidationAssist.HorizontalAlignment>
@@ -122,14 +143,24 @@
                 Margin="5"
                 FontSize="18"
                 materialDesign:ValidationAssist.Background="Transparent"
-                materialDesign:TextFieldAssist.HasClearButton="True"
-                materialDesign:PasswordBoxAssist.Password="{Binding UserCredentials.Password, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                materialDesign:TextFieldAssist.HasClearButton="True">
                 <PasswordBox.Resources>
                     <Style TargetType="materialDesign:PackIcon"
                            BasedOn="{StaticResource {x:Type materialDesign:PackIcon}}">
                         <Setter Property="VerticalAlignment" Value="Bottom" />
                     </Style>
                 </PasswordBox.Resources>
+                <materialDesign:PasswordBoxAssist.Password>
+                    <Binding
+                        Path="UserCredentials.Password"
+                        UpdateSourceTrigger="PropertyChanged"
+                        ValidatesOnExceptions="True" >
+                        <Binding.ValidationRules>
+                            <validation:NotEmptyValidationRule
+                                ValidatesOnTargetUpdated="False"/>
+                        </Binding.ValidationRules>
+                    </Binding>
+                </materialDesign:PasswordBoxAssist.Password>
                 <materialDesign:ValidationAssist.HorizontalAlignment>
                     Right
                 </materialDesign:ValidationAssist.HorizontalAlignment>
@@ -157,26 +188,8 @@
                     Grid.Column="0"
                     Style="{DynamicResource MaterialDesignFlatDarkButton}"
                     Background="{DynamicResource UiElementsColorBrush}"
-                    Command="{s:Action AccountLogin}"
-                    Margin="0, 0, 3, 0">
-                    <StackPanel
-                        Orientation="Horizontal">
-                        <materialDesign:PackIcon
-                            Width="20"
-                            Height="20"
-                            Kind="Login" />
-                        <TextBlock
-                            Margin="5, 0"
-                            Text="Login"
-                            VerticalAlignment="Center" />
-                    </StackPanel>
-                </Button>
-                <Button
-                    Grid.Column="1"
-                    Style="{DynamicResource MaterialDesignFlatDarkButton}"
-                    Background="{DynamicResource UiElementsColorBrush}"
                     Command="{s:Action AccountRegister}"
-                    Margin="3, 0, 0, 0">
+                    Margin="0, 0, 3, 0">
                     <StackPanel
                         Orientation="Horizontal">
                         <materialDesign:PackIcon
@@ -186,6 +199,24 @@
                         <TextBlock
                             Margin="5, 0"
                             Text="Register"
+                            VerticalAlignment="Center" />
+                    </StackPanel>
+                </Button>
+                <Button
+                    Grid.Column="1"
+                    Style="{DynamicResource MaterialDesignFlatDarkButton}"
+                    Background="{DynamicResource UiElementsColorBrush}"
+                    Command="{s:Action AccountLogin}"
+                    Margin="3, 0, 0, 0">
+                    <StackPanel
+                        Orientation="Horizontal">
+                        <materialDesign:PackIcon
+                            Width="20"
+                            Height="20"
+                            Kind="Login" />
+                        <TextBlock
+                            Margin="5, 0"
+                            Text="Login"
                             VerticalAlignment="Center" />
                     </StackPanel>
                 </Button>

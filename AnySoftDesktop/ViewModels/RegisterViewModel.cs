@@ -16,6 +16,7 @@ using AnySoftDesktop.Services;
 using AnySoftDesktop.Utils;
 using AnySoftDesktop.ViewModels.Framework;
 using RPM_Project_Backend.Domain;
+using RPM_Project_Backend.Models;
 using Image = System.Windows.Controls.Image;
 
 namespace AnySoftDesktop.ViewModels;
@@ -146,9 +147,13 @@ public class RegisterViewModel : DialogScreen<ApplicationUser?>, INotifyProperty
             else
             {
                 Close(null);
+                using var cancellationTokenSource = new CancellationTokenSource(timeoutAfter);
+                var responseStream = await postUserRequest.Content.ReadAsStreamAsync(cancellationTokenSource.Token);
+                var errorModel = await JsonSerializer.DeserializeAsync<ErrorModel>(responseStream, CustomJsonSerializerOptions.Options, cancellationToken: cancellationTokenSource.Token);
+                
                 var messageBoxDialog = _viewModelFactory.CreateMessageBoxViewModel(
                     title: "Some error has occurred",
-                    message: $@"An error occurred while making a request to the server".Trim(),
+                    message: $@"{(errorModel ?? new ErrorModel("An error occurred while making a request to the server")).Message}".Trim(),
                     okButtonText: "OK",
                     cancelButtonText: null
                 );

@@ -15,6 +15,7 @@ using AnySoftDesktop.ViewModels.Framework;
 using Microsoft.IdentityModel.Tokens;
 using RPM_Project_Backend.Domain;
 using RPM_Project_Backend.Helpers;
+using RPM_Project_Backend.Models;
 
 namespace AnySoftDesktop.ViewModels;
 
@@ -40,13 +41,13 @@ public class LoginViewModel : DialogScreen<ApplicationUser?>
     {
         var validationContext = new ValidationContext(UserCredentials, null, null);
         var results = new List<ValidationResult>();
+        var timeoutAfter = TimeSpan.FromMilliseconds(100);
 
         if (Validator.TryValidateObject(UserCredentials, validationContext, results, true))
         {
             var getTokenRequest = await WebApiService.PostCall("api/auth/login", UserCredentials);
             if (getTokenRequest.IsSuccessStatusCode)
             {
-                var timeoutAfter = TimeSpan.FromMilliseconds(100);
                 string? userId, tokenString;
                 using (var cancellationTokenSource = new CancellationTokenSource(timeoutAfter))
                 {
@@ -77,9 +78,13 @@ public class LoginViewModel : DialogScreen<ApplicationUser?>
             else
             {
                 Close(null);
+                using var cancellationTokenSource = new CancellationTokenSource(timeoutAfter);
+                var responseStream = await getTokenRequest.Content.ReadAsStreamAsync(cancellationTokenSource.Token);
+                var errorModel = await JsonSerializer.DeserializeAsync<ErrorModel>(responseStream, CustomJsonSerializerOptions.Options, cancellationToken: cancellationTokenSource.Token);
+                
                 var messageBoxDialog = _viewModelFactory.CreateMessageBoxViewModel(
                     title: "Some error has occurred",
-                    message: $@"An error occurred while making a request to the server".Trim(),
+                    message: $@"{(errorModel ?? new ErrorModel("An error occurred while making a request to the server")).Message}".Trim(),
                     okButtonText: "OK",
                     cancelButtonText: null
                 );

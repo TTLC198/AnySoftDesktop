@@ -62,10 +62,11 @@
                 <TextBox.Text>
                     <Binding
                         Path="UserCredentials.Login"
-                        UpdateSourceTrigger="PropertyChanged">
+                        UpdateSourceTrigger="PropertyChanged"
+                        ValidatesOnExceptions="True" >
                         <Binding.ValidationRules>
                             <validation:NotEmptyValidationRule
-                                ValidatesOnTargetUpdated="True"/>
+                                ValidatesOnTargetUpdated="False"/>
                         </Binding.ValidationRules>
                     </Binding>
                 </TextBox.Text>
@@ -92,10 +93,11 @@
                 <materialDesign:PasswordBoxAssist.Password>
                     <Binding
                         Path="UserCredentials.Password"
-                        UpdateSourceTrigger="PropertyChanged">
+                        UpdateSourceTrigger="PropertyChanged"
+                        ValidatesOnExceptions="True" >
                         <Binding.ValidationRules>
                             <validation:NotEmptyValidationRule
-                                ValidatesOnTargetUpdated="True"/>
+                                ValidatesOnTargetUpdated="False"/>
                         </Binding.ValidationRules>
                     </Binding>
                 </materialDesign:PasswordBoxAssist.Password>
