@@ -24,7 +24,7 @@
         mc:Ignorable="d">
     <materialDesign:DialogHost
         x:Name="DialogHost"
-        CloseOnClickAway="True"
+        CloseOnClickAway="False"
         Style="{DynamicResource MaterialDesignEmbeddedDialogHost}"
         DialogBackground="Transparent"
         DialogTheme="Inherit"
@@ -440,10 +440,10 @@
                             <ScrollViewer
                                 Padding="4"
                                 Background="{DynamicResource MaterialDesignCardBackground}"
-
                                 HorizontalScrollBarVisibility="Disabled"
                                 VerticalScrollBarVisibility="Auto">
-                                <ContentControl s:View.Model="{Binding}" />
+                                <ContentControl 
+                                    s:View.Model="{Binding}" />
                             </ScrollViewer>
                         </DataTemplate>
                     </materialDesign:Transitioner.ItemTemplate>

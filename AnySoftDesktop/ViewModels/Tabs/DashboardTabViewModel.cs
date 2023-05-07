@@ -4,10 +4,12 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Net.Mime;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
 using AnySoftDesktop.Services;
 using AnySoftDesktop.Utils;
 using AnySoftDesktop.ViewModels.Framework;
@@ -17,6 +19,9 @@ namespace AnySoftDesktop.ViewModels.Tabs;
 
 public class DashboardTabViewModel : TabBaseViewModel, INotifyPropertyChanged
 {
+    private readonly IViewModelFactory _viewModelFactory;
+    private readonly DialogManager _dialogManager;
+
     private ObservableCollection<ProductResponseDto> _products = new ObservableCollection<ProductResponseDto>();
 
     public ObservableCollection<ProductResponseDto> Products
@@ -28,7 +33,7 @@ public class DashboardTabViewModel : TabBaseViewModel, INotifyPropertyChanged
             OnPropertyChanged();
         }
     }
-    
+
     private ProductResponseDto _mainProduct = new();
 
     public ProductResponseDto MainProduct
@@ -41,8 +46,10 @@ public class DashboardTabViewModel : TabBaseViewModel, INotifyPropertyChanged
         }
     }
 
-    public DashboardTabViewModel() : base(0, "Dashboard")
+    public DashboardTabViewModel(IViewModelFactory viewModelFactory, DialogManager dialogManager) : base(0, "Dashboard")
     {
+        _viewModelFactory = viewModelFactory;
+        _dialogManager = dialogManager;
     }
 
     public async void OnViewFullyLoaded()
@@ -50,7 +57,12 @@ public class DashboardTabViewModel : TabBaseViewModel, INotifyPropertyChanged
         await UpdateProducts();
     }
 
-    public async Task UpdateProducts()
+    public async void OnProductButtonClick(int id)
+    {
+        //TODO
+    }
+
+    private async Task UpdateProducts()
     {
         var getProductsRequest = await WebApiService.GetCall("api/products");
         if (getProductsRequest.IsSuccessStatusCode)

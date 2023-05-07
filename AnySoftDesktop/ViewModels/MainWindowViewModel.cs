@@ -15,7 +15,7 @@ public class MainWindowViewModel : Screen, INotifyPropertyChanged
     private readonly IViewModelFactory _viewModelFactory;
     private readonly DialogManager _dialogManager;
     
-    public IReadOnlyList<ITabViewModel> Tabs { get; }
+    public List<ITabViewModel> Tabs { get; }
     public ITabViewModel? ActiveTab { get; private set; }
     
     public bool IsMenuExpanded { get; set; }
@@ -40,7 +40,7 @@ public class MainWindowViewModel : Screen, INotifyPropertyChanged
     {
         _viewModelFactory = viewModelFactory;
         _dialogManager = dialogManager;
-        Tabs = tabs.OrderBy(t => t.Order).ToArray();
+        Tabs = tabs.OrderBy(t => t.Order).ToList();
         // Pre-select first tab
         var firstTab = Tabs.FirstOrDefault();
         if (firstTab is not null)
