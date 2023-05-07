@@ -11,7 +11,7 @@
     <Color x:Key="UiElementsColor">#262626</Color>
     
     <!--Brushes-->
-    <SolidColorBrush x:Key="PrimaryHueLightBrush" Color="{DynamicResource BackgroundColor}" />
+    <SolidColorBrush x:Key="PrimaryHueLightBrush" Color="{DynamicResource UiElementsColor}" />
     <SolidColorBrush x:Key="PrimaryHueLightForegroundBrush" Color="{DynamicResource TextColor}" />
     <SolidColorBrush x:Key="PrimaryHueMidBrush" Color="{DynamicResource PrimaryColor}" />
     <SolidColorBrush x:Key="PrimaryHueMidForegroundBrush" Color="{DynamicResource TextColor}" />
@@ -20,7 +20,7 @@
     <SolidColorBrush x:Key="SecondaryHueMidBrush" Color="{DynamicResource TertiaryColor}" />
     <SolidColorBrush x:Key="SecondaryHueMidForegroundBrush" Color="{DynamicResource TextColor}" />
     <SolidColorBrush x:Key="SearchBarColorBrush" Color="{DynamicResource SearchBarColor}" />
-    <SolidColorBrush x:Key="UiElementsColorBrush" Color="{DynamicResource UiElementsColor}" />
+    <SolidColorBrush x:Key="UiElementsColorBrush" Color="{DynamicResource BackgroundColor}" />
     
     <FontFamily
         x:Key="Outfit">

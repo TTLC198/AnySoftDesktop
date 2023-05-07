@@ -22,6 +22,7 @@ public class Bootstrapper : Bootstrapper<MainWindowViewModel>
         builder.Bind<LoginViewModel>().ToSelf().InSingletonScope();
         builder.Bind<ITabViewModel>().ToAllImplementations().InSingletonScope();
         
+        builder.Bind<SingleProductViewModel>().ToSelf().InSingletonScope();
         builder.Bind<DashboardTabViewModel>().ToSelf().InSingletonScope();
         builder.Bind<LibraryTabViewModel>().ToSelf().InSingletonScope();
         builder.Bind<SettingsTabViewModel>().ToSelf().InSingletonScope();

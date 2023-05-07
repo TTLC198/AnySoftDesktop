@@ -12,14 +12,26 @@
              Background="Transparent">
     <UserControl.Resources>
         <Style
-            x:Key="SliderButtonsStyle"
-            TargetType="{x:Type Button}">
+            TargetType="{x:Type Button}"
+            BasedOn="{StaticResource MaterialDesignFlatButton}">
             <Setter
                 Property="Background"
                 Value="Transparent" />
             <Setter
                 Property="BorderThickness"
                 Value="0" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Border
+                            Background="{TemplateBinding Background}"
+                            BorderThickness="0"
+                            CornerRadius="5">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
             <Style.Triggers>
                 <Trigger
                     Property="IsMouseOver"
@@ -68,7 +80,6 @@
                                 ImageSource="{Binding ., Converter={x:Static converters:UrlToImageConverter.Instance}}"/>
                         </Border.Background>
                     </Border>
-
                 </DataTemplate>
             </materialDesign:Transitioner.ItemTemplate>
         </materialDesign:Transitioner>
@@ -79,24 +90,6 @@
             <Button
                 Click="LeftButton_OnClick"
                 DockPanel.Dock="Left">
-                <Button.Style>
-                    <Style
-                        BasedOn="{StaticResource SliderButtonsStyle}"
-                        TargetType="{x:Type Button}">
-                        <Setter Property="Template">
-                            <Setter.Value>
-                                <ControlTemplate TargetType="{x:Type Button}">
-                                    <Border
-                                        Background="{TemplateBinding Background}"
-                                        BorderThickness="0"
-                                        CornerRadius="15, 0, 0, 15">
-                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                    </Border>
-                                </ControlTemplate>
-                            </Setter.Value>
-                        </Setter>
-                    </Style>
-                </Button.Style>
                 <materialDesign:PackIcon
                     Width="20"
                     Height="20"
@@ -105,24 +98,6 @@
             <Button
                 Click="RightButton_OnClick"
                 DockPanel.Dock="Right">
-                <Button.Style>
-                    <Style
-                        BasedOn="{StaticResource SliderButtonsStyle}"
-                        TargetType="{x:Type Button}">
-                        <Setter Property="Template">
-                            <Setter.Value>
-                                <ControlTemplate TargetType="{x:Type Button}">
-                                    <Border
-                                        Background="{TemplateBinding Background}"
-                                        BorderThickness="0"
-                                        CornerRadius="0, 15, 15, 0">
-                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                    </Border>
-                                </ControlTemplate>
-                            </Setter.Value>
-                        </Setter>
-                    </Style>
-                </Button.Style>
                 <materialDesign:PackIcon
                     Width="20"
                     Height="20"
