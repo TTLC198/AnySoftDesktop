@@ -11,7 +11,7 @@ public class BoolToVisibleConverter : IValueConverter
     public static BoolToVisibleConverter Instance { get; } = new();
 
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture) =>
-        value is true ? Visibility.Visible : Visibility.Collapsed;
+        (bool)value == true ? Visibility.Visible : Visibility.Collapsed;
 
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) =>
         value is Visibility.Visible;
@@ -23,7 +23,7 @@ public class InverseBoolToVisibleConverter : IValueConverter
     public static InverseBoolToVisibleConverter Instance { get; } = new();
 
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture) =>
-        value is false ? Visibility.Visible : Visibility.Collapsed;
+        (bool)value == false ? Visibility.Visible : Visibility.Collapsed;
 
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) =>
         value is Visibility.Collapsed;
