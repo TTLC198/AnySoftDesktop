@@ -89,7 +89,7 @@
                 <TextBox.Text>
                     <Binding
                         Path="UserCredentials.Login"
-                        UpdateSourceTrigger="PropertyChanged"
+                        UpdateSourceTrigger="LostFocus"
                         ValidatesOnExceptions="True" >
                         <Binding.ValidationRules>
                             <validation:NotEmptyValidationRule
@@ -120,7 +120,7 @@
                 <TextBox.Text>
                     <Binding
                         Path="UserCredentials.Email"
-                        UpdateSourceTrigger="PropertyChanged"
+                        UpdateSourceTrigger="LostFocus"
                         ValidatesOnExceptions="True" >
                         <Binding.ValidationRules>
                             <validation:NotEmptyValidationRule
@@ -157,7 +157,7 @@
                 <materialDesign:PasswordBoxAssist.Password>
                     <Binding
                         Path="UserCredentials.Password"
-                        UpdateSourceTrigger="PropertyChanged"
+                        UpdateSourceTrigger="LostFocus"
                         ValidatesOnExceptions="True" >
                         <Binding.ValidationRules>
                             <validation:NotEmptyValidationRule
@@ -194,7 +194,7 @@
                 <TextBox.Text>
                     <Binding
                         Path="UserCredentials.Login"
-                        UpdateSourceTrigger="PropertyChanged"
+                        UpdateSourceTrigger="LostFocus"
                         ValidatesOnExceptions="True" >
                         <Binding.ValidationRules>
                             <validation:NotEmptyValidationRule
@@ -225,11 +225,11 @@
                 <materialDesign:PasswordBoxAssist.Password>
                     <Binding
                         Path="UserCredentials.Password"
-                        UpdateSourceTrigger="PropertyChanged"
-                        ValidatesOnExceptions="False" >
+                        UpdateSourceTrigger="LostFocus"
+                        ValidatesOnExceptions="True" >
                         <Binding.ValidationRules>
                             <validation:NotEmptyValidationRule
-                                ValidatesOnTargetUpdated="True"/>
+                                ValidatesOnTargetUpdated="False"/>
                         </Binding.ValidationRules>
                     </Binding>
                 </materialDesign:PasswordBoxAssist.Password>
