@@ -15,9 +15,9 @@ using RPM_Project_Backend.Domain;
 
 namespace AnySoftDesktop.ViewModels;
 
-public class SingleProductViewModel : DashboardTabViewModel
+public class SingleProductViewModel : DashboardTabViewModel, INotifyPropertyChanged
 {
-    private readonly int Id;
+    private readonly int _productId;
     private readonly IViewModelFactory _viewModelFactory;
     private readonly DialogManager _dialogManager;
 
@@ -32,16 +32,10 @@ public class SingleProductViewModel : DashboardTabViewModel
             OnPropertyChanged();
         }
     }
-    
-    /*public SingleProductViewModel(IViewModelFactory viewModelFactory, DialogManager dialogManager) : base(viewModelFactory, dialogManager)
-    {
-        _viewModelFactory = viewModelFactory;
-        _dialogManager = dialogManager;
-    }*/
 
-    public SingleProductViewModel(int id, IViewModelFactory viewModelFactory, DialogManager dialogManager) : base(viewModelFactory, dialogManager)
+    public SingleProductViewModel(int productId, IViewModelFactory viewModelFactory, DialogManager dialogManager) : base(viewModelFactory, dialogManager)
     {
-        Id = id;
+        _productId = productId;
         _viewModelFactory = viewModelFactory;
         _dialogManager = dialogManager;
     }
@@ -53,7 +47,7 @@ public class SingleProductViewModel : DashboardTabViewModel
 
     private async Task UpdateProduct()
     {
-        var getProductsRequest = await WebApiService.GetCall($"api/products/{Id}");
+        var getProductsRequest = await WebApiService.GetCall($"api/products/{_productId}");
 
         try
         {
