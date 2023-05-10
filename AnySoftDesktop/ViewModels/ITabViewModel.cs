@@ -5,4 +5,5 @@ public interface ITabViewModel
     int Order { get; }
     string Name { get; }
     bool IsSelected { get; set; }
+    bool IsVisible { get; set; }
 }

@@ -10,6 +10,8 @@ public abstract class TabBaseViewModel : PropertyChangedBase, ITabViewModel
 
     public bool IsSelected { get; set; }
 
+    public bool IsVisible { get; set; } = true;
+
     protected TabBaseViewModel(int order, string name)
     {
         Order = order;
