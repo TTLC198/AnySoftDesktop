@@ -20,12 +20,10 @@ public class Bootstrapper : Bootstrapper<MainWindowViewModel>
         builder.Bind<IViewModelFactory>().ToAbstractFactory();
         builder.Bind<MainWindowViewModel>().ToSelf().InSingletonScope();
         builder.Bind<LoginViewModel>().ToSelf().InSingletonScope();
-        builder.Bind<ITabViewModel>().ToAllImplementations().InSingletonScope();
         
-        builder.Bind<SingleProductViewModel>().ToSelf().InSingletonScope();
-        builder.Bind<DashboardTabViewModel>().ToSelf().InSingletonScope();
-        builder.Bind<LibraryTabViewModel>().ToSelf().InSingletonScope();
-        builder.Bind<SettingsTabViewModel>().ToSelf().InSingletonScope();
+        builder.Bind<ITabViewModel>().To<DashboardTabViewModel>().InSingletonScope();
+        builder.Bind<ITabViewModel>().To<LibraryTabViewModel>().InSingletonScope();
+        builder.Bind<ITabViewModel>().To<SettingsTabViewModel>().InSingletonScope();
     }
     
     protected override void Launch()
