@@ -15,7 +15,7 @@ using RPM_Project_Backend.Domain;
 
 namespace AnySoftDesktop.ViewModels;
 
-public class SingleProductViewModel : INotifyPropertyChanged
+public class SingleProductViewModel : DashboardTabViewModel
 {
     private readonly int Id;
     private readonly IViewModelFactory _viewModelFactory;
@@ -32,8 +32,14 @@ public class SingleProductViewModel : INotifyPropertyChanged
             OnPropertyChanged();
         }
     }
+    
+    /*public SingleProductViewModel(IViewModelFactory viewModelFactory, DialogManager dialogManager) : base(viewModelFactory, dialogManager)
+    {
+        _viewModelFactory = viewModelFactory;
+        _dialogManager = dialogManager;
+    }*/
 
-    public SingleProductViewModel(int id, IViewModelFactory viewModelFactory, DialogManager dialogManager)
+    public SingleProductViewModel(int id, IViewModelFactory viewModelFactory, DialogManager dialogManager) : base(viewModelFactory, dialogManager)
     {
         Id = id;
         _viewModelFactory = viewModelFactory;
