@@ -5,6 +5,7 @@ using System.Runtime.CompilerServices;
 using AnySoftDesktop.Models;
 using AnySoftDesktop.Utils;
 using AnySoftDesktop.ViewModels.Framework;
+using AnySoftDesktop.ViewModels.Tabs;
 using RPM_Project_Backend.Domain;
 using Stylet;
 
@@ -15,7 +16,7 @@ public class MainWindowViewModel : Screen, INotifyPropertyChanged
     private readonly IViewModelFactory _viewModelFactory;
     private readonly DialogManager _dialogManager;
     
-    public List<ITabViewModel> Tabs { get; }
+    public IObservableCollection<ITabViewModel> Tabs { get; }
     public ITabViewModel? ActiveTab { get; private set; }
     
     public bool IsMenuExpanded { get; set; }
@@ -36,25 +37,52 @@ public class MainWindowViewModel : Screen, INotifyPropertyChanged
         }
     }
 
-    public MainWindowViewModel(IReadOnlyList<ITabViewModel> tabs, IViewModelFactory viewModelFactory, DialogManager dialogManager)
+    public MainWindowViewModel(List<ITabViewModel> tabs, IViewModelFactory viewModelFactory, DialogManager dialogManager)
     {
         _viewModelFactory = viewModelFactory;
         _dialogManager = dialogManager;
-        Tabs = tabs.OrderBy(t => t.Order).ToList();
+        Tabs = new BindableCollection<ITabViewModel>(tabs
+            .OrderBy(t => t.Order)
+            .ToList());
         // Pre-select first tab
         var firstTab = Tabs.FirstOrDefault();
         if (firstTab is not null)
             ActivateTab(firstTab);
     }
 
-    public void ActivateTab(ITabViewModel settingsTab)
+    public void ActivateTab(ITabViewModel tab)
     {
+        var singleProductTab = Tabs.FirstOrDefault(t => t.GetType() == typeof(SingleProductViewModel));
+        if (singleProductTab is not null)
+        {
+            var baseTab = Tabs.First(t => t.GetType() == singleProductTab.GetType().BaseType);
+            baseTab.IsVisible = true;
+            Tabs.Remove(singleProductTab);
+        }
+        
         // Deactivate previously selected tab
         if (ActiveTab is not null)
             ActiveTab.IsSelected = false;
         
-        ActiveTab = settingsTab;
-        settingsTab.IsSelected = true;
+        ActiveTab = tab;
+        tab.IsSelected = true;
+    }
+
+    public async void OnProductButtonClick(int id)
+    {
+        // Deactivate previously selected tab
+        if (ActiveTab is not null)
+            ActiveTab.IsSelected = false;
+
+        var tab = new SingleProductViewModel(id, _viewModelFactory, _dialogManager);
+
+        var baseTab = Tabs.First(t => t.GetType() == tab.GetType().BaseType);
+        Tabs.Insert(Tabs.IndexOf(baseTab), tab);
+        baseTab.IsVisible = false;
+
+        ActiveTab = tab;
+        tab.IsSelected = true;
+        tab.IsVisible = true;
     }
 
     public void ToggleMaximized() =>
