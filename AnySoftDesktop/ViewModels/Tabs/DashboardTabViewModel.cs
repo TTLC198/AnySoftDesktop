@@ -57,11 +57,6 @@ public class DashboardTabViewModel : TabBaseViewModel, INotifyPropertyChanged
         await UpdateProducts();
     }
 
-    public async void OnProductButtonClick(int id)
-    {
-        //TODO
-    }
-
     private async Task UpdateProducts()
     {
         var getProductsRequest = await WebApiService.GetCall("api/products");
@@ -79,9 +74,9 @@ public class DashboardTabViewModel : TabBaseViewModel, INotifyPropertyChanged
         }
     }
 
-    public event PropertyChangedEventHandler? PropertyChanged;
+    public new event PropertyChangedEventHandler? PropertyChanged;
 
-    protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+    protected override void OnPropertyChanged([CallerMemberName] string? propertyName = null)
     {
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }

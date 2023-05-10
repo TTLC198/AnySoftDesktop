@@ -88,6 +88,7 @@
                         DockPanel.Dock="Bottom"
                         FontSize="12"
                         Content="Learn more..."
+                        s:View.ActionTarget="{Binding DataContext, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}"
                         Command="{s:Action OnProductButtonClick}"
                         CommandParameter="{Binding MainProduct.Id}" />
                 </DockPanel>
@@ -177,7 +178,10 @@
                                         Margin="0, 5, 0, 0"
                                         DockPanel.Dock="Bottom"
                                         FontSize="10"
-                                        Content="Learn more..." />
+                                        Content="Learn more..." 
+                                        s:View.ActionTarget="{Binding DataContext, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}"
+                                        Command="{s:Action OnProductButtonClick}"
+                                        CommandParameter="{Binding Id}"/>
                                 </DockPanel>
                             </Border>
                         </Grid>
@@ -249,7 +253,10 @@
                                     <Button
                                         Grid.Row="1"
                                         FontSize="10"
-                                        Content="Learn more..." />
+                                        Content="Learn more..." 
+                                        s:View.ActionTarget="{Binding DataContext, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}"
+                                        Command="{s:Action OnProductButtonClick}"
+                                        CommandParameter="{Binding Id}"/>
                                 </Grid>
                             </Border>
                         </DataTemplate>
