@@ -226,10 +226,10 @@
                     <Binding
                         Path="UserCredentials.Password"
                         UpdateSourceTrigger="PropertyChanged"
-                        ValidatesOnExceptions="True" >
+                        ValidatesOnExceptions="False" >
                         <Binding.ValidationRules>
                             <validation:NotEmptyValidationRule
-                                ValidatesOnTargetUpdated="False"/>
+                                ValidatesOnTargetUpdated="True"/>
                         </Binding.ValidationRules>
                     </Binding>
                 </materialDesign:PasswordBoxAssist.Password>

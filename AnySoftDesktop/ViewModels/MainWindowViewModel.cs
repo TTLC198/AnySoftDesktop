@@ -89,6 +89,12 @@ public class MainWindowViewModel : Screen, INotifyPropertyChanged
         ActiveTab = settingsTab;
         settingsTab.IsSelected = true;
     }
+
+    public void Logout()
+    {
+        IsAuthorized = false;
+        CurrentUser = new ApplicationUser();
+    }
     
     public event PropertyChangedEventHandler? PropertyChanged;
 
