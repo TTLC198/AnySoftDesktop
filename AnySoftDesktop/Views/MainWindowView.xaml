@@ -3,13 +3,12 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:local="clr-namespace:AnySoftDesktop.Views"
         xmlns:viewModels="clr-namespace:AnySoftDesktop.ViewModels"
-        xmlns:AnySoftDesktop="clr-namespace:AnySoftDesktop"
+        xmlns:anySoftDesktop="clr-namespace:AnySoftDesktop"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         xmlns:converters="clr-namespace:AnySoftDesktop.Utils.Converters"
         xmlns:s="https://github.com/canton7/Stylet"
-        xmlns:usersControls="clr-namespace:AnySoftDesktop.UsersControls"
+        xmlns:tb="http://www.hardcodet.net/taskbar"
         Background="{DynamicResource MaterialDesignPaper}"
         FontFamily="{DynamicResource MaterialDesignFont}"
         Style="{DynamicResource MaterialDesignRoot}"
@@ -20,10 +19,10 @@
         WindowStyle="None"
         WindowStartupLocation="CenterScreen"
         WindowState="{Binding IsWindowMaximized, Converter={x:Static converters:BoolToMaximizedStateConverter.Instance}}"
-        Title="{x:Static AnySoftDesktop:App.Name}"
-        mc:Ignorable="d">
+        Title="{x:Static anySoftDesktop:App.Name}"
+        mc:Ignorable="d"
+        Icon="/Resources/Images/favicon.ico">
     <materialDesign:DialogHost
-        x:Name="DialogHost"
         CloseOnClickAway="False"
         Style="{DynamicResource MaterialDesignEmbeddedDialogHost}"
         DialogBackground="Transparent"
@@ -32,13 +31,42 @@
         <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition
+                    Width="Auto"/>
+                <ColumnDefinition
                     Width="Auto" />
                 <ColumnDefinition
                     Width="*" />
             </Grid.ColumnDefinitions>
+            <tb:TaskbarIcon
+                Grid.Column="0"
+                x:Name="MainTaskbarIcon"
+                ToolTipText="{x:Static anySoftDesktop:App.Name}"
+                NoLeftClickDelay="True"
+                IconSource="/Resources/Images/favicon.ico"
+                TrayMouseDoubleClick="MainTaskbarIcon_OnTrayBalloonTipClicked">
+                <tb:TaskbarIcon.ContextMenu>
+                    <ContextMenu
+                        Margin="2">
+                        <MenuItem
+                            Header="_Show window"
+                            Click="Show_OnClick">
+                            <MenuItem.Icon>
+                                <materialDesign:PackIcon Kind="WindowMaximize" />
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem
+                            Header="_Close application"
+                            Click="Close_OnClick">
+                            <MenuItem.Icon>
+                                <materialDesign:PackIcon Kind="WindowClose" />
+                            </MenuItem.Icon>
+                        </MenuItem>
+                    </ContextMenu>
+                </tb:TaskbarIcon.ContextMenu>
+            </tb:TaskbarIcon>
             <!--Left Navbar-->
             <Grid
-                Grid.Column="0">
+                Grid.Column="1">
                 <Grid.RowDefinitions>
                     <RowDefinition
                         Height="Auto" />
@@ -228,7 +256,7 @@
                 </Button>
             </Grid>
             <Grid
-                Grid.Column="1">
+                Grid.Column="2">
                 <Grid.RowDefinitions>
                     <RowDefinition
                         Height="Auto" />
@@ -313,7 +341,7 @@
                             Width="Auto"
                             Margin="1"
                             Padding="1"
-                            Click="CloseButton_OnClick"
+                            Click="Close_OnClick"
                             Style="{DynamicResource MaterialDesignFlatDarkButton}"
                             ToolTip="Close application">
                             <materialDesign:PackIcon
@@ -358,7 +386,7 @@
                             Width="Auto"
                             Margin="1"
                             Padding="1"
-                            Click="HideButton_OnClick"
+                            Click="Hide_OnClick"
                             Style="{DynamicResource MaterialDesignFlatDarkButton}"
                             ToolTip="Hide application">
                             <materialDesign:PackIcon
@@ -427,12 +455,12 @@
                         <Style TargetType="{x:Type materialDesign:TransitionerSlide}">
                             <Setter Property="BackwardWipe">
                                 <Setter.Value>
-                                    <materialDesign:SlideWipe Direction="Down" Duration="0:0:0.2" />
+                                    <materialDesign:SlideWipe Direction="Down" Duration="0:0:0.5" />
                                 </Setter.Value>
                             </Setter>
                             <Setter Property="ForwardWipe">
                                 <Setter.Value>
-                                    <materialDesign:SlideWipe Direction="Up" Duration="0:0:0.2" />
+                                    <materialDesign:SlideWipe Direction="Up" Duration="0:0:0.5" />
                                 </Setter.Value>
                             </Setter>
                         </Style>
