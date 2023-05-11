@@ -7,7 +7,7 @@ using MaterialDesignThemes.Wpf;
 
 namespace AnySoftDesktop.Utils.Converters;
 
-[ValueConversion(typeof(ITabViewModel), typeof(PackIconKind))]
+[ValueConversion(typeof(TabBaseViewModel), typeof(PackIconKind))]
 public class TabsToIconConverter : IValueConverter
 {
     public static TabsToIconConverter Instance { get; } = new();

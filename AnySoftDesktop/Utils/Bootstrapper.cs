@@ -21,9 +21,9 @@ public class Bootstrapper : Bootstrapper<MainWindowViewModel>
         builder.Bind<MainWindowViewModel>().ToSelf().InSingletonScope();
         builder.Bind<LoginViewModel>().ToSelf().InSingletonScope();
         
-        builder.Bind<ITabViewModel>().To<DashboardTabViewModel>().InSingletonScope();
-        builder.Bind<ITabViewModel>().To<LibraryTabViewModel>().InSingletonScope();
-        builder.Bind<ITabViewModel>().To<SettingsTabViewModel>().InSingletonScope();
+        builder.Bind<TabBaseViewModel>().To<DashboardTabViewModel>().InSingletonScope();
+        builder.Bind<TabBaseViewModel>().To<LibraryTabViewModel>().InSingletonScope();
+        builder.Bind<TabBaseViewModel>().To<SettingsTabViewModel>().InSingletonScope();
     }
     
     protected override void Launch()
