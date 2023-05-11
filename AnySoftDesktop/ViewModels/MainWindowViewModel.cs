@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -16,8 +17,8 @@ public class MainWindowViewModel : Screen, INotifyPropertyChanged
     private readonly IViewModelFactory _viewModelFactory;
     private readonly DialogManager _dialogManager;
     
-    public IObservableCollection<ITabViewModel> Tabs { get; }
-    public ITabViewModel? ActiveTab { get; private set; }
+    public IObservableCollection<TabBaseViewModel> Tabs { get; }
+    public TabBaseViewModel? ActiveTab { get; private set; }
     
     public bool IsMenuExpanded { get; set; }
     public bool IsWindowMaximized { get; set; }
@@ -37,11 +38,11 @@ public class MainWindowViewModel : Screen, INotifyPropertyChanged
         }
     }
 
-    public MainWindowViewModel(List<ITabViewModel> tabs, IViewModelFactory viewModelFactory, DialogManager dialogManager)
+    public MainWindowViewModel(List<TabBaseViewModel> tabs, IViewModelFactory viewModelFactory, DialogManager dialogManager)
     {
         _viewModelFactory = viewModelFactory;
         _dialogManager = dialogManager;
-        Tabs = new BindableCollection<ITabViewModel>(tabs
+        Tabs = new BindableCollection<TabBaseViewModel>(tabs
             .OrderBy(t => t.Order)
             .ToList());
         // Pre-select first tab
@@ -50,7 +51,7 @@ public class MainWindowViewModel : Screen, INotifyPropertyChanged
             ActivateTab(firstTab);
     }
 
-    public void ActivateTab(ITabViewModel tab)
+    public void ActivateTab(TabBaseViewModel tab)
     {
         var singleProductTab = Tabs.FirstOrDefault(t => t.GetType() == typeof(SingleProductViewModel));
         if (singleProductTab is not null)
@@ -65,6 +66,7 @@ public class MainWindowViewModel : Screen, INotifyPropertyChanged
             ActiveTab.IsSelected = false;
         
         ActiveTab = tab;
+        tab.OnTabSelected(EventArgs.Empty);
         tab.IsSelected = true;
     }
 
@@ -81,6 +83,7 @@ public class MainWindowViewModel : Screen, INotifyPropertyChanged
         baseTab.IsVisible = false;
 
         ActiveTab = tab;
+        tab.OnTabSelected(EventArgs.Empty);
         tab.IsSelected = true;
         tab.IsVisible = true;
     }
