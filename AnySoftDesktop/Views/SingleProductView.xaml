@@ -184,13 +184,15 @@
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
                             <StackPanel
-                                Orientation="Vertical" />
+                                Orientation="Vertical" 
+                                HorizontalAlignment="Stretch"/>
                         </ItemsPanelTemplate>
                     </ItemsControl.ItemsPanel>
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
                             <StackPanel
-                                Orientation="Vertical">
+                                Orientation="Vertical"
+                                HorizontalAlignment="Stretch">
                                 <DockPanel
                                     LastChildFill="False"
                                     HorizontalAlignment="Left"
@@ -200,7 +202,7 @@
                                         Width="60"
                                         Margin="6"
                                         DockPanel.Dock="Left"
-                                        HorizontalAlignment="Center"
+                                        HorizontalAlignment="Stretch"
                                         VerticalAlignment="Center">
                                         <Ellipse.Fill>
                                             <ImageBrush
@@ -209,7 +211,7 @@
                                     </Ellipse>
                                     <!--User Description-->
                                     <DockPanel
-                                        HorizontalAlignment="Left"
+                                        HorizontalAlignment="Stretch"
                                         VerticalAlignment="Center"
                                         LastChildFill="False">
                                         <TextBlock
@@ -219,18 +221,20 @@
                                             Text="{Binding User.Login}" />
                                         <TextBlock
                                             DockPanel.Dock="Top"
-                                            FontSize="14"
+                                            FontSize="16"
                                             TextWrapping="Wrap"
                                             Foreground="{DynamicResource PrimaryHueDarkBrush}"
                                             Text="{Binding Ts, StringFormat='Posted {0:D}'}" />
                                         <materialDesign:RatingBar
                                             x:Name="BasicRatingBar"
+                                            FontSize="12"
                                             IsReadOnly="True"
                                             Value="{Binding Grade}" />
                                     </DockPanel>
                                 </DockPanel>
                                 <TextBlock
                                     DockPanel.Dock="Top"
+                                    HorizontalAlignment="Stretch"
                                     Margin="5, 7"
                                     FontSize="14"
                                     TextWrapping="Wrap"
