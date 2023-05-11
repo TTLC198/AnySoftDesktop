@@ -59,18 +59,38 @@ public class DashboardTabViewModel : TabBaseViewModel, INotifyPropertyChanged
 
     private async Task UpdateProducts()
     {
-        var getProductsRequest = await WebApiService.GetCall("api/products");
-        if (getProductsRequest.IsSuccessStatusCode)
+        try
         {
-            var timeoutAfter = TimeSpan.FromMilliseconds(300);
-            using (var cancellationTokenSource = new CancellationTokenSource(timeoutAfter))
+            var getProductsRequest = await WebApiService.GetCall("api/products");
+            if (getProductsRequest.IsSuccessStatusCode)
             {
-                var responseStream = await getProductsRequest.Content.ReadAsStreamAsync(cancellationTokenSource.Token);
-                var products = await JsonSerializer.DeserializeAsync<IEnumerable<ProductResponseDto>>(responseStream,
-                    CustomJsonSerializerOptions.Options, cancellationToken: cancellationTokenSource.Token);
-                MainProduct = products.First();
-                Products = new ObservableCollection<ProductResponseDto>(products.Skip(1));
+                var timeoutAfter = TimeSpan.FromMilliseconds(300);
+                using (var cancellationTokenSource = new CancellationTokenSource(timeoutAfter))
+                {
+                    var responseStream =
+                        await getProductsRequest.Content.ReadAsStreamAsync(cancellationTokenSource.Token);
+                    var products = await JsonSerializer.DeserializeAsync<IEnumerable<ProductResponseDto>>(
+                        responseStream,
+                        CustomJsonSerializerOptions.Options, cancellationToken: cancellationTokenSource.Token);
+                    MainProduct = products.First();
+                    Products = new ObservableCollection<ProductResponseDto>(products.Skip(1));
+                }
             }
+            else
+            {
+                var msg = await getProductsRequest.Content.ReadAsStringAsync();
+                throw new InvalidOperationException($"{getProductsRequest.ReasonPhrase}\n{msg}");
+            }
+        }
+        catch (Exception exception)
+        {
+            var messageBoxDialog = _viewModelFactory.CreateMessageBoxViewModel(
+                title: "Some error has occurred",
+                message: $@"{exception.Message}".Trim(),
+                okButtonText: "OK",
+                cancelButtonText: null
+            );
+            await _dialogManager.ShowDialogAsync(messageBoxDialog);
         }
     }
 

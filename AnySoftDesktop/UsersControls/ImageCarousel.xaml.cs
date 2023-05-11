@@ -61,7 +61,7 @@ public partial class ImageCarousel : UserControl, INotifyPropertyChanged
 
     private void LeftButton_OnClick(object sender, RoutedEventArgs e)
     {
-        if (Images is {Count: 0}) return;
+        if (Images is null or {Count: 0}) return;
         if (SelectedImage == string.Empty)
             SelectedImage = Images.First();
         var index = Images.IndexOf(SelectedImage);
@@ -73,7 +73,7 @@ public partial class ImageCarousel : UserControl, INotifyPropertyChanged
 
     private void RightButton_OnClick(object sender, RoutedEventArgs e)
     {
-        if (Images is {Count: 0}) return;
+        if (Images is null or {Count: 0}) return;
         if (SelectedImage == string.Empty)
             SelectedImage = Images.First();
         var index = Images.IndexOf(SelectedImage);

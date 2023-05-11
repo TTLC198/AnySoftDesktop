@@ -9,12 +9,15 @@ using System.Threading;
 using System.Threading.Tasks;
 using AnySoftDesktop.Services;
 using AnySoftDesktop.Utils;
+using AnySoftDesktop.ViewModels.Framework;
 using RPM_Project_Backend.Domain;
 
 namespace AnySoftDesktop.ViewModels.Tabs;
 
 public class LibraryTabViewModel : TabBaseViewModel, INotifyPropertyChanged
 {
+    private readonly IViewModelFactory _viewModelFactory;
+    private readonly DialogManager _dialogManager;
     private ObservableCollection<ProductResponseDto> _products = new ObservableCollection<ProductResponseDto>();
 
     public ObservableCollection<ProductResponseDto> Products
@@ -26,7 +29,7 @@ public class LibraryTabViewModel : TabBaseViewModel, INotifyPropertyChanged
             OnPropertyChanged();
         }
     }
-    
+
     public async void OnViewFullyLoaded()
     {
         //await UpdateOrders();
@@ -36,23 +39,43 @@ public class LibraryTabViewModel : TabBaseViewModel, INotifyPropertyChanged
     {
         if (Products is not {Count: 0})
             return;
-        var getOrdersRequest = await WebApiService.GetCall("api/orders",/* App.AuthorizationToken)*/ "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjQiLCJyb2xlIjoidXNlciIsImp0aSI6ImVmYmRiMjgxLTY4N2YtNDEzZS1hYjZlLTFjMGRmYzUyM2Y2ZiIsImV4cCI6MTY4MzgzOTU5NywiaXNzIjoieW91ciBlbnZpcm9ubWVudCIsImF1ZCI6InlvdXIgYXVkaWVuY2UifQ.eFlEdthzSXldF9pM8HSC11MGiigCzQ_WobWwOHbDQXc");
-        if (getOrdersRequest.IsSuccessStatusCode)
+        try
         {
-            var timeoutAfter = TimeSpan.FromMilliseconds(300);
-            using var cancellationTokenSource = new CancellationTokenSource(timeoutAfter);
-            var responseStream = await getOrdersRequest.Content.ReadAsStreamAsync(cancellationTokenSource.Token);
-            var orders = await JsonSerializer.DeserializeAsync<IEnumerable<OrderResponseDto>>(responseStream,
-                CustomJsonSerializerOptions.Options, cancellationToken: cancellationTokenSource.Token);
-            Products = new ObservableCollection<ProductResponseDto>(
-                orders
-                    .SelectMany(o => o.PurchasedProducts)
+            var getOrdersRequest = await WebApiService.GetCall("api/orders",  App.AuthorizationToken);
+            if (getOrdersRequest.IsSuccessStatusCode)
+            {
+                var timeoutAfter = TimeSpan.FromMilliseconds(300);
+                using var cancellationTokenSource = new CancellationTokenSource(timeoutAfter);
+                var responseStream = await getOrdersRequest.Content.ReadAsStreamAsync(cancellationTokenSource.Token);
+                var orders = await JsonSerializer.DeserializeAsync<IEnumerable<OrderResponseDto>>(responseStream,
+                    CustomJsonSerializerOptions.Options, cancellationToken: cancellationTokenSource.Token);
+                Products = new ObservableCollection<ProductResponseDto>(
+                    orders
+                        .SelectMany(o => o.PurchasedProducts)
+                );
+            }
+            else
+            {
+                var msg = await getOrdersRequest.Content.ReadAsStringAsync();
+                throw new InvalidOperationException($"{getOrdersRequest.ReasonPhrase}\n{msg}");
+            }
+        }
+        catch (Exception exception)
+        {
+            var messageBoxDialog = _viewModelFactory.CreateMessageBoxViewModel(
+                title: "Some error has occurred",
+                message: $@"{exception.Message}".Trim(),
+                okButtonText: "OK",
+                cancelButtonText: null
             );
+            await _dialogManager.ShowDialogAsync(messageBoxDialog);
         }
     }
-    
-    public LibraryTabViewModel() : base(1, "Library")
+
+    public LibraryTabViewModel(IViewModelFactory viewModelFactory, DialogManager dialogManager) : base(1, "Library")
     {
+        _viewModelFactory = viewModelFactory;
+        _dialogManager = dialogManager;
         TabSelected += UpdateOrders;
     }
 
