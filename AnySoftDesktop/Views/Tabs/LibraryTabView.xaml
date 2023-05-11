@@ -4,6 +4,9 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:tabs="clr-namespace:AnySoftDesktop.ViewModels.Tabs"
+             xmlns:s="https://github.com/canton7/Stylet"
+             xmlns:converters="clr-namespace:AnySoftDesktop.Utils.Converters"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              Background="{DynamicResource MaterialDesignPaper}"
              FontFamily="{DynamicResource MaterialDesignFont}"
              TextElement.FontFamily="{StaticResource Outfit}"
@@ -11,7 +14,109 @@
              d:DesignHeight="300"
              d:DesignWidth="800"
              d:DataContext="{d:DesignInstance Type=tabs:LibraryTabViewModel}">
-    <Grid>
-        
+    <Grid
+        Margin="0, 0, 12, 0"
+        Loaded="{s:Action OnViewFullyLoaded}">
+        <ItemsControl
+            Grid.IsSharedSizeScope="True"
+            HorizontalAlignment="Center"
+            HorizontalContentAlignment="Stretch"
+            ItemsSource="{Binding Products}">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <UniformGrid
+                        HorizontalAlignment="Stretch"
+                        VerticalAlignment="Stretch"
+                        Columns="4" />
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <Grid
+                        Background="Transparent"
+                        Margin="0, 0, 15, 15"
+                        HorizontalAlignment="Stretch"
+                        VerticalAlignment="Stretch">
+                        <Border
+                            MinWidth="200"
+                            Height="Auto"
+                            CornerRadius="15"
+                            HorizontalAlignment="Stretch"
+                            VerticalAlignment="Stretch">
+                            <Border.Background>
+                                <ImageBrush
+                                    Stretch="Fill"
+                                    ImageSource="{Binding Images[0], Converter={x:Static converters:UrlToImageConverter.Instance}}" />
+                            </Border.Background>
+                        </Border>
+                        <materialDesign:Snackbar
+                            Background="Transparent">
+                            <materialDesign:SnackbarMessage
+                                HorizontalAlignment="Stretch"
+                                VerticalAlignment="Bottom"
+                                HorizontalContentAlignment="Stretch"
+                                VerticalContentAlignment="Stretch">
+                                <materialDesign:SnackbarMessage.Content>
+                                    <Grid
+                                        HorizontalAlignment="Stretch"
+                                        VerticalAlignment="Stretch"
+                                        Margin="15, 0">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition
+                                                Width="*"/>
+                                            <ColumnDefinition
+                                                Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Button
+                                            Grid.Column="0"
+                                            Style="{StaticResource MaterialDesignPaperLightButton}"
+                                            Margin="5, 0"
+                                            FontSize="12"
+                                            Content="Launch"/>
+                                        <Button
+                                            Grid.Column="1"
+                                            Style="{StaticResource MaterialDesignPaperLightButton}"
+                                            Margin="5, 0"
+                                            FontSize="12"
+                                            Content="More"
+                                            s:View.ActionTarget="{Binding DataContext, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}"
+                                            Command="{s:Action OnProductButtonClick}"
+                                            CommandParameter="{Binding Id}" />
+                                    </Grid>
+                                    <!--<StackPanel
+                                        Orientation="Vertical">
+                                        <TextBlock
+                                            Margin="0, 5"
+                                            Style="{StaticResource MaterialDesignHeadline6TextBlock}"
+                                            Foreground="{StaticResource PrimaryHueMidBrush}"
+                                            HorizontalAlignment="Center"
+                                            VerticalAlignment="Stretch"
+                                            Text="{Binding Name}" />
+                                        
+                                    </StackPanel>-->
+                                </materialDesign:SnackbarMessage.Content>
+                            </materialDesign:SnackbarMessage>
+                            <materialDesign:Snackbar.Style>
+                                <Style
+                                    TargetType="materialDesign:Snackbar">
+                                    <Style.Triggers>
+                                        <DataTrigger
+                                            Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Grid},Path=IsMouseOver}"
+                                            Value="True">
+                                            <Setter
+                                                Property="IsActive"
+                                                Value="True"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                    <Setter
+                                        Property="IsActive"
+                                        Value="False"/>
+                                </Style>
+                            </materialDesign:Snackbar.Style>
+                        </materialDesign:Snackbar>
+                    </Grid>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
     </Grid>
 </UserControl>
