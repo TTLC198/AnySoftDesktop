@@ -94,6 +94,7 @@ public class LoginViewModel : DialogScreen<ApplicationUser?>, INotifyPropertyCha
                 {
                     var responseStream = await getTokenRequest.Content.ReadAsStreamAsync(cancellationTokenSource.Token);
                     tokenString = await JsonSerializer.DeserializeAsync<string>(responseStream, CustomJsonSerializerOptions.Options, cancellationToken: cancellationTokenSource.Token);
+                    App.AuthorizationToken = tokenString;
                     var handler = new JwtSecurityTokenHandler();
                     var token = handler.ReadJwtToken(tokenString);
                     userId = token.Payload.Claims.First(cl => cl.Type == "id").Value;
