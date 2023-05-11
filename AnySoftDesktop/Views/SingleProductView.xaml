@@ -16,235 +16,259 @@
              d:DesignWidth="800"
              d:DataContext="{d:DesignInstance Type=viewModels:SingleProductViewModel}">
     <Grid
-        Margin="15"
+        Margin="0, 0, 12, 0"
         Loaded="{s:Action OnViewFullyLoaded}">
-        <Grid.RowDefinitions>
-            <RowDefinition
-                Height="Auto" />
-            <RowDefinition
-                Height="Auto" />
-            <RowDefinition
-                Height="Auto" />
-        </Grid.RowDefinitions>
-        <!--Main information block-->
-        <Grid
-            Grid.Row="0">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition
-                    Width="2*" />
-                <ColumnDefinition
-                    Width="*" />
-            </Grid.ColumnDefinitions>
+        <DockPanel
+            VerticalAlignment="Top"
+            HorizontalAlignment="Left"
+            ZIndex="1">
+            <Button
+                Height="Auto"
+                Width="Auto"
+                Margin="2"
+                Padding="4"
+                Style="{DynamicResource MaterialDesignFlatDarkButton}"
+                s:View.ActionTarget="{Binding DataContext, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}"
+                Command="{s:Action BackFromProduct}"
+                ToolTip="Login"
+                DockPanel.Dock="Right"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center">
+                <materialDesign:PackIcon
+                    Width="25"
+                    Height="25"
+                    Kind="ArrowLeftBold" />
+            </Button>
+        </DockPanel>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition
+                    Height="Auto" />
+                <RowDefinition
+                    Height="Auto" />
+                <RowDefinition
+                    Height="Auto" />
+            </Grid.RowDefinitions>
+            <!--Main information block-->
             <Grid
-                Grid.Column="0"
-                HorizontalAlignment="Stretch"
-                VerticalAlignment="Top"
-                Margin="0, 0, 15, 0">
-                <!--Main image-->
-                <Border
-                    Height="{Binding ElementName=RightColumnDockPanel, Path=ActualHeight}"
-                    Width="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DockPanel, AncestorLevel=1}, Path=ActualWidth}"
-                    CornerRadius="15"
+                Grid.Row="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition
+                        Width="2*" />
+                    <ColumnDefinition
+                        Width="*" />
+                </Grid.ColumnDefinitions>
+                <Grid
+                    Grid.Column="0"
                     HorizontalAlignment="Stretch"
-                    VerticalAlignment="Stretch">
-                    <Border.Background>
-                        <ImageBrush
-                            Stretch="UniformToFill"
-                            ImageSource="{Binding Product.Images[0], Converter={x:Static converters:UrlToImageConverter.Instance}}" />
-                    </Border.Background>
-                </Border>
-                <!--Genres-->
+                    VerticalAlignment="Top"
+                    Margin="0, 0, 15, 0">
+                    <!--Main image-->
+                    <Border
+                        Height="{Binding ElementName=RightColumnDockPanel, Path=ActualHeight}"
+                        Width="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DockPanel, AncestorLevel=1}, Path=ActualWidth}"
+                        CornerRadius="15"
+                        HorizontalAlignment="Stretch"
+                        VerticalAlignment="Stretch">
+                        <Border.Background>
+                            <ImageBrush
+                                Stretch="UniformToFill"
+                                ImageSource="{Binding Product.Images[0], Converter={x:Static converters:UrlToImageConverter.Instance}}" />
+                        </Border.Background>
+                    </Border>
+                    <!--Genres-->
+                    <DockPanel
+                        LastChildFill="False">
+                        <ItemsControl
+                            Margin="0, 0, 0, 15"
+                            DockPanel.Dock="Bottom"
+                            HorizontalAlignment="Center"
+                            HorizontalContentAlignment="Stretch"
+                            ItemsSource="{Binding Product.Genres}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <StackPanel
+                                        Orientation="Horizontal"
+                                        HorizontalAlignment="Stretch" />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Button
+                                        Style="{StaticResource MaterialDesignFlatButton}"
+                                        Margin="4, 0"
+                                        Padding="1"
+                                        FontSize="12"
+                                        Foreground="{DynamicResource PrimaryHueMidBrush}"
+                                        Content="{Binding Name}" />
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </DockPanel>
+                </Grid>
+                <!--Name & Description column-->
                 <DockPanel
-                    LastChildFill="False">
-                    <ItemsControl
+                    x:Name="RightColumnDockPanel"
+                    Grid.Column="1"
+                    LastChildFill="False"
+                    HorizontalAlignment="Stretch"
+                    VerticalAlignment="Top">
+                    <Border
+                        DockPanel.Dock="Top"
                         Margin="0, 0, 0, 15"
-                        DockPanel.Dock="Bottom"
+                        CornerRadius="15"
+                        BorderThickness="0"
+                        Background="{DynamicResource SearchBarColorBrush}"
+                        Padding="15">
+                        <StackPanel
+                            Orientation="Vertical">
+                            <TextBlock
+                                Margin="5, 7"
+                                FontSize="24"
+                                Foreground="{DynamicResource PrimaryHueMidBrush}"
+                                Text="{Binding Product.Name}" />
+                            <TextBlock
+                                Margin="5, 7"
+                                FontSize="14"
+                                TextWrapping="Wrap"
+                                Foreground="{DynamicResource PrimaryHueDarkBrush}"
+                                Text="{Binding Product.Seller.Login}" />
+                        </StackPanel>
+                    </Border>
+                    <Border
+                        DockPanel.Dock="Top"
+                        Margin="0, 0, 0, 15"
+                        CornerRadius="15"
+                        BorderThickness="0"
+                        Background="{DynamicResource SearchBarColorBrush}"
+                        Padding="15">
+                        <StackPanel
+                            Orientation="Horizontal">
+                            <Button
+                                Content="DOWNLOAD">
+                            </Button>
+                            <TextBlock
+                                Margin="5, 7"
+                                FontSize="18"
+                                TextWrapping="Wrap"
+                                Foreground="{DynamicResource PrimaryHueMidBrush}"
+                                Text="{Binding Product.Cost}" />
+                        </StackPanel>
+                    </Border>
+                    <Border
+                        DockPanel.Dock="Top"
+                        CornerRadius="15"
+                        BorderThickness="0"
+                        Background="{DynamicResource SearchBarColorBrush}"
+                        Padding="15">
+                        <TextBlock
+                            Margin="5, 7"
+                            FontSize="14"
+                            TextWrapping="Wrap"
+                            Foreground="{DynamicResource PrimaryHueMidBrush}"
+                            Text="{Binding Product.Description}" />
+                    </Border>
+                </DockPanel>
+            </Grid>
+            <!--Media block-->
+            <StackPanel
+                Grid.Row="1">
+                <TextBlock
+                    HorizontalAlignment="Left"
+                    Margin="5, 7"
+                    FontSize="14"
+                    TextWrapping="Wrap"
+                    Foreground="{DynamicResource PrimaryHueDarkBrush}"
+                    Text="Images" />
+                <usersControls:ImageCarousel
+                    MinHeight="350"
+                    Images="{Binding Product.Images}"
+                    SelectedImage="{Binding Product.Images[1]}" />
+            </StackPanel>
+            <!--Reviews block-->
+            <StackPanel
+                Grid.Row="2">
+                <TextBlock
+                    HorizontalAlignment="Left"
+                    Margin="5, 7"
+                    FontSize="14"
+                    TextWrapping="Wrap"
+                    Foreground="{DynamicResource PrimaryHueDarkBrush}"
+                    Text="Reviews" />
+                <Border
+                    CornerRadius="15"
+                    BorderThickness="0"
+                    Background="{DynamicResource SearchBarColorBrush}"
+                    Padding="15">
+                    <ItemsControl
                         HorizontalAlignment="Center"
                         HorizontalContentAlignment="Stretch"
-                        ItemsSource="{Binding Product.Genres}">
+                        ItemsSource="{Binding Product.Reviews}">
                         <ItemsControl.ItemsPanel>
                             <ItemsPanelTemplate>
                                 <StackPanel
-                                    Orientation="Horizontal"
+                                    Orientation="Vertical"
                                     HorizontalAlignment="Stretch" />
                             </ItemsPanelTemplate>
                         </ItemsControl.ItemsPanel>
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
-                                <Button
-                                    Style="{StaticResource MaterialDesignFlatButton}"
-                                    Margin="4, 0"
-                                    Padding="1"
-                                    FontSize="12"
-                                    Foreground="{DynamicResource PrimaryHueMidBrush}"
-                                    Content="{Binding Name}" />
+                                <StackPanel
+                                    Orientation="Vertical"
+                                    HorizontalAlignment="Stretch">
+                                    <DockPanel
+                                        LastChildFill="False"
+                                        HorizontalAlignment="Left"
+                                        VerticalAlignment="Stretch">
+                                        <Ellipse
+                                            Height="60"
+                                            Width="60"
+                                            Margin="6"
+                                            DockPanel.Dock="Left"
+                                            HorizontalAlignment="Stretch"
+                                            VerticalAlignment="Center">
+                                            <Ellipse.Fill>
+                                                <ImageBrush
+                                                    ImageSource="{Binding User.Image, Converter={x:Static converters:UrlToImageConverter.Instance}}" />
+                                            </Ellipse.Fill>
+                                        </Ellipse>
+                                        <!--User Description-->
+                                        <DockPanel
+                                            HorizontalAlignment="Stretch"
+                                            VerticalAlignment="Center"
+                                            LastChildFill="False">
+                                            <TextBlock
+                                                DockPanel.Dock="Top"
+                                                FontSize="20"
+                                                Foreground="{DynamicResource PrimaryHueMidBrush}"
+                                                Text="{Binding User.Login}" />
+                                            <TextBlock
+                                                DockPanel.Dock="Top"
+                                                FontSize="16"
+                                                TextWrapping="Wrap"
+                                                Foreground="{DynamicResource PrimaryHueDarkBrush}"
+                                                Text="{Binding Ts, StringFormat='Posted {0:D}'}" />
+                                            <materialDesign:RatingBar
+                                                x:Name="BasicRatingBar"
+                                                FontSize="12"
+                                                IsReadOnly="True"
+                                                Value="{Binding Grade}" />
+                                        </DockPanel>
+                                    </DockPanel>
+                                    <TextBlock
+                                        DockPanel.Dock="Top"
+                                        HorizontalAlignment="Stretch"
+                                        Margin="5, 7"
+                                        FontSize="14"
+                                        TextWrapping="Wrap"
+                                        Foreground="{DynamicResource PrimaryHueDarkBrush}"
+                                        Text="{Binding Text}" />
+                                </StackPanel>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
-                </DockPanel>
-            </Grid>
-            <!--Name & Description column-->
-            <DockPanel
-                x:Name="RightColumnDockPanel"
-                Grid.Column="1"
-                LastChildFill="False"
-                HorizontalAlignment="Stretch"
-                VerticalAlignment="Top">
-                <Border
-                    DockPanel.Dock="Top"
-                    Margin="0, 0, 0, 15"
-                    CornerRadius="15"
-                    BorderThickness="0"
-                    Background="{DynamicResource SearchBarColorBrush}"
-                    Padding="15">
-                    <StackPanel
-                        Orientation="Vertical">
-                        <TextBlock
-                            Margin="5, 7"
-                            FontSize="24"
-                            Foreground="{DynamicResource PrimaryHueMidBrush}"
-                            Text="{Binding Product.Name}" />
-                        <TextBlock
-                            Margin="5, 7"
-                            FontSize="14"
-                            TextWrapping="Wrap"
-                            Foreground="{DynamicResource PrimaryHueDarkBrush}"
-                            Text="{Binding Product.Seller.Login}" />
-                    </StackPanel>
                 </Border>
-                <Border
-                    DockPanel.Dock="Top"
-                    Margin="0, 0, 0, 15"
-                    CornerRadius="15"
-                    BorderThickness="0"
-                    Background="{DynamicResource SearchBarColorBrush}"
-                    Padding="15">
-                    <StackPanel
-                        Orientation="Horizontal">
-                        <Button
-                            Content="DOWNLOAD">
-                        </Button>
-                        <TextBlock
-                            Margin="5, 7"
-                            FontSize="18"
-                            TextWrapping="Wrap"
-                            Foreground="{DynamicResource PrimaryHueMidBrush}"
-                            Text="{Binding Product.Cost}" />
-                    </StackPanel>
-                </Border>
-                <Border
-                    DockPanel.Dock="Top"
-                    CornerRadius="15"
-                    BorderThickness="0"
-                    Background="{DynamicResource SearchBarColorBrush}"
-                    Padding="15">
-                    <TextBlock
-                        Margin="5, 7"
-                        FontSize="14"
-                        TextWrapping="Wrap"
-                        Foreground="{DynamicResource PrimaryHueMidBrush}"
-                        Text="{Binding Product.Description}" />
-                </Border>
-            </DockPanel>
+            </StackPanel>
         </Grid>
-        <!--Media block-->
-        <StackPanel
-            Grid.Row="1">
-            <TextBlock
-                HorizontalAlignment="Left"
-                Margin="5, 7"
-                FontSize="14"
-                TextWrapping="Wrap"
-                Foreground="{DynamicResource PrimaryHueDarkBrush}"
-                Text="Images" />
-            <usersControls:ImageCarousel
-                MinHeight="350"
-                Images="{Binding Product.Images}"
-                SelectedImage="{Binding Product.Images[1]}" />
-        </StackPanel>
-        <!--Reviews block-->
-        <StackPanel
-            Grid.Row="2">
-            <TextBlock
-                HorizontalAlignment="Left"
-                Margin="5, 7"
-                FontSize="14"
-                TextWrapping="Wrap"
-                Foreground="{DynamicResource PrimaryHueDarkBrush}"
-                Text="Reviews" />
-            <Border
-                CornerRadius="15"
-                BorderThickness="0"
-                Background="{DynamicResource SearchBarColorBrush}"
-                Padding="15">
-                <ItemsControl
-                    HorizontalAlignment="Center"
-                    HorizontalContentAlignment="Stretch"
-                    ItemsSource="{Binding Product.Reviews}">
-                    <ItemsControl.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <StackPanel
-                                Orientation="Vertical" 
-                                HorizontalAlignment="Stretch"/>
-                        </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <StackPanel
-                                Orientation="Vertical"
-                                HorizontalAlignment="Stretch">
-                                <DockPanel
-                                    LastChildFill="False"
-                                    HorizontalAlignment="Left"
-                                    VerticalAlignment="Stretch">
-                                    <Ellipse
-                                        Height="60"
-                                        Width="60"
-                                        Margin="6"
-                                        DockPanel.Dock="Left"
-                                        HorizontalAlignment="Stretch"
-                                        VerticalAlignment="Center">
-                                        <Ellipse.Fill>
-                                            <ImageBrush
-                                                ImageSource="{Binding User.Image, Converter={x:Static converters:UrlToImageConverter.Instance}}" />
-                                        </Ellipse.Fill>
-                                    </Ellipse>
-                                    <!--User Description-->
-                                    <DockPanel
-                                        HorizontalAlignment="Stretch"
-                                        VerticalAlignment="Center"
-                                        LastChildFill="False">
-                                        <TextBlock
-                                            DockPanel.Dock="Top"
-                                            FontSize="20"
-                                            Foreground="{DynamicResource PrimaryHueMidBrush}"
-                                            Text="{Binding User.Login}" />
-                                        <TextBlock
-                                            DockPanel.Dock="Top"
-                                            FontSize="16"
-                                            TextWrapping="Wrap"
-                                            Foreground="{DynamicResource PrimaryHueDarkBrush}"
-                                            Text="{Binding Ts, StringFormat='Posted {0:D}'}" />
-                                        <materialDesign:RatingBar
-                                            x:Name="BasicRatingBar"
-                                            FontSize="12"
-                                            IsReadOnly="True"
-                                            Value="{Binding Grade}" />
-                                    </DockPanel>
-                                </DockPanel>
-                                <TextBlock
-                                    DockPanel.Dock="Top"
-                                    HorizontalAlignment="Stretch"
-                                    Margin="5, 7"
-                                    FontSize="14"
-                                    TextWrapping="Wrap"
-                                    Foreground="{DynamicResource PrimaryHueDarkBrush}"
-                                    Text="{Binding Text}" />
-                            </StackPanel>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
-            </Border>
-        </StackPanel>
     </Grid>
 </UserControl>
