@@ -22,6 +22,8 @@ namespace AnySoftDesktop
         public static Version Version { get; } = Assembly.GetName().Version!;
         
         public static string ApiUrl { get; } = "https://localhost:5001/";
+        
+        public static string AuthorizationToken { get; set; }
 
         public static string VersionString { get; } = "v" + Version.ToString(3).Trim();
 
