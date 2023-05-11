@@ -57,6 +57,41 @@
                                 HorizontalContentAlignment="Stretch"
                                 VerticalContentAlignment="Stretch">
                                 <materialDesign:SnackbarMessage.Content>
+                                    <TextBlock
+                                        Margin="0, 5"
+                                        Style="{StaticResource MaterialDesignHeadline6TextBlock}"
+                                        Foreground="{StaticResource PrimaryHueMidBrush}"
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Stretch"
+                                        Text="{Binding Name}" />
+                                </materialDesign:SnackbarMessage.Content>
+                            </materialDesign:SnackbarMessage>
+                            <materialDesign:Snackbar.Style>
+                                <Style
+                                    TargetType="materialDesign:Snackbar">
+                                    <Style.Triggers>
+                                        <DataTrigger
+                                            Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Grid},Path=IsMouseOver}"
+                                            Value="True">
+                                            <Setter
+                                                Property="IsActive"
+                                                Value="False"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                    <Setter
+                                        Property="IsActive"
+                                        Value="True"/>
+                                </Style>
+                            </materialDesign:Snackbar.Style>
+                        </materialDesign:Snackbar>
+                        <materialDesign:Snackbar
+                            Background="Transparent">
+                            <materialDesign:SnackbarMessage
+                                HorizontalAlignment="Stretch"
+                                VerticalAlignment="Bottom"
+                                HorizontalContentAlignment="Stretch"
+                                VerticalContentAlignment="Stretch">
+                                <materialDesign:SnackbarMessage.Content>
                                     <Grid
                                         HorizontalAlignment="Stretch"
                                         VerticalAlignment="Stretch"
