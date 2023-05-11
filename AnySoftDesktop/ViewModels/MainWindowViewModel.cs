@@ -16,14 +16,14 @@ public class MainWindowViewModel : Screen, INotifyPropertyChanged
 {
     private readonly IViewModelFactory _viewModelFactory;
     private readonly DialogManager _dialogManager;
-    
+
     public IObservableCollection<TabBaseViewModel> Tabs { get; }
     public TabBaseViewModel? ActiveTab { get; private set; }
-    
+
     public bool IsMenuExpanded { get; set; }
     public bool IsWindowMaximized { get; set; }
     public bool IsAuthorized { get; set; }
-    
+
     public string? SearchString { get; set; }
 
     private ApplicationUser _currentUser = new ApplicationUser();
@@ -38,7 +38,8 @@ public class MainWindowViewModel : Screen, INotifyPropertyChanged
         }
     }
 
-    public MainWindowViewModel(List<TabBaseViewModel> tabs, IViewModelFactory viewModelFactory, DialogManager dialogManager)
+    public MainWindowViewModel(List<TabBaseViewModel> tabs, IViewModelFactory viewModelFactory,
+        DialogManager dialogManager)
     {
         _viewModelFactory = viewModelFactory;
         _dialogManager = dialogManager;
@@ -60,17 +61,36 @@ public class MainWindowViewModel : Screen, INotifyPropertyChanged
             baseTab.IsVisible = true;
             Tabs.Remove(singleProductTab);
         }
-        
+
         // Deactivate previously selected tab
         if (ActiveTab is not null)
             ActiveTab.IsSelected = false;
-        
+
         ActiveTab = tab;
         tab.OnTabSelected(EventArgs.Empty);
         tab.IsSelected = true;
     }
 
-    public async void OnProductButtonClick(int id)
+    public void BackFromProduct()
+    {
+        var singleProductTab = Tabs.FirstOrDefault(t => t.GetType() == typeof(SingleProductViewModel));
+        if (singleProductTab is not SingleProductViewModel)
+            return;
+
+        var baseTab = Tabs.First(t => t.GetType() == singleProductTab.GetType().BaseType);
+        baseTab.IsVisible = true;
+        Tabs.Remove(singleProductTab);
+        
+        // Deactivate previously selected tab
+        if (ActiveTab is not null)
+            ActiveTab.IsSelected = false;
+        
+        ActiveTab = Tabs.First(t => t == (singleProductTab as SingleProductViewModel).PreviousTab);
+        ActiveTab.OnTabSelected(EventArgs.Empty);
+        ActiveTab.IsSelected = true;
+    }
+
+    public void OnProductButtonClick(int id)
     {
         // Deactivate previously selected tab
         if (ActiveTab is not null)
@@ -84,6 +104,7 @@ public class MainWindowViewModel : Screen, INotifyPropertyChanged
 
         ActiveTab = tab;
         tab.OnTabSelected(EventArgs.Empty);
+        tab.PreviousTab = baseTab;
         tab.IsSelected = true;
         tab.IsVisible = true;
     }
@@ -91,14 +112,14 @@ public class MainWindowViewModel : Screen, INotifyPropertyChanged
     public void ToggleMaximized() =>
         IsWindowMaximized = !IsWindowMaximized;
 
-    public void ToggleMenu() => 
+    public void ToggleMenu() =>
         IsMenuExpanded = !IsMenuExpanded;
 
     public async void OpenLoginPage()
     {
         if (IsAuthorized) return;
         var user = await _dialogManager.ShowDialogAsync(_viewModelFactory.CreateLoginViewModel());
-        
+
         if (user is null) return;
         IsAuthorized = true;
         CurrentUser = user;
@@ -110,10 +131,10 @@ public class MainWindowViewModel : Screen, INotifyPropertyChanged
         // Deactivate previously selected tab
         if (ActiveTab is not null)
             ActiveTab.IsSelected = false;
-        
+
         var settingsTab = Tabs
             .FirstOrDefault(t => t.Name == "Dashboard");
-        
+
         if (settingsTab is null)
             return;
 
@@ -126,7 +147,7 @@ public class MainWindowViewModel : Screen, INotifyPropertyChanged
         IsAuthorized = false;
         CurrentUser = new ApplicationUser();
     }
-    
+
     public event PropertyChangedEventHandler? PropertyChanged;
 
     protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
