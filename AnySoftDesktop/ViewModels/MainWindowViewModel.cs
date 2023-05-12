@@ -271,8 +271,8 @@ public class MainWindowViewModel : Screen, INotifyPropertyChanged
                 var products = await JsonSerializer.DeserializeAsync<IEnumerable<ProductResponseDto>>(responseStream,
                     CustomJsonSerializerOptions.Options, cancellationToken: cancellationTokenSource.Token);
                 
-                var tab = new MultipleProductViewModel(products, _viewModelFactory, _dialogManager);
-                var baseTab = Tabs.First(t => t.GetType() == tab.GetType().BaseType);
+                var tab = new ShoppingCartViewModel(products, _viewModelFactory, _dialogManager);
+                var baseTab = Tabs.First(t => t.GetType() == tab.GetType().BaseType.BaseType);
                 Tabs.Insert(Tabs.IndexOf(baseTab), tab);
                 baseTab.IsVisible = false;
 
