@@ -36,7 +36,7 @@
                 Padding="4"
                 Style="{DynamicResource MaterialDesignFlatDarkButton}"
                 s:View.ActionTarget="{Binding DataContext, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}"
-                Command="{s:Action BackFromProduct}"
+                Command="{s:Action BackFromProducts}"
                 ToolTip="Login"
                 DockPanel.Dock="Right"
                 HorizontalAlignment="Center"
@@ -83,7 +83,10 @@
                                                 Padding="1"
                                                 FontSize="12"
                                                 Foreground="{DynamicResource PrimaryHueMidBrush}"
-                                                Content="{Binding Name}" />
+                                                Content="{Binding Name}" 
+                                                s:View.ActionTarget="{Binding DataContext, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}"
+                                                Command="{s:Action OpenProductsByGenre}"
+                                                CommandParameter="{Binding Id}"/>
                                         </DataTemplate>
                                     </ItemsControl.ItemTemplate>
                                 </ItemsControl>
