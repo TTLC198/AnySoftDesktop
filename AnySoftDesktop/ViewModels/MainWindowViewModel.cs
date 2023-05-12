@@ -127,19 +127,25 @@ public class MainWindowViewModel : Screen, INotifyPropertyChanged
 
     public async void OpenSearchPage()
     {
-        var searchString = SearchString;
         // Deactivate previously selected tab
         if (ActiveTab is not null)
             ActiveTab.IsSelected = false;
 
-        var settingsTab = Tabs
-            .FirstOrDefault(t => t.Name == "Dashboard");
+        var tab = new MultipleProductViewModel(_viewModelFactory, _dialogManager);
 
-        if (settingsTab is null)
-            return;
+        var baseTab = Tabs.First(t => t.GetType() == tab.GetType().BaseType);
+        Tabs.Insert(Tabs.IndexOf(baseTab), tab);
+        baseTab.IsVisible = false;
 
-        ActiveTab = settingsTab;
-        settingsTab.IsSelected = true;
+        ActiveTab = tab;
+        tab.OnTabSelected(EventArgs.Empty);
+        tab.PreviousTab = baseTab;
+        tab.ProductRequestDto = new()
+        {
+            Name = SearchString
+        };
+        tab.IsSelected = true;
+        tab.IsVisible = true;
     }
 
     public void Logout()
