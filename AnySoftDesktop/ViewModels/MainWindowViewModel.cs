@@ -21,8 +21,10 @@ public class MainWindowViewModel : Screen, INotifyPropertyChanged
 {
     private readonly IViewModelFactory _viewModelFactory;
     private readonly DialogManager _dialogManager;
-
-    public IObservableCollection<TabBaseViewModel> Tabs { get; }
+    
+    public ObservableCollection<Genre> Genres { get; set; }
+    public ObservableCollection<Property> Properties { get; set; }
+    public ObservableCollection<TabBaseViewModel> Tabs { get; }
     public TabBaseViewModel? ActiveTab { get; private set; }
 
     public bool IsMenuExpanded { get; set; }
@@ -30,6 +32,8 @@ public class MainWindowViewModel : Screen, INotifyPropertyChanged
     public bool IsAuthorized { get; set; }
 
     public string? SearchString { get; set; }
+    public Genre? SelectedGenre { get; set; } 
+    public Property? SelectedProperty { get; set; } 
 
     private ApplicationUser _currentUser = new ApplicationUser();
 
@@ -55,6 +59,42 @@ public class MainWindowViewModel : Screen, INotifyPropertyChanged
         var firstTab = Tabs.FirstOrDefault();
         if (firstTab is not null)
             ActivateTab(firstTab);
+    }
+
+    public async void OnViewFullyLoaded()
+    {
+        var getGenresRequest = await WebApiService.GetCall("api/genres");
+        var getPropertiesRequest = await WebApiService.GetCall("api/properties");
+        try
+        {
+            var timeoutAfter = TimeSpan.FromMilliseconds(300);
+            if (getGenresRequest.IsSuccessStatusCode)
+            {
+                using var cancellationTokenSource = new CancellationTokenSource(timeoutAfter);
+                var responseStream = await getGenresRequest.Content.ReadAsStreamAsync(cancellationTokenSource.Token);
+                var genres = await JsonSerializer.DeserializeAsync<IEnumerable<Genre>>(responseStream,
+                    CustomJsonSerializerOptions.Options, cancellationToken: cancellationTokenSource.Token);
+                Genres = new ObservableCollection<Genre>(genres);
+            }
+            if (getPropertiesRequest.IsSuccessStatusCode)
+            {
+                using var cancellationTokenSource = new CancellationTokenSource(timeoutAfter);
+                var responseStream = await getPropertiesRequest.Content.ReadAsStreamAsync(cancellationTokenSource.Token);
+                var properties = await JsonSerializer.DeserializeAsync<IEnumerable<Property>>(responseStream,
+                    CustomJsonSerializerOptions.Options, cancellationToken: cancellationTokenSource.Token);
+                Properties = new ObservableCollection<Property>(properties);
+            }
+        }
+        catch (Exception exception)
+        {
+            var messageBoxDialog = _viewModelFactory.CreateMessageBoxViewModel(
+                title: "Some error has occurred",
+                message: $@"{exception.Message}".Trim(),
+                okButtonText: "OK",
+                cancelButtonText: null
+            );
+            await _dialogManager.ShowDialogAsync(messageBoxDialog);
+        }
     }
 
     public void ActivateTab(TabBaseViewModel tab)
@@ -97,7 +137,6 @@ public class MainWindowViewModel : Screen, INotifyPropertyChanged
 
     public void OnProductButtonClick(int id)
     {
-        // Deactivate previously selected tab
         if (ActiveTab is not null)
             ActiveTab.IsSelected = false;
 
@@ -114,12 +153,6 @@ public class MainWindowViewModel : Screen, INotifyPropertyChanged
         tab.IsVisible = true;
     }
 
-    public void ToggleMaximized() =>
-        IsWindowMaximized = !IsWindowMaximized;
-
-    public void ToggleMenu() =>
-        IsMenuExpanded = !IsMenuExpanded;
-
     public async void OpenLoginPage()
     {
         if (IsAuthorized) return;
@@ -128,6 +161,12 @@ public class MainWindowViewModel : Screen, INotifyPropertyChanged
         if (user is null) return;
         IsAuthorized = true;
         CurrentUser = user;
+    }
+    
+    public async void OpenProductsByGenre(int id)
+    {
+        SelectedGenre = Genres.First(g => g.Id == id);
+        OpenSearchPage();
     }
 
     public async void OpenSearchPage()
@@ -138,7 +177,15 @@ public class MainWindowViewModel : Screen, INotifyPropertyChanged
         
         var productRequestDto = new ProductRequestDto
         {
-            Name = SearchString
+            Name = string.IsNullOrEmpty(SearchString) 
+                ? null
+                : SearchString,
+            Genres = SelectedGenre is not null 
+                ? new List<int>() {SelectedGenre.Id}
+                : null,
+            Properties = SelectedProperty is not null 
+                ? new List<int>() {SelectedProperty.Id}
+                : null,
         };
         var productRequestQueryJson = HttpUtility.UrlEncode(JsonSerializer.Serialize(productRequestDto, CustomJsonSerializerOptions.Options));
         var getProductsRequest = await WebApiService.GetCall($"api/products?Query={productRequestQueryJson}");
@@ -233,6 +280,12 @@ public class MainWindowViewModel : Screen, INotifyPropertyChanged
         CurrentUser = new ApplicationUser();
     }
 
+    public void ToggleMaximized() =>
+        IsWindowMaximized = !IsWindowMaximized;
+
+    public void ToggleMenu() =>
+        IsMenuExpanded = !IsMenuExpanded;
+    
     public event PropertyChangedEventHandler? PropertyChanged;
 
     protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)

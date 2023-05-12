@@ -9,6 +9,7 @@
         xmlns:converters="clr-namespace:AnySoftDesktop.Utils.Converters"
         xmlns:s="https://github.com/canton7/Stylet"
         xmlns:tb="http://www.hardcodet.net/taskbar"
+        xmlns:validation="clr-namespace:AnySoftDesktop.Utils.Validation"
         Background="{DynamicResource MaterialDesignPaper}"
         FontFamily="{DynamicResource MaterialDesignFont}"
         Style="{DynamicResource MaterialDesignRoot}"
@@ -27,11 +28,12 @@
         Style="{DynamicResource MaterialDesignEmbeddedDialogHost}"
         DialogBackground="Transparent"
         DialogTheme="Inherit"
-        DialogMargin="10">
+        DialogMargin="10"
+        Loaded="{s:Action OnViewFullyLoaded}">
         <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition
-                    Width="Auto"/>
+                    Width="Auto" />
                 <ColumnDefinition
                     Width="Auto" />
                 <ColumnDefinition
@@ -105,9 +107,9 @@
                     ItemsSource="{Binding Tabs}">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <Border 
+                            <Border
                                 BorderThickness="0,0,3,0"
-                                Visibility="{Binding IsVisible, Converter={x:Static converters:BoolToVisibleConverter.Instance}}">                                             
+                                Visibility="{Binding IsVisible, Converter={x:Static converters:BoolToVisibleConverter.Instance}}">
                                 <Border.Style>
                                     <Style TargetType="{x:Type Border}">
                                         <Style.Triggers>
@@ -186,7 +188,7 @@
                                                                         <DataTrigger Binding="{Binding IsSelected}"
                                                                             Value="True">
                                                                             <Setter Property="TextElement.Foreground"
-                                                                                Value="{DynamicResource PrimaryHueMidBrush}"/>
+                                                                                Value="{DynamicResource PrimaryHueMidBrush}" />
                                                                         </DataTrigger>
                                                                     </Style.Triggers>
                                                                     <Setter Property="TextElement.Foreground"
@@ -276,12 +278,14 @@
                         Height="46"
                         Margin="12, 0, 0, 0"
                         VerticalAlignment="Center"
+                        HorizontalAlignment="Left"
                         Background="{StaticResource SearchBarColorBrush}"
                         CornerRadius="15">
                         <DockPanel
                             Margin="0, 0, 8, 0"
-                            LastChildFill="True">
+                            LastChildFill="False">
                             <Button
+                                DockPanel.Dock="Left"
                                 Height="Auto"
                                 Margin="10"
                                 Padding="0"
@@ -296,6 +300,8 @@
                                 </materialDesign:PackIcon>
                             </Button>
                             <TextBox
+                                DockPanel.Dock="Left"
+                                MinWidth="270"
                                 Margin="4, 0"
                                 Background="Transparent"
                                 Style="{StaticResource MaterialDesignTextBox}"
@@ -314,12 +320,77 @@
                                     Right
                                 </materialDesign:ValidationAssist.HorizontalAlignment>
                                 <materialDesign:HintAssist.Hint>
-                                    <StackPanel Orientation="Horizontal">
+                                    <StackPanel
+                                        Orientation="Horizontal">
                                         <TextBlock
                                             Text="Search something..." />
                                     </StackPanel>
                                 </materialDesign:HintAssist.Hint>
                             </TextBox>
+                            <Grid
+                                DockPanel.Dock="Right">
+                                <ToggleButton
+                                    x:Name="FilterToggleButton"
+                                    HorizontalAlignment="Left"
+                                    VerticalAlignment="Center"
+                                    Style="{StaticResource MaterialDesignFlatDarkButton}"
+                                    ToolTip="MaterialDesignFlatToggleButton">
+                                    <materialDesign:PackIcon
+                                        Width="21"
+                                        Height="21"
+                                        Kind="Filter" />
+                                </ToggleButton>
+                                <Expander
+                                    IsExpanded="{Binding ElementName=FilterToggleButton, Path=IsChecked}"
+                                    ExpandDirection="Right"
+                                    VerticalAlignment="Center"
+                                    VerticalContentAlignment="Center"
+                                    Background="Transparent"
+                                    Foreground="{StaticResource PrimaryHueMidBrush}"
+                                    Style="{StaticResource MaterialDesignExpander}"
+                                    Height="{Binding RelativeSource={RelativeSource AncestorType=DockPanel, Mode=FindAncestor}, Path=ActualHeight}">
+                                    <Expander.Header>
+                                        <materialDesign:PackIcon
+                                            Width="24"
+                                            Height="24"
+                                            Kind="Filter" />
+                                    </Expander.Header>
+                                    <DockPanel
+                                        LastChildFill="False"
+                                        HorizontalAlignment="Left">
+                                        <ComboBox
+                                            DockPanel.Dock="Left"
+                                            Margin="5, 0"
+                                            MinWidth="72"
+                                            materialDesign:HintAssist.Hint="Genres"
+                                            ItemsSource="{Binding Genres}"
+                                            SelectedValue="{Binding SelectedGenre}">
+                                            <ComboBox.ItemTemplate>
+                                                <DataTemplate>
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <TextBlock Text="{Binding Path=Name}" />
+                                                    </StackPanel>
+                                                </DataTemplate>
+                                            </ComboBox.ItemTemplate>
+                                        </ComboBox>
+                                        <ComboBox
+                                            DockPanel.Dock="Left"
+                                            Margin="5, 0"
+                                            MinWidth="72"
+                                            materialDesign:HintAssist.Hint="Properties"
+                                            ItemsSource="{Binding Properties}"
+                                            SelectedValue="{Binding SelectedProperty}">
+                                            <ComboBox.ItemTemplate>
+                                                <DataTemplate>
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <TextBlock Text="{Binding Path=Name}" />
+                                                    </StackPanel>
+                                                </DataTemplate>
+                                            </ComboBox.ItemTemplate>
+                                        </ComboBox>
+                                    </DockPanel>
+                                </Expander>
+                            </Grid>
                         </DockPanel>
                     </Border>
                     <!--Window controls-->
@@ -473,7 +544,7 @@
                                 Background="{DynamicResource MaterialDesignCardBackground}"
                                 HorizontalScrollBarVisibility="Disabled"
                                 VerticalScrollBarVisibility="Auto">
-                                <ContentControl 
+                                <ContentControl
                                     s:View.Model="{Binding}" />
                             </ScrollViewer>
                         </DataTemplate>
