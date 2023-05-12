@@ -420,7 +420,8 @@
                         DockPanel.Dock="Right"
                         HorizontalAlignment="Center"
                         VerticalAlignment="Center"
-                        Visibility="{Binding IsAuthorized, Converter={x:Static converters:BoolToVisibleConverter.Instance}}">
+                        Visibility="{Binding IsAuthorized, Converter={x:Static converters:BoolToVisibleConverter.Instance}}"
+                        Command="{s:Action OpenShoppingCart}">
                         <materialDesign:PackIcon
                             Width="40"
                             Height="40"
@@ -455,12 +456,12 @@
                         <Style TargetType="{x:Type materialDesign:TransitionerSlide}">
                             <Setter Property="BackwardWipe">
                                 <Setter.Value>
-                                    <materialDesign:SlideWipe Direction="Down" Duration="0:0:0.5" />
+                                    <materialDesign:SlideWipe Direction="Down" Duration="0:0:0.3" />
                                 </Setter.Value>
                             </Setter>
                             <Setter Property="ForwardWipe">
                                 <Setter.Value>
-                                    <materialDesign:SlideWipe Direction="Up" Duration="0:0:0.5" />
+                                    <materialDesign:SlideWipe Direction="Up" Duration="0:0:0.3" />
                                 </Setter.Value>
                             </Setter>
                         </Style>
