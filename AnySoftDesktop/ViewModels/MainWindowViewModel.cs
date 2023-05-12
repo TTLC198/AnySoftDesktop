@@ -74,7 +74,7 @@ public class MainWindowViewModel : Screen, INotifyPropertyChanged
                 var responseStream = await getGenresRequest.Content.ReadAsStreamAsync(cancellationTokenSource.Token);
                 var genres = await JsonSerializer.DeserializeAsync<IEnumerable<Genre>>(responseStream,
                     CustomJsonSerializerOptions.Options, cancellationToken: cancellationTokenSource.Token);
-                Genres = new ObservableCollection<Genre>(genres);
+                Genres = new ObservableCollection<Genre>(genres.OrderBy(g => g.Name).Prepend(new Genre() {Id = -1, Name = "Empty"}));
             }
             if (getPropertiesRequest.IsSuccessStatusCode)
             {
@@ -82,7 +82,7 @@ public class MainWindowViewModel : Screen, INotifyPropertyChanged
                 var responseStream = await getPropertiesRequest.Content.ReadAsStreamAsync(cancellationTokenSource.Token);
                 var properties = await JsonSerializer.DeserializeAsync<IEnumerable<Property>>(responseStream,
                     CustomJsonSerializerOptions.Options, cancellationToken: cancellationTokenSource.Token);
-                Properties = new ObservableCollection<Property>(properties);
+                Properties = new ObservableCollection<Property>(properties.OrderBy(p => p.Name).Prepend(new Property() {Id = -1, Name = "Empty"}));
             }
         }
         catch (Exception exception)
@@ -116,7 +116,7 @@ public class MainWindowViewModel : Screen, INotifyPropertyChanged
         tab.IsSelected = true;
     }
 
-    public void BackFromProduct()
+    public void BackFromProduct() //костыль
     {
         var singleProductTab = Tabs.FirstOrDefault(t => t.GetType() == typeof(SingleProductViewModel));
         if (singleProductTab is not SingleProductViewModel)
@@ -134,6 +134,25 @@ public class MainWindowViewModel : Screen, INotifyPropertyChanged
         ActiveTab.OnTabSelected(EventArgs.Empty);
         ActiveTab.IsSelected = true;
     }
+    
+    public void BackFromProducts() //костыль
+    {
+        var multipleProductViewModel = Tabs.FirstOrDefault(t => t.GetType() == typeof(MultipleProductViewModel));
+        if (multipleProductViewModel is not MultipleProductViewModel)
+            return;
+
+        var baseTab = Tabs.First(t => t.GetType() == multipleProductViewModel.GetType().BaseType);
+        baseTab.IsVisible = true;
+        Tabs.Remove(multipleProductViewModel);
+        
+        // Deactivate previously selected tab
+        if (ActiveTab is not null)
+            ActiveTab.IsSelected = false;
+        
+        ActiveTab = Tabs.First(t => t == (multipleProductViewModel as MultipleProductViewModel).PreviousTab);
+        ActiveTab.OnTabSelected(EventArgs.Empty);
+        ActiveTab.IsSelected = true;
+    }
 
     public void OnProductButtonClick(int id)
     {
@@ -146,9 +165,9 @@ public class MainWindowViewModel : Screen, INotifyPropertyChanged
         Tabs.Insert(Tabs.IndexOf(baseTab), tab);
         baseTab.IsVisible = false;
 
+        tab.PreviousTab = ActiveTab;
         ActiveTab = tab;
         tab.OnTabSelected(EventArgs.Empty);
-        tab.PreviousTab = baseTab;
         tab.IsSelected = true;
         tab.IsVisible = true;
     }
@@ -180,10 +199,10 @@ public class MainWindowViewModel : Screen, INotifyPropertyChanged
             Name = string.IsNullOrEmpty(SearchString) 
                 ? null
                 : SearchString,
-            Genres = SelectedGenre is not null 
+            Genres = SelectedGenre is {Id: > 0}
                 ? new List<int>() {SelectedGenre.Id}
                 : null,
-            Properties = SelectedProperty is not null 
+            Properties = SelectedProperty is {Id: > 0} 
                 ? new List<int>() {SelectedProperty.Id}
                 : null,
         };
@@ -199,14 +218,21 @@ public class MainWindowViewModel : Screen, INotifyPropertyChanged
                 var products = await JsonSerializer.DeserializeAsync<IEnumerable<ProductResponseDto>>(responseStream,
                     CustomJsonSerializerOptions.Options, cancellationToken: cancellationTokenSource.Token);
                 
-                var tab = new MultipleProductViewModel(products, _viewModelFactory, _dialogManager);
-                var baseTab = Tabs.First(t => t.GetType() == tab.GetType().BaseType);
-                Tabs.Insert(Tabs.IndexOf(baseTab), tab);
-                baseTab.IsVisible = false;
-
+                if (Tabs.FirstOrDefault(t => t.GetType() == typeof(MultipleProductViewModel)) is MultipleProductViewModel tab)
+                {
+                    tab.Products = new ObservableCollection<ProductResponseDto>(products!);
+                }
+                else
+                {
+                    tab = new MultipleProductViewModel(products!, _viewModelFactory, _dialogManager);
+                    var baseTab = Tabs.First(t => t.GetType() == tab.GetType().BaseType);
+                    Tabs.Insert(Tabs.IndexOf(baseTab), tab);
+                    baseTab.IsVisible = false;
+                    tab.PreviousTab = ActiveTab;
+                }
+                
                 ActiveTab = tab;
                 tab.OnTabSelected(EventArgs.Empty);
-                tab.PreviousTab = baseTab;
                 tab.IsSelected = true;
                 tab.IsVisible = true;
             }
@@ -250,9 +276,9 @@ public class MainWindowViewModel : Screen, INotifyPropertyChanged
                 Tabs.Insert(Tabs.IndexOf(baseTab), tab);
                 baseTab.IsVisible = false;
 
+                tab.PreviousTab = ActiveTab;
                 ActiveTab = tab;
                 tab.OnTabSelected(EventArgs.Empty);
-                tab.PreviousTab = baseTab;
                 tab.IsSelected = true;
                 tab.IsVisible = true;
             }
