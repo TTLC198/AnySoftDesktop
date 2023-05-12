@@ -42,7 +42,7 @@ public class SingleProductViewModel : DashboardTabViewModel, INotifyPropertyChan
         _dialogManager = dialogManager;
     }
 
-    public async void OnViewFullyLoaded()
+    public new async void OnViewFullyLoaded()
     {
         await UpdateProduct();
     }
@@ -64,7 +64,8 @@ public class SingleProductViewModel : DashboardTabViewModel, INotifyPropertyChan
             }
             else
             {
-                throw new InvalidOperationException(await getProductsRequest.Content.ReadAsStringAsync());
+                var msg = await getProductsRequest.Content.ReadAsStringAsync();
+                throw new InvalidOperationException($"{getProductsRequest.ReasonPhrase}\n{msg}");
             }
         }
         catch (Exception exception)
