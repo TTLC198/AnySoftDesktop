@@ -1,9 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Text.Json;
+using System.Threading;
+using System.Web;
 using AnySoftDesktop.Models;
+using AnySoftDesktop.Services;
 using AnySoftDesktop.Utils;
 using AnySoftDesktop.ViewModels.Framework;
 using AnySoftDesktop.ViewModels.Tabs;
@@ -130,22 +135,96 @@ public class MainWindowViewModel : Screen, INotifyPropertyChanged
         // Deactivate previously selected tab
         if (ActiveTab is not null)
             ActiveTab.IsSelected = false;
-
-        var tab = new MultipleProductViewModel(_viewModelFactory, _dialogManager);
-
-        var baseTab = Tabs.First(t => t.GetType() == tab.GetType().BaseType);
-        Tabs.Insert(Tabs.IndexOf(baseTab), tab);
-        baseTab.IsVisible = false;
-
-        ActiveTab = tab;
-        tab.OnTabSelected(EventArgs.Empty);
-        tab.PreviousTab = baseTab;
-        tab.ProductRequestDto = new()
+        
+        var productRequestDto = new ProductRequestDto
         {
             Name = SearchString
         };
-        tab.IsSelected = true;
-        tab.IsVisible = true;
+        var productRequestQueryJson = HttpUtility.UrlEncode(JsonSerializer.Serialize(productRequestDto, CustomJsonSerializerOptions.Options));
+        var getProductsRequest = await WebApiService.GetCall($"api/products?Query={productRequestQueryJson}");
+        try
+        {
+            if (getProductsRequest.IsSuccessStatusCode)
+            {
+                var timeoutAfter = TimeSpan.FromMilliseconds(300);
+                using var cancellationTokenSource = new CancellationTokenSource(timeoutAfter);
+                var responseStream = await getProductsRequest.Content.ReadAsStreamAsync(cancellationTokenSource.Token);
+                var products = await JsonSerializer.DeserializeAsync<IEnumerable<ProductResponseDto>>(responseStream,
+                    CustomJsonSerializerOptions.Options, cancellationToken: cancellationTokenSource.Token);
+                
+                var tab = new MultipleProductViewModel(products, _viewModelFactory, _dialogManager);
+                var baseTab = Tabs.First(t => t.GetType() == tab.GetType().BaseType);
+                Tabs.Insert(Tabs.IndexOf(baseTab), tab);
+                baseTab.IsVisible = false;
+
+                ActiveTab = tab;
+                tab.OnTabSelected(EventArgs.Empty);
+                tab.PreviousTab = baseTab;
+                tab.IsSelected = true;
+                tab.IsVisible = true;
+            }
+            else
+            {
+                var msg = await getProductsRequest.Content.ReadAsStringAsync();
+                throw new InvalidOperationException($"{getProductsRequest.ReasonPhrase}\n{msg}");
+            }
+        }
+        catch (Exception exception)
+        {
+            var messageBoxDialog = _viewModelFactory.CreateMessageBoxViewModel(
+                title: "Some error has occurred",
+                message: $@"{exception.Message}".Trim(),
+                okButtonText: "OK",
+                cancelButtonText: null
+            );
+            await _dialogManager.ShowDialogAsync(messageBoxDialog);
+        }
+    }
+    
+    public async void OpenShoppingCart()
+    {
+        // Deactivate previously selected tab
+        if (ActiveTab is not null)
+            ActiveTab.IsSelected = false;
+
+        var getProductsRequest = await WebApiService.GetCall($"api/cart", App.AuthorizationToken ?? "");
+        try
+        {
+            if (getProductsRequest.IsSuccessStatusCode)
+            {
+                var timeoutAfter = TimeSpan.FromMilliseconds(300);
+                using var cancellationTokenSource = new CancellationTokenSource(timeoutAfter);
+                var responseStream = await getProductsRequest.Content.ReadAsStreamAsync(cancellationTokenSource.Token);
+                var products = await JsonSerializer.DeserializeAsync<IEnumerable<ProductResponseDto>>(responseStream,
+                    CustomJsonSerializerOptions.Options, cancellationToken: cancellationTokenSource.Token);
+                
+                var tab = new MultipleProductViewModel(products, _viewModelFactory, _dialogManager);
+                var baseTab = Tabs.First(t => t.GetType() == tab.GetType().BaseType);
+                Tabs.Insert(Tabs.IndexOf(baseTab), tab);
+                baseTab.IsVisible = false;
+
+                ActiveTab = tab;
+                tab.OnTabSelected(EventArgs.Empty);
+                tab.PreviousTab = baseTab;
+                tab.IsSelected = true;
+                tab.IsVisible = true;
+            }
+            else
+            {
+                var msg = await getProductsRequest.Content.ReadAsStringAsync();
+                throw new InvalidOperationException($"{getProductsRequest.ReasonPhrase}\n{msg}");
+            }
+        }
+        catch (Exception exception)
+        {
+            var messageBoxDialog = _viewModelFactory.CreateMessageBoxViewModel(
+                title: "Some error has occurred",
+                message: $@"{exception.Message}".Trim(),
+                okButtonText: "OK",
+                cancelButtonText: null
+            );
+            await _dialogManager.ShowDialogAsync(messageBoxDialog);
+        }
     }
 
     public void Logout()

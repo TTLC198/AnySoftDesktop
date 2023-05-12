@@ -22,7 +22,7 @@ public class MultipleProductViewModel : DashboardTabViewModel, INotifyPropertyCh
 
     private ObservableCollection<ProductResponseDto> _products = new();
 
-    public ObservableCollection<ProductResponseDto> Products
+    public new ObservableCollection<ProductResponseDto> Products
     {
         get => _products;
         set
@@ -31,63 +31,14 @@ public class MultipleProductViewModel : DashboardTabViewModel, INotifyPropertyCh
             OnPropertyChanged();
         }
     }
-    
-    private ProductRequestDto _productRequestDto = new();
 
-    public ProductRequestDto ProductRequestDto
-    {
-        get => _productRequestDto;
-        set
-        {
-            _productRequestDto = value;
-            OnPropertyChanged();
-        }
-    }
+    public TabBaseViewModel? PreviousTab { get; set; }
     
-    public TabBaseViewModel PreviousTab { get; set; }
-    
-    public MultipleProductViewModel(IViewModelFactory viewModelFactory, DialogManager dialogManager) : base(viewModelFactory, dialogManager)
+    public MultipleProductViewModel(IEnumerable<ProductResponseDto> products, IViewModelFactory viewModelFactory, DialogManager dialogManager) : base(viewModelFactory, dialogManager)
     {
+        Products = new ObservableCollection<ProductResponseDto>(products);
         _viewModelFactory = viewModelFactory;
         _dialogManager = dialogManager;
-    }
-    
-    public new async void OnViewFullyLoaded()
-    {
-        await UpdateProducts();
-    }
-
-    private async Task UpdateProducts()
-    {
-        var productRequestQueryJson = HttpUtility.UrlEncode(JsonSerializer.Serialize(_productRequestDto, CustomJsonSerializerOptions.Options));
-        var getProductsRequest = await WebApiService.GetCall($"api/products?Query={productRequestQueryJson}");
-        try
-        {
-            if (getProductsRequest.IsSuccessStatusCode)
-            {
-                var timeoutAfter = TimeSpan.FromMilliseconds(300);
-                using var cancellationTokenSource = new CancellationTokenSource(timeoutAfter);
-                var responseStream = await getProductsRequest.Content.ReadAsStreamAsync(cancellationTokenSource.Token);
-                var products = await JsonSerializer.DeserializeAsync<IEnumerable<ProductResponseDto>>(responseStream,
-                    CustomJsonSerializerOptions.Options, cancellationToken: cancellationTokenSource.Token);
-                Products = new ObservableCollection<ProductResponseDto>(products);
-            }
-            else
-            {
-                var msg = await getProductsRequest.Content.ReadAsStringAsync();
-                throw new InvalidOperationException($"{getProductsRequest.ReasonPhrase}\n{msg}");
-            }
-        }
-        catch (Exception exception)
-        {
-            var messageBoxDialog = _viewModelFactory.CreateMessageBoxViewModel(
-                title: "Some error has occurred",
-                message: $@"{exception.Message}".Trim(),
-                okButtonText: "OK",
-                cancelButtonText: null
-            );
-            await _dialogManager.ShowDialogAsync(messageBoxDialog);
-        }
     }
 
     public new event PropertyChangedEventHandler? PropertyChanged;
