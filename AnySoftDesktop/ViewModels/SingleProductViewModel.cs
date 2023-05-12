@@ -33,7 +33,7 @@ public class SingleProductViewModel : DashboardTabViewModel, INotifyPropertyChan
         }
     }
     
-    public TabBaseViewModel PreviousTab { get; set; }
+    public TabBaseViewModel? PreviousTab { get; set; }
 
     public SingleProductViewModel(int productId, IViewModelFactory viewModelFactory, DialogManager dialogManager) : base(viewModelFactory, dialogManager)
     {
