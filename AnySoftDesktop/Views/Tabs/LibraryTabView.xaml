@@ -27,7 +27,8 @@
                     <UniformGrid
                         HorizontalAlignment="Stretch"
                         VerticalAlignment="Stretch"
-                        Columns="4" />
+                        Columns="4" 
+                        Rows="3"/>
                 </ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
             <ItemsControl.ItemTemplate>
