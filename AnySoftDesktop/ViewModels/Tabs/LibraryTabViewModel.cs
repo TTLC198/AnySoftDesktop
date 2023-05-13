@@ -32,7 +32,7 @@ public class LibraryTabViewModel : TabBaseViewModel, INotifyPropertyChanged
 
     public async void OnViewFullyLoaded()
     {
-        //await UpdateOrders();
+        
     }
 
     private async void UpdateOrders(object? sender, EventArgs e)
@@ -41,7 +41,7 @@ public class LibraryTabViewModel : TabBaseViewModel, INotifyPropertyChanged
             return;
         try
         {
-            var getOrdersRequest = await WebApiService.GetCall("api/orders",  App.AuthorizationToken);
+            var getOrdersRequest = await WebApiService.GetCall("api/orders",  App.AuthorizationToken ?? "");
             if (getOrdersRequest.IsSuccessStatusCode)
             {
                 var timeoutAfter = TimeSpan.FromMilliseconds(3000);
@@ -51,7 +51,8 @@ public class LibraryTabViewModel : TabBaseViewModel, INotifyPropertyChanged
                     CustomJsonSerializerOptions.Options, cancellationToken: cancellationTokenSource.Token);
                 Products = new ObservableCollection<ProductResponseDto>(
                     orders
-                        .SelectMany(o => o.PurchasedProducts)
+                        .Select(o => o.PurchasedProducts)
+                        .SelectMany(p => p)
                 );
             }
             else
