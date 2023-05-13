@@ -64,7 +64,7 @@ public class DashboardTabViewModel : TabBaseViewModel, INotifyPropertyChanged
             var getProductsRequest = await WebApiService.GetCall("api/products");
             if (getProductsRequest.IsSuccessStatusCode)
             {
-                var timeoutAfter = TimeSpan.FromMilliseconds(300);
+                var timeoutAfter = TimeSpan.FromMilliseconds(3000);
                 using (var cancellationTokenSource = new CancellationTokenSource(timeoutAfter))
                 {
                     var responseStream =

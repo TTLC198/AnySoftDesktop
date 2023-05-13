@@ -3,10 +3,13 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using System.Net.Http;
 using System.Runtime.CompilerServices;
+using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Web;
+using System.Windows.Documents;
 using AnySoftDesktop.Models;
 using AnySoftDesktop.Services;
 using AnySoftDesktop.Utils;
@@ -212,7 +215,7 @@ public class MainWindowViewModel : Screen, INotifyPropertyChanged
         {
             if (getProductsRequest.IsSuccessStatusCode)
             {
-                var timeoutAfter = TimeSpan.FromMilliseconds(300);
+                var timeoutAfter = TimeSpan.FromMilliseconds(3000);
                 using var cancellationTokenSource = new CancellationTokenSource(timeoutAfter);
                 var responseStream = await getProductsRequest.Content.ReadAsStreamAsync(cancellationTokenSource.Token);
                 var products = await JsonSerializer.DeserializeAsync<IEnumerable<ProductResponseDto>>(responseStream,
@@ -265,7 +268,7 @@ public class MainWindowViewModel : Screen, INotifyPropertyChanged
         {
             if (getProductsRequest.IsSuccessStatusCode)
             {
-                var timeoutAfter = TimeSpan.FromMilliseconds(300);
+                var timeoutAfter = TimeSpan.FromMilliseconds(3000);
                 using var cancellationTokenSource = new CancellationTokenSource(timeoutAfter);
                 var responseStream = await getProductsRequest.Content.ReadAsStreamAsync(cancellationTokenSource.Token);
                 var products = await JsonSerializer.DeserializeAsync<IEnumerable<ProductResponseDto>>(responseStream,

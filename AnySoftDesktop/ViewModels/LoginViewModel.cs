@@ -82,7 +82,7 @@ public class LoginViewModel : DialogScreen<ApplicationUser?>, INotifyPropertyCha
         
         var validationContext = new ValidationContext(UserCredentials, null, null);
         var results = new List<ValidationResult>();
-        var timeoutAfter = TimeSpan.FromMilliseconds(100);
+        var timeoutAfter = TimeSpan.FromMilliseconds(3000);
 
         if (Validator.TryValidateObject(UserCredentials, validationContext, results, true))
         {
@@ -154,7 +154,7 @@ public class LoginViewModel : DialogScreen<ApplicationUser?>, INotifyPropertyCha
         
         var validationContext = new ValidationContext(UserCredentials, null, null);
         var results = new List<ValidationResult>();
-        var timeoutAfter = TimeSpan.FromMilliseconds(100);
+        var timeoutAfter = TimeSpan.FromMilliseconds(3000);
 
         try
         {

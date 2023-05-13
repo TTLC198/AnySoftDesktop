@@ -44,7 +44,7 @@ public class LibraryTabViewModel : TabBaseViewModel, INotifyPropertyChanged
             var getOrdersRequest = await WebApiService.GetCall("api/orders",  App.AuthorizationToken);
             if (getOrdersRequest.IsSuccessStatusCode)
             {
-                var timeoutAfter = TimeSpan.FromMilliseconds(300);
+                var timeoutAfter = TimeSpan.FromMilliseconds(3000);
                 using var cancellationTokenSource = new CancellationTokenSource(timeoutAfter);
                 var responseStream = await getOrdersRequest.Content.ReadAsStreamAsync(cancellationTokenSource.Token);
                 var orders = await JsonSerializer.DeserializeAsync<IEnumerable<OrderResponseDto>>(responseStream,
