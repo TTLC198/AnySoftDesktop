@@ -18,7 +18,7 @@ using RPM_Project_Backend.Domain;
 
 namespace AnySoftDesktop.ViewModels;
 
-public class SingleProductViewModel : DashboardTabViewModel, INotifyPropertyChanged
+public class SingleProductTabViewModel : DashboardTabViewModel, INotifyPropertyChanged
 {
     private readonly int _productId;
     private readonly IViewModelFactory _viewModelFactory;
@@ -62,7 +62,7 @@ public class SingleProductViewModel : DashboardTabViewModel, INotifyPropertyChan
         }
     }
 
-    public SingleProductViewModel(int productId, IViewModelFactory viewModelFactory, DialogManager dialogManager) : base(viewModelFactory, dialogManager)
+    public SingleProductTabViewModel(int productId, IViewModelFactory viewModelFactory, DialogManager dialogManager) : base(viewModelFactory, dialogManager)
     {
         _productId = productId;
         _viewModelFactory = viewModelFactory;
@@ -103,28 +103,18 @@ public class SingleProductViewModel : DashboardTabViewModel, INotifyPropertyChan
                             .Any(p => p.Id == Product.Id))
                             IsBought = true;
                     }
-                    
-                    var getProductsInCartRequest = await WebApiService.GetCall($"api/cart", App.AuthorizationToken ?? "");
-                    if (getProductsInCartRequest.IsSuccessStatusCode)
-                    {
-                        using var cancellationTokenSource = new CancellationTokenSource(timeoutAfter);
-                        var responseStream = await getProductsInCartRequest.Content.ReadAsStreamAsync(cancellationTokenSource.Token);
-                        var products = await JsonSerializer.DeserializeAsync<IEnumerable<ProductResponseDto>>(responseStream,
-                            CustomJsonSerializerOptions.Options, cancellationToken: cancellationTokenSource.Token);
-                        if (products
-                            .Any(p => p.Id == Product.Id))
-                            IsInCart = true;
-                    }
-                    else
-                    {
-                        var msg = await getProductsRequest.Content.ReadAsStringAsync();
-                        throw new InvalidOperationException($"{getProductsRequest.ReasonPhrase}\n{msg}");
-                    }
                 }
-                else
+                
+                var getProductsInCartRequest = await WebApiService.GetCall($"api/cart", App.AuthorizationToken ?? "");
+                if (getProductsInCartRequest.IsSuccessStatusCode)
                 {
-                    var msg = await getOrdersRequest.Content.ReadAsStringAsync();
-                    throw new InvalidOperationException($"{getOrdersRequest.ReasonPhrase}\n{msg}");
+                    using var cancellationTokenSource = new CancellationTokenSource(timeoutAfter);
+                    var responseStream = await getProductsInCartRequest.Content.ReadAsStreamAsync(cancellationTokenSource.Token);
+                    var products = await JsonSerializer.DeserializeAsync<IEnumerable<ProductResponseDto>>(responseStream,
+                        CustomJsonSerializerOptions.Options, cancellationToken: cancellationTokenSource.Token);
+                    if (products
+                        .Any(p => p.Id == Product.Id))
+                        IsInCart = true;
                 }
             }
             else
@@ -149,6 +139,8 @@ public class SingleProductViewModel : DashboardTabViewModel, INotifyPropertyChan
     {
         try
         {
+            if (IsBought)
+                return;
             if (IsInCart)
                 OnRemoveFromCartButtonClick(id);
             else 

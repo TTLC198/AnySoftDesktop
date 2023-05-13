@@ -2,9 +2,9 @@
 
 namespace AnySoftDesktop.Views;
 
-public partial class SingleProductView : UserControl
+public partial class MultipleProductTabView : UserControl
 {
-    public SingleProductView()
+    public MultipleProductTabView()
     {
         InitializeComponent();
     }

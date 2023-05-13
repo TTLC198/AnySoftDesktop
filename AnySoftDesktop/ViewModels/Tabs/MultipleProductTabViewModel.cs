@@ -15,7 +15,7 @@ using RPM_Project_Backend.Domain;
 
 namespace AnySoftDesktop.ViewModels;
 
-public class MultipleProductViewModel : DashboardTabViewModel, INotifyPropertyChanged
+public class MultipleProductTabViewModel : DashboardTabViewModel, INotifyPropertyChanged
 {
     private readonly IViewModelFactory _viewModelFactory;
     private readonly DialogManager _dialogManager;
@@ -34,7 +34,7 @@ public class MultipleProductViewModel : DashboardTabViewModel, INotifyPropertyCh
 
     public TabBaseViewModel? PreviousTab { get; set; }
     
-    public MultipleProductViewModel(IEnumerable<ProductResponseDto> products, IViewModelFactory viewModelFactory, DialogManager dialogManager) : base(viewModelFactory, dialogManager)
+    public MultipleProductTabViewModel(IEnumerable<ProductResponseDto> products, IViewModelFactory viewModelFactory, DialogManager dialogManager) : base(viewModelFactory, dialogManager)
     {
         Products = new ObservableCollection<ProductResponseDto>(products);
         _viewModelFactory = viewModelFactory;
