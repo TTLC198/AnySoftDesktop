@@ -103,13 +103,17 @@ public class WebApiService
         }
     }  
     
-    public static async Task<HttpResponseMessage> DeleteCall(string url)   
+    public static async Task<HttpResponseMessage> DeleteCall(
+        string url,
+        string? authorizationToken = null)   
     {  
         ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;  
         var apiUrl = App.ApiUrl + url;
         try
         {
             using var client = new HttpClient();
+            if (authorizationToken is not null)
+                client.DefaultRequestHeaders.Add("Authorization", $"Bearer {authorizationToken}");
             client.BaseAddress = new Uri(apiUrl);  
             client.Timeout = TimeSpan.FromSeconds(900);  
             client.DefaultRequestHeaders.Accept.Clear();  
