@@ -467,19 +467,69 @@
                         </Button>
                     </Grid>
                     <!--User profile icon-->
-                    <Ellipse
+                    <Button
+                        x:Name="ProfileIconButton"
                         Height="40"
                         Width="40"
                         Margin="6"
                         DockPanel.Dock="Right"
                         HorizontalAlignment="Center"
                         VerticalAlignment="Center"
+                        Background="Transparent"
+                        BorderBrush="Transparent"
+                        Command="{s:Action OnProfileButtonClick}"
                         Visibility="{Binding IsAuthorized, Converter={x:Static converters:BoolToVisibleConverter.Instance}}">
-                        <Ellipse.Fill>
-                            <ImageBrush
-                                ImageSource="{Binding CurrentUser.Image, Converter={x:Static converters:UrlToImageConverter.Instance}}" />
-                        </Ellipse.Fill>
-                    </Ellipse>
+                        <Button.Style>
+                            <Style
+                                TargetType="Button"
+                                BasedOn="{StaticResource MaterialDesignIconButton}">
+                                <Setter
+                                    Property="Content">
+                                    <Setter.Value>
+                                        <Ellipse
+                                            Height="40"
+                                            Width="40">
+                                            <Ellipse.Fill>
+                                                <ImageBrush
+                                                    ImageSource="{Binding CurrentUser.Image, Converter={x:Static converters:UrlToImageConverter.Instance}}" />
+                                            </Ellipse.Fill>
+                                        </Ellipse>
+                                    </Setter.Value>
+                                </Setter>
+                                <Style.Triggers>
+                                    <DataTrigger
+                                        Binding="{Binding ElementName=ProfileIconButton, Path=IsMouseOver}"
+                                        Value="True">
+                                        <Setter
+                                            Property="Content">
+                                            <Setter.Value>
+                                                <Grid>
+                                                    <materialDesign:PackIcon
+                                                        Grid.Row="0"
+                                                        Panel.ZIndex="1"
+                                                        Width="20"
+                                                        Height="20"
+                                                        Kind="Account" 
+                                                        Foreground="{StaticResource PrimaryHueMidBrush}"
+                                                        VerticalAlignment="Center"
+                                                        HorizontalAlignment="Center"/>
+                                                    <Ellipse
+                                                        Grid.Row="0"
+                                                        Height="40"
+                                                        Width="40">
+                                                        <Ellipse.Fill>
+                                                            <ImageBrush
+                                                                ImageSource="{Binding CurrentUser.Image, Converter={x:Static converters:UrlToImageConverter.Instance}}" />
+                                                        </Ellipse.Fill>
+                                                    </Ellipse>
+                                                </Grid>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
                     <!--Shopping Cart button-->
                     <Button
                         Height="Auto"
@@ -487,7 +537,6 @@
                         Margin="2"
                         Padding="4"
                         Style="{DynamicResource MaterialDesignFlatDarkButton}"
-                        ToolTip="Shopping Cart"
                         DockPanel.Dock="Right"
                         HorizontalAlignment="Center"
                         VerticalAlignment="Center"
@@ -506,7 +555,6 @@
                         Padding="4"
                         Style="{DynamicResource MaterialDesignFlatDarkButton}"
                         Command="{s:Action OpenLoginPage}"
-                        ToolTip="Login"
                         DockPanel.Dock="Right"
                         HorizontalAlignment="Center"
                         VerticalAlignment="Center"

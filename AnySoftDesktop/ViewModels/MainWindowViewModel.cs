@@ -119,6 +119,25 @@ public class MainWindowViewModel : Screen, INotifyPropertyChanged
         tab.OnTabSelected(EventArgs.Empty);
         tab.IsSelected = true;
     }
+    
+    public void BackFromProfile() //костыль
+    {
+        var currentTab = Tabs.FirstOrDefault(t => t.GetType() == typeof(ProfileTabViewModel));
+        if (currentTab is not ProfileTabViewModel)
+            return;
+
+        var baseTab = Tabs.First(t => t.GetType() == currentTab.GetType().BaseType);
+        baseTab.IsVisible = true;
+        Tabs.Remove(currentTab);
+        
+        // Deactivate previously selected tab
+        if (ActiveTab is not null)
+            ActiveTab.IsSelected = false;
+        
+        ActiveTab = Tabs.First(t => t == (currentTab as ProfileTabViewModel).PreviousTab);
+        ActiveTab.OnTabSelected(EventArgs.Empty);
+        ActiveTab.IsSelected = true;
+    }
 
     public void BackFromProduct() //костыль
     {
@@ -170,6 +189,32 @@ public class MainWindowViewModel : Screen, INotifyPropertyChanged
         baseTab.IsVisible = false;
 
         tab.PreviousTab = ActiveTab;
+        ActiveTab = tab;
+        tab.OnTabSelected(EventArgs.Empty);
+        tab.IsSelected = true;
+        tab.IsVisible = true;
+    }
+    
+    public void OnProfileButtonClick()
+    {
+        if (ActiveTab is not null)
+            ActiveTab.IsSelected = false;
+
+        if (Tabs.FirstOrDefault(t => t.GetType() == typeof(ProfileTabViewModel)) is ProfileTabViewModel tab)
+        {
+            tab.ApplicationUser = CurrentUser;
+        }
+        else
+        {
+            tab = new ProfileTabViewModel(CurrentUser, _viewModelFactory, _dialogManager);
+
+            var baseTab = Tabs.First(t => t.GetType() == tab.GetType().BaseType);
+            Tabs.Insert(Tabs.IndexOf(baseTab), tab);
+            baseTab.IsVisible = false;
+
+            tab.PreviousTab = ActiveTab;
+        }
+        
         ActiveTab = tab;
         tab.OnTabSelected(EventArgs.Empty);
         tab.IsSelected = true;
@@ -296,6 +341,51 @@ public class MainWindowViewModel : Screen, INotifyPropertyChanged
             {
                 var msg = await getProductsRequest.Content.ReadAsStringAsync();
                 throw new InvalidOperationException($"{getProductsRequest.ReasonPhrase}\n{msg}");
+            }
+        }
+        catch (Exception exception)
+        {
+            var messageBoxDialog = _viewModelFactory.CreateMessageBoxViewModel(
+                title: "Some error has occurred",
+                message: $@"{exception.Message}".Trim(),
+                okButtonText: "OK",
+                cancelButtonText: null
+            );
+            await _dialogManager.ShowDialogAsync(messageBoxDialog);
+        }
+    }
+    
+    public async void OnProfileChanged(ApplicationUser applicationUser)
+    {
+        var userEdit = new UserEditDto()
+        {
+            Id = applicationUser.Id ?? 0,
+            Login = applicationUser.Login,
+            Email = applicationUser.Email,
+            Password = applicationUser.Password
+        };
+        var putChangesOfUserRequest = await WebApiService.PutCall("api/users", userEdit, App.AuthorizationToken);
+        try
+        {
+            if (putChangesOfUserRequest.IsSuccessStatusCode)
+            {
+                var timeoutAfter = TimeSpan.FromMilliseconds(3000);
+                using var cancellationTokenSource = new CancellationTokenSource(timeoutAfter);
+                var responseStream = await putChangesOfUserRequest.Content.ReadAsStreamAsync(cancellationTokenSource.Token);
+                var editedUser = await JsonSerializer.DeserializeAsync<User>(responseStream,
+                    CustomJsonSerializerOptions.Options, cancellationToken: cancellationTokenSource.Token);
+                if (editedUser is null)
+                    throw new InvalidOperationException("User is null");
+                CurrentUser.Id = editedUser.Id;
+                CurrentUser.Email = editedUser.Email;
+                CurrentUser.Login = editedUser.Login;
+                /*CurrentUser.Image = editedUser.Id;*/
+                //TODO image edit
+            }
+            else
+            {
+                var msg = await putChangesOfUserRequest.Content.ReadAsStringAsync();
+                throw new InvalidOperationException($"{putChangesOfUserRequest.ReasonPhrase}\n{msg}");
             }
         }
         catch (Exception exception)
