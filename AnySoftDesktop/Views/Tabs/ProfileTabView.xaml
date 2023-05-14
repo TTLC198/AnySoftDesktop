@@ -1,0 +1,203 @@
+﻿<UserControl x:Class="AnySoftDesktop.Views.Tabs.ProfileTabView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:tabs="clr-namespace:AnySoftDesktop.ViewModels.Tabs"
+             xmlns:s="https://github.com/canton7/Stylet"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:converters="clr-namespace:AnySoftDesktop.Utils.Converters"
+             xmlns:validation="clr-namespace:AnySoftDesktop.Utils.Validation"
+             Background="{DynamicResource MaterialDesignPaper}"
+             FontFamily="{DynamicResource MaterialDesignFont}"
+             TextElement.Foreground="{StaticResource PrimaryHueMidBrush}"
+             TextElement.FontFamily="{StaticResource Outfit}"
+             mc:Ignorable="d"
+             d:DesignHeight="300"
+             d:DesignWidth="800"
+             d:DataContext="{d:DesignInstance Type=tabs:ProfileTabViewModel}">
+    <Grid
+        Loaded="{s:Action OnViewFullyLoaded}"
+        Margin="0, 0, 0, 12">
+        <Grid.RowDefinitions>
+            <RowDefinition
+                Height="Auto" />
+            <RowDefinition
+                Height="*" />
+            <RowDefinition
+                Height="Auto" />
+        </Grid.RowDefinitions>
+        <DockPanel
+            VerticalAlignment="Top"
+            HorizontalAlignment="Left"
+            ZIndex="1"
+            Grid.Row="0">
+            <Button
+                Height="Auto"
+                Width="Auto"
+                Margin="2"
+                Padding="4"
+                Style="{DynamicResource MaterialDesignFlatDarkButton}"
+                s:View.ActionTarget="{Binding DataContext, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}"
+                Command="{s:Action BackFromProfile}"
+                DockPanel.Dock="Left"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center">
+                <materialDesign:PackIcon
+                    Width="25"
+                    Height="25"
+                    Kind="ArrowLeftBold" />
+            </Button>
+            <TextBlock
+                VerticalAlignment="Center"
+                DockPanel.Dock="Left"
+                Style="{StaticResource MaterialDesignHeadline5TextBlock}"
+                Text="Profile" />
+        </DockPanel>
+        <StackPanel
+            Grid.Row="1"
+            Orientation="Vertical"
+            HorizontalAlignment="Stretch"
+            Margin="10, 0, 0, 0">
+            <DockPanel
+                LastChildFill="False"
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Stretch">
+                <Ellipse
+                    Height="140"
+                    Width="140"
+                    Margin="6"
+                    DockPanel.Dock="Left"
+                    HorizontalAlignment="Stretch"
+                    VerticalAlignment="Top">
+                    <Ellipse.Fill>
+                        <ImageBrush
+                            ImageSource="{Binding ApplicationUser.Image, Converter={x:Static converters:UrlToImageConverter.Instance}}" />
+                    </Ellipse.Fill>
+                </Ellipse>
+                <!--User Description-->
+                <DockPanel
+                    HorizontalAlignment="Stretch"
+                    VerticalAlignment="Center"
+                    LastChildFill="False">
+                    <TextBox
+                        DockPanel.Dock="Top"
+                        Margin="0, 12"
+                        MinWidth="210"
+                        HorizontalAlignment="Stretch"
+                        materialDesign:HintAssist.HelperText="Login"
+                        FontSize="18"
+                        materialDesign:ValidationAssist.Background="Transparent"
+                        materialDesign:TextFieldAssist.HasClearButton="True">
+                        <materialDesign:HintAssist.Hint>
+                            <StackPanel Orientation="Horizontal">
+                                <materialDesign:PackIcon
+                                    Kind="Account"
+                                    VerticalAlignment="Top" />
+                                <TextBlock
+                                    Margin="4, 0"
+                                    Text="{Binding ApplicationUser.Login, Mode=OneTime}" />
+                            </StackPanel>
+                        </materialDesign:HintAssist.Hint>
+                        <TextBox.Text>
+                            <Binding
+                                Path="ApplicationUser.Login"
+                                UpdateSourceTrigger="LostFocus"
+                                ValidatesOnExceptions="True" >
+                                <Binding.ValidationRules>
+                                    <validation:NotEmptyValidationRule
+                                        ValidatesOnTargetUpdated="True"/>
+                                </Binding.ValidationRules>
+                            </Binding>
+                        </TextBox.Text>
+                    </TextBox>
+                    <TextBox
+                        DockPanel.Dock="Top"
+                        MinWidth="210"
+                        Margin="0, 12"
+                        HorizontalAlignment="Stretch"
+                        materialDesign:HintAssist.HelperText="Email"
+                        FontSize="18"
+                        materialDesign:ValidationAssist.Background="Transparent"
+                        materialDesign:TextFieldAssist.HasClearButton="True">
+                        <materialDesign:HintAssist.Hint>
+                            <StackPanel Orientation="Horizontal">
+                                <materialDesign:PackIcon
+                                    Kind="Mail"
+                                    VerticalAlignment="Top" />
+                                <TextBlock
+                                    Margin="4, 0"
+                                    Text="{Binding ApplicationUser.Email, Mode=OneTime}" />
+                            </StackPanel>
+                        </materialDesign:HintAssist.Hint>
+                        <TextBox.Text>
+                            <Binding
+                                Path="ApplicationUser.Email"
+                                UpdateSourceTrigger="LostFocus"
+                                ValidatesOnExceptions="True" >
+                                <Binding.ValidationRules>
+                                    <validation:NotEmptyValidationRule
+                                        ValidatesOnTargetUpdated="True"/>
+                                </Binding.ValidationRules>
+                            </Binding>
+                        </TextBox.Text>
+                    </TextBox>
+                    <PasswordBox
+                        DockPanel.Dock="Top"
+                        MinWidth="210"
+                        Margin="0, 12"
+                        HorizontalAlignment="Stretch"
+                        materialDesign:HintAssist.HelperText="Password"
+                        FontSize="18"
+                        materialDesign:ValidationAssist.Background="Transparent"
+                        materialDesign:TextFieldAssist.HasClearButton="True">
+                        <materialDesign:PasswordBoxAssist.Password>
+                            <Binding
+                                Path="ApplicationUser.Password"
+                                UpdateSourceTrigger="LostFocus"
+                                ValidatesOnExceptions="True" >
+                                <Binding.ValidationRules>
+                                    <validation:NotEmptyValidationRule
+                                        ValidatesOnTargetUpdated="False"/>
+                                </Binding.ValidationRules>
+                            </Binding>
+                        </materialDesign:PasswordBoxAssist.Password>
+                        <materialDesign:HintAssist.Hint>
+                            <StackPanel Orientation="Horizontal">
+                                <materialDesign:PackIcon
+                                    Kind="Key"
+                                    VerticalAlignment="Center" />
+                                <TextBlock
+                                    Margin="4, 0"
+                                    Text="Your password" />
+                            </StackPanel>
+                        </materialDesign:HintAssist.Hint>
+                    </PasswordBox>
+                </DockPanel>
+            </DockPanel>
+        </StackPanel>
+        <DockPanel
+            VerticalAlignment="Top"
+            HorizontalAlignment="Stretch"
+            ZIndex="1"
+            Grid.Row="2">
+            <Button
+                Margin="4"
+                Padding="8"
+                Height="Auto"
+                Width="Auto"
+                Style="{DynamicResource MaterialDesignFlatDarkButton}"
+                s:View.ActionTarget="{Binding DataContext, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}"
+                Command="{s:Action OnProfileChanged}"
+                CommandParameter="{Binding ApplicationUser}"
+                DockPanel.Dock="Right"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Center">
+                <materialDesign:PackIcon
+                    Width="40"
+                    Height="40"
+                    Kind="ContentSave" />
+            </Button>
+        </DockPanel>
+    </Grid>
+</UserControl>
