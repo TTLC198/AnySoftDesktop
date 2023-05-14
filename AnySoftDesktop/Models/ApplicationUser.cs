@@ -18,6 +18,10 @@ public class ApplicationUser
     /// </summary>
     public string? Email { get; set; }
     /// <summary>
+    /// Password
+    /// </summary>
+    public string? Password { get; set; }
+    /// <summary>
     /// Image Path
     /// </summary>
     public string? Image { get; set; }
