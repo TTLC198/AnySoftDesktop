@@ -83,13 +83,18 @@ public class WebApiService
         }
     }  
     
-    public static async Task<HttpResponseMessage> PutCall<T>(string url, T model) where T : class  
+    public static async Task<HttpResponseMessage> PutCall<T>(
+        string url,
+        T model,
+        string? authorizationToken = null) where T : class  
     {  
         ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;  
         var apiUrl = App.ApiUrl + url;
         try
         {
             using var client = new HttpClient();
+            if (authorizationToken is not null)
+                client.DefaultRequestHeaders.Add("Authorization", $"Bearer {authorizationToken}");
             client.BaseAddress = new Uri(apiUrl);  
             client.Timeout = TimeSpan.FromSeconds(900);  
             client.DefaultRequestHeaders.Accept.Clear();  
