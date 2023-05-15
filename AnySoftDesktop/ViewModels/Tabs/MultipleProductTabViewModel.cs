@@ -1,19 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using System.Text.Json;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Web;
-using AnySoftDesktop.Services;
-using AnySoftDesktop.Utils;
 using AnySoftDesktop.ViewModels.Framework;
-using AnySoftDesktop.ViewModels.Tabs;
 using RPM_Project_Backend.Domain;
 
-namespace AnySoftDesktop.ViewModels;
+namespace AnySoftDesktop.ViewModels.Tabs;
 
 public class MultipleProductTabViewModel : DashboardTabViewModel, INotifyPropertyChanged
 {
@@ -37,6 +29,12 @@ public class MultipleProductTabViewModel : DashboardTabViewModel, INotifyPropert
     public MultipleProductTabViewModel(IEnumerable<ProductResponseDto> products, IViewModelFactory viewModelFactory, DialogManager dialogManager) : base(viewModelFactory, dialogManager)
     {
         Products = new ObservableCollection<ProductResponseDto>(products);
+        _viewModelFactory = viewModelFactory;
+        _dialogManager = dialogManager;
+    }
+
+    protected MultipleProductTabViewModel(IViewModelFactory viewModelFactory, DialogManager dialogManager) : base(viewModelFactory, dialogManager)
+    {
         _viewModelFactory = viewModelFactory;
         _dialogManager = dialogManager;
     }

@@ -1,6 +1,6 @@
 ﻿using System.Windows.Controls;
 
-namespace AnySoftDesktop.Views;
+namespace AnySoftDesktop.Views.Tabs;
 
 public partial class ShoppingCartTabView : UserControl
 {

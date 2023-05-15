@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text.Json;
-using System.Threading;
-using AnySoftDesktop.Services;
-using AnySoftDesktop.Utils;
+﻿using System.Collections.Generic;
 using AnySoftDesktop.ViewModels.Framework;
 using RPM_Project_Backend.Domain;
 
-namespace AnySoftDesktop.ViewModels;
+namespace AnySoftDesktop.ViewModels.Tabs;
 
 public class ShoppingCartTabViewModel : MultipleProductTabViewModel
 {

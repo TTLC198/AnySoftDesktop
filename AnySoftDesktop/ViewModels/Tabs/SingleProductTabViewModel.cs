@@ -1,24 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
-using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Runtime.CompilerServices;
-using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using AnySoftDesktop.Services;
 using AnySoftDesktop.Utils;
 using AnySoftDesktop.ViewModels.Framework;
-using AnySoftDesktop.ViewModels.Tabs;
 using RPM_Project_Backend.Domain;
 
-namespace AnySoftDesktop.ViewModels;
+namespace AnySoftDesktop.ViewModels.Tabs;
 
-public class SingleProductTabViewModel : DashboardTabViewModel, INotifyPropertyChanged
+public class SingleProductTabViewModel : MultipleProductTabViewModel, INotifyPropertyChanged
 {
     private readonly int _productId;
     private readonly IViewModelFactory _viewModelFactory;
@@ -114,8 +109,8 @@ public class SingleProductTabViewModel : DashboardTabViewModel, INotifyPropertyC
                             CustomJsonSerializerOptions.Options, cancellationToken: cancellationTokenSource.Token);
                         if (orders
                             .Where(o => o.Status == "Paid")
-                            .SelectMany(o => o.PurchasedProducts)
-                            .Any(p => p.Id == Product.Id))
+                            .SelectMany(o => o.PurchasedProductsIds)
+                            .Any(p => p == Product.Id))
                             IsBought = true;
                     }
                 }
