@@ -13,13 +13,15 @@
              TextElement.Foreground="{StaticResource PrimaryHueMidBrush}"
              TextElement.FontFamily="{StaticResource Outfit}"
              mc:Ignorable="d"
-             d:DesignHeight="300"
+             d:DesignHeight="600"
              d:DesignWidth="800"
              d:DataContext="{d:DesignInstance Type=tabs:ProfileTabViewModel}">
     <Grid
         Loaded="{s:Action OnViewFullyLoaded}"
         Margin="0, 0, 0, 12">
         <Grid.RowDefinitions>
+            <RowDefinition
+                Height="Auto" />
             <RowDefinition
                 Height="Auto" />
             <RowDefinition
@@ -55,132 +57,365 @@
                 Text="Profile" />
         </DockPanel>
         <StackPanel
-            Grid.Row="1"
-            Orientation="Vertical"
-            HorizontalAlignment="Stretch"
-            Margin="10, 0, 0, 0">
-            <DockPanel
-                LastChildFill="False"
+            Grid.Row="1">
+            <TextBlock
+                HorizontalAlignment="Left"
+                Margin="5, 7"
+                FontSize="14"
+                TextWrapping="Wrap"
+                Foreground="{DynamicResource PrimaryHueDarkBrush}"
+                Text="Information" />
+            <!--Information field-->
+            <StackPanel
+                Orientation="Vertical"
                 HorizontalAlignment="Stretch"
-                VerticalAlignment="Stretch">
-                <Ellipse
-                    Height="140"
-                    Width="140"
-                    Margin="6"
-                    DockPanel.Dock="Left"
-                    HorizontalAlignment="Stretch"
-                    VerticalAlignment="Top">
-                    <Ellipse.Fill>
-                        <ImageBrush
-                            ImageSource="{Binding ApplicationUser.Image, Converter={x:Static converters:UrlToImageConverter.Instance}}" />
-                    </Ellipse.Fill>
-                </Ellipse>
-                <!--User Description-->
+                Margin="10, 0, 0, 0">
                 <DockPanel
+                    LastChildFill="True"
                     HorizontalAlignment="Stretch"
-                    VerticalAlignment="Center"
-                    LastChildFill="False">
-                    <TextBox
-                        DockPanel.Dock="Top"
-                        Margin="0, 12"
-                        MinWidth="210"
+                    VerticalAlignment="Stretch">
+                    <Ellipse
+                        Height="180"
+                        Width="180"
+                        Margin="6"
+                        DockPanel.Dock="Left"
                         HorizontalAlignment="Stretch"
-                        materialDesign:HintAssist.HelperText="Login"
-                        FontSize="18"
-                        materialDesign:ValidationAssist.Background="Transparent"
-                        materialDesign:TextFieldAssist.HasClearButton="True">
-                        <materialDesign:HintAssist.Hint>
-                            <StackPanel Orientation="Horizontal">
-                                <materialDesign:PackIcon
-                                    Kind="Account"
-                                    VerticalAlignment="Top" />
-                                <TextBlock
-                                    Margin="4, 0"
-                                    Text="{Binding ApplicationUser.Login, Mode=OneTime}" />
-                            </StackPanel>
-                        </materialDesign:HintAssist.Hint>
-                        <TextBox.Text>
-                            <Binding
-                                Path="ApplicationUser.Login"
-                                UpdateSourceTrigger="LostFocus"
-                                ValidatesOnExceptions="True" >
-                                <Binding.ValidationRules>
-                                    <validation:NotEmptyValidationRule
-                                        ValidatesOnTargetUpdated="True"/>
-                                </Binding.ValidationRules>
-                            </Binding>
-                        </TextBox.Text>
-                    </TextBox>
-                    <TextBox
-                        DockPanel.Dock="Top"
-                        MinWidth="210"
-                        Margin="0, 12"
+                        VerticalAlignment="Top">
+                        <Ellipse.Fill>
+                            <ImageBrush
+                                ImageSource="{Binding ApplicationUser.Image, Converter={x:Static converters:UrlToImageConverter.Instance}}" />
+                        </Ellipse.Fill>
+                    </Ellipse>
+                    <!--User Description-->
+                    <DockPanel
                         HorizontalAlignment="Stretch"
-                        materialDesign:HintAssist.HelperText="Email"
-                        FontSize="18"
-                        materialDesign:ValidationAssist.Background="Transparent"
-                        materialDesign:TextFieldAssist.HasClearButton="True">
-                        <materialDesign:HintAssist.Hint>
-                            <StackPanel Orientation="Horizontal">
-                                <materialDesign:PackIcon
-                                    Kind="Mail"
-                                    VerticalAlignment="Top" />
-                                <TextBlock
-                                    Margin="4, 0"
-                                    Text="{Binding ApplicationUser.Email, Mode=OneTime}" />
-                            </StackPanel>
-                        </materialDesign:HintAssist.Hint>
-                        <TextBox.Text>
-                            <Binding
-                                Path="ApplicationUser.Email"
-                                UpdateSourceTrigger="LostFocus"
-                                ValidatesOnExceptions="True" >
-                                <Binding.ValidationRules>
-                                    <validation:NotEmptyValidationRule
-                                        ValidatesOnTargetUpdated="True"/>
-                                </Binding.ValidationRules>
-                            </Binding>
-                        </TextBox.Text>
-                    </TextBox>
-                    <PasswordBox
-                        DockPanel.Dock="Top"
-                        MinWidth="210"
-                        Margin="0, 12"
-                        HorizontalAlignment="Stretch"
-                        materialDesign:HintAssist.HelperText="Password"
-                        FontSize="18"
-                        materialDesign:ValidationAssist.Background="Transparent"
-                        materialDesign:TextFieldAssist.HasClearButton="True">
-                        <materialDesign:PasswordBoxAssist.Password>
-                            <Binding
-                                Path="ApplicationUser.Password"
-                                UpdateSourceTrigger="LostFocus"
-                                ValidatesOnExceptions="True" >
-                                <Binding.ValidationRules>
-                                    <validation:NotEmptyValidationRule
-                                        ValidatesOnTargetUpdated="False"/>
-                                </Binding.ValidationRules>
-                            </Binding>
-                        </materialDesign:PasswordBoxAssist.Password>
-                        <materialDesign:HintAssist.Hint>
-                            <StackPanel Orientation="Horizontal">
-                                <materialDesign:PackIcon
-                                    Kind="Key"
-                                    VerticalAlignment="Center" />
-                                <TextBlock
-                                    Margin="4, 0"
-                                    Text="Your password" />
-                            </StackPanel>
-                        </materialDesign:HintAssist.Hint>
-                    </PasswordBox>
+                        VerticalAlignment="Center"
+                        LastChildFill="False"
+                        Margin="15, 0, 12, 0">
+                        <TextBox
+                            DockPanel.Dock="Top"
+                            Margin="0, 12"
+                            MinWidth="210"
+                            HorizontalAlignment="Stretch"
+                            materialDesign:HintAssist.HelperText="Login"
+                            FontSize="18"
+                            materialDesign:ValidationAssist.Background="Transparent"
+                            materialDesign:TextFieldAssist.HasClearButton="True">
+                            <materialDesign:HintAssist.Hint>
+                                <StackPanel Orientation="Horizontal">
+                                    <materialDesign:PackIcon
+                                        Kind="Account"
+                                        VerticalAlignment="Top" />
+                                    <TextBlock
+                                        Margin="4, 0"
+                                        Text="{Binding ApplicationUser.Login, Mode=OneTime}" />
+                                </StackPanel>
+                            </materialDesign:HintAssist.Hint>
+                            <TextBox.Text>
+                                <Binding
+                                    Path="ApplicationUser.Login"
+                                    UpdateSourceTrigger="LostFocus"
+                                    ValidatesOnExceptions="True">
+                                    <Binding.ValidationRules>
+                                        <validation:NotEmptyValidationRule
+                                            ValidatesOnTargetUpdated="True" />
+                                    </Binding.ValidationRules>
+                                </Binding>
+                            </TextBox.Text>
+                        </TextBox>
+                        <TextBox
+                            DockPanel.Dock="Top"
+                            MinWidth="210"
+                            Margin="0, 12"
+                            HorizontalAlignment="Stretch"
+                            materialDesign:HintAssist.HelperText="Email"
+                            FontSize="18"
+                            materialDesign:ValidationAssist.Background="Transparent"
+                            materialDesign:TextFieldAssist.HasClearButton="True">
+                            <materialDesign:HintAssist.Hint>
+                                <StackPanel Orientation="Horizontal">
+                                    <materialDesign:PackIcon
+                                        Kind="Mail"
+                                        VerticalAlignment="Top" />
+                                    <TextBlock
+                                        Margin="4, 0"
+                                        Text="{Binding ApplicationUser.Email, Mode=OneTime}" />
+                                </StackPanel>
+                            </materialDesign:HintAssist.Hint>
+                            <TextBox.Text>
+                                <Binding
+                                    Path="ApplicationUser.Email"
+                                    UpdateSourceTrigger="LostFocus"
+                                    ValidatesOnExceptions="True">
+                                    <Binding.ValidationRules>
+                                        <validation:NotEmptyValidationRule
+                                            ValidatesOnTargetUpdated="True" />
+                                    </Binding.ValidationRules>
+                                </Binding>
+                            </TextBox.Text>
+                        </TextBox>
+                        <PasswordBox
+                            DockPanel.Dock="Top"
+                            MinWidth="210"
+                            Margin="0, 12"
+                            HorizontalAlignment="Stretch"
+                            materialDesign:HintAssist.HelperText="Password"
+                            FontSize="18"
+                            materialDesign:ValidationAssist.Background="Transparent"
+                            materialDesign:TextFieldAssist.HasClearButton="True">
+                            <materialDesign:PasswordBoxAssist.Password>
+                                <Binding
+                                    Path="ApplicationUser.Password"
+                                    UpdateSourceTrigger="LostFocus"
+                                    ValidatesOnExceptions="True">
+                                    <Binding.ValidationRules>
+                                        <validation:NotEmptyValidationRule
+                                            ValidatesOnTargetUpdated="False" />
+                                    </Binding.ValidationRules>
+                                </Binding>
+                            </materialDesign:PasswordBoxAssist.Password>
+                            <materialDesign:HintAssist.Hint>
+                                <StackPanel Orientation="Horizontal">
+                                    <materialDesign:PackIcon
+                                        Kind="Key"
+                                        VerticalAlignment="Center" />
+                                    <TextBlock
+                                        Margin="4, 0"
+                                        Text="Your password" />
+                                </StackPanel>
+                            </materialDesign:HintAssist.Hint>
+                        </PasswordBox>
+                    </DockPanel>
                 </DockPanel>
-            </DockPanel>
+            </StackPanel>
+        </StackPanel>
+        <StackPanel
+            Grid.Row="2">
+            <TextBlock
+                HorizontalAlignment="Left"
+                Margin="5, 7"
+                FontSize="14"
+                TextWrapping="Wrap"
+                Foreground="{DynamicResource PrimaryHueDarkBrush}"
+                Text="Payment" />
+            <!--Payments field-->
+            <ItemsControl
+                Padding="15"
+                Margin="15, 0"
+                HorizontalAlignment="Center"
+                HorizontalContentAlignment="Stretch"
+                ItemsSource="{Binding PaymentMethods}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <UniformGrid
+                            Columns="2" 
+                            HorizontalAlignment="Stretch" 
+                            VerticalAlignment="Stretch"/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Border
+                            CornerRadius="15"
+                            BorderThickness="0"
+                            Background="{DynamicResource SearchBarColorBrush}"
+                            Padding="15"
+                            Margin="15, 0, 15, 15">
+                            <Grid
+                                VerticalAlignment="Stretch"
+                                HorizontalAlignment="Stretch">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition
+                                        Height="Auto" />
+                                    <RowDefinition
+                                        Height="Auto" />
+                                    <RowDefinition
+                                        Height="Auto" />
+                                </Grid.RowDefinitions>
+                                <!--Card number-->
+                                <TextBox
+                                    Grid.Row="0"
+                                    MinWidth="210"
+                                    Margin="0, 6"
+                                    HorizontalAlignment="Stretch"
+                                    materialDesign:HintAssist.HelperText="Card number"
+                                    FontSize="18"
+                                    materialDesign:ValidationAssist.Background="Transparent"
+                                    materialDesign:TextFieldAssist.HasClearButton="True">
+                                    <materialDesign:HintAssist.Hint>
+                                        <StackPanel Orientation="Horizontal">
+                                            <materialDesign:PackIcon
+                                                Kind="CreditCard"
+                                                VerticalAlignment="Top" />
+                                            <TextBlock
+                                                Margin="4, 0"
+                                                Text="{Binding Number, Mode=OneTime}" />
+                                        </StackPanel>
+                                    </materialDesign:HintAssist.Hint>
+                                    <TextBox.Text>
+                                        <Binding
+                                            Path="Number"
+                                            UpdateSourceTrigger="PropertyChanged">
+                                            <Binding.ValidationRules>
+                                                <validation:NotEmptyValidationRule
+                                                    ValidatesOnTargetUpdated="True" />
+                                            </Binding.ValidationRules>
+                                        </Binding>
+                                    </TextBox.Text>
+                                </TextBox>
+                                <!--Card CVC & Expiration Data-->
+                                <Grid
+                                    Grid.Row="1"
+                                    DockPanel.Dock="Top"
+                                    Margin="0, 6"
+                                    HorizontalAlignment="Stretch">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition
+                                            Width="*" />
+                                        <ColumnDefinition
+                                            Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBox
+                                        Grid.Column="0"
+                                        HorizontalAlignment="Left"
+                                        materialDesign:HintAssist.HelperText="CVC"
+                                        FontSize="18"
+                                        materialDesign:ValidationAssist.Background="Transparent"
+                                        materialDesign:TextFieldAssist.HasClearButton="True">
+                                        <materialDesign:HintAssist.Hint>
+                                            <StackPanel Orientation="Horizontal">
+                                                <materialDesign:PackIcon
+                                                    Kind="CreditCardChip"
+                                                    VerticalAlignment="Top" />
+                                                <TextBlock
+                                                    Margin="4, 0"
+                                                    Text="{Binding Cvc, Mode=OneTime}" />
+                                            </StackPanel>
+                                        </materialDesign:HintAssist.Hint>
+                                        <TextBox.Text>
+                                            <Binding
+                                                Path="Cvc"
+                                                UpdateSourceTrigger="PropertyChanged">
+                                                <Binding.ValidationRules>
+                                                    <validation:NotEmptyValidationRule
+                                                        ValidatesOnTargetUpdated="True" />
+                                                </Binding.ValidationRules>
+                                            </Binding>
+                                        </TextBox.Text>
+                                    </TextBox>
+                                    <StackPanel
+                                        Grid.Column="1"
+                                        Orientation="Horizontal"
+                                        HorizontalAlignment="Right">
+                                        <TextBox
+                                            HorizontalAlignment="Left"
+                                            materialDesign:HintAssist.HelperText="Month"
+                                            FontSize="18"
+                                            materialDesign:ValidationAssist.Background="Transparent">
+                                            <materialDesign:HintAssist.Hint>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <materialDesign:PackIcon
+                                                        Kind="CalendarMonth"
+                                                        VerticalAlignment="Top" />
+                                                    <TextBlock
+                                                        Margin="4, 0"
+                                                        Text="{Binding ExpirationDate, Mode=OneTime, StringFormat='{}{0:MM}'}" />
+                                                </StackPanel>
+                                            </materialDesign:HintAssist.Hint>
+                                        </TextBox>
+                                        <TextBox
+                                            HorizontalAlignment="Right"
+                                            materialDesign:HintAssist.HelperText="Year"
+                                            FontSize="18"
+                                            materialDesign:ValidationAssist.Background="Transparent">
+                                            <materialDesign:HintAssist.Hint>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <TextBlock
+                                                        Margin="4, 0"
+                                                        Text="{Binding ExpirationDate, Mode=OneTime, StringFormat='{}{0:yy}'}" />
+                                                </StackPanel>
+                                            </materialDesign:HintAssist.Hint>
+                                        </TextBox>
+                                    </StackPanel>
+                                </Grid>
+                                <Grid
+                                    Grid.Row="2"
+                                    DockPanel.Dock="Top"
+                                    Margin="5, 25, 5, 5"
+                                    HorizontalAlignment="Stretch">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition
+                                            Width="*" />
+                                        <ColumnDefinition
+                                            Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <Button
+                                        Grid.Column="0"
+                                        Style="{DynamicResource MaterialDesignFlatDarkButton}"
+                                        Background="{DynamicResource PrimaryHueLightBrush}"
+                                        Command="{s:Action RemovePayment}"
+                                        CommandParameter="{Binding Id}"
+                                        Margin="0, 0, 3, 0">
+                                        <StackPanel
+                                            Orientation="Horizontal">
+                                            <materialDesign:PackIcon
+                                                Width="20"
+                                                Height="20"
+                                                Kind="Delete" />
+                                            <TextBlock
+                                                Margin="5, 0"
+                                                Text="Remove"
+                                                VerticalAlignment="Center" />
+                                        </StackPanel>
+                                    </Button>
+                                    <Button
+                                        Grid.Column="1"
+                                        Style="{DynamicResource MaterialDesignFlatDarkButton}"
+                                        Background="{DynamicResource PrimaryHueLightBrush}"
+                                        Command="{s:Action EditPayment}"
+                                        CommandParameter="{Binding .}"
+                                        Margin="3, 0, 0, 0">
+                                        <StackPanel
+                                            Orientation="Horizontal">
+                                            <materialDesign:PackIcon
+                                                Width="20"
+                                                Height="20"
+                                                Kind="CreditCardEdit" />
+                                            <TextBlock
+                                                Margin="5, 0"
+                                                Text="Edit"
+                                                VerticalAlignment="Center" />
+                                        </StackPanel>
+                                    </Button>
+                                </Grid>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+            <Button
+                Margin="15, 5"
+                Style="{DynamicResource MaterialDesignFlatDarkButton}"
+                Background="{DynamicResource PrimaryHueLightBrush}"
+                Command="{s:Action AddPayment}">
+                <StackPanel
+                    Orientation="Horizontal">
+                    <materialDesign:PackIcon
+                        Width="20"
+                        Height="20"
+                        Kind="CreditCardPlus"/>
+                    <TextBlock
+                        Margin="5, 0"
+                        Text="Add"
+                        VerticalAlignment="Center" />
+                </StackPanel>
+            </Button>
         </StackPanel>
         <DockPanel
             VerticalAlignment="Top"
             HorizontalAlignment="Stretch"
             ZIndex="1"
-            Grid.Row="2">
+            Grid.Row="3">
             <Button
                 Margin="4"
                 Padding="8"

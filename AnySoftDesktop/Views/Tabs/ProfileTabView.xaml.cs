@@ -1,4 +1,6 @@
 ﻿using System.Windows.Controls;
+using AnySoftDesktop.ViewModels.Tabs;
+using MaterialDesignThemes.Wpf;
 
 namespace AnySoftDesktop.Views.Tabs;
 
