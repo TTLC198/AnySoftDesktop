@@ -30,7 +30,6 @@
                 Style="{DynamicResource MaterialDesignFlatDarkButton}"
                 s:View.ActionTarget="{Binding DataContext, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}"
                 Command="{s:Action BackFromProduct}"
-                ToolTip="Login"
                 DockPanel.Dock="Right"
                 HorizontalAlignment="Center"
                 VerticalAlignment="Center">

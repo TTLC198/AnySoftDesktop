@@ -19,4 +19,6 @@ public class ShoppingCartTabViewModel : MultipleProductTabViewModel
         _viewModelFactory = viewModelFactory;
         _dialogManager = dialogManager;
     }
+    
+    
 }
