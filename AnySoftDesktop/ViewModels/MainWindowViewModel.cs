@@ -274,7 +274,7 @@ public class MainWindowViewModel : Screen, INotifyPropertyChanged
                 else
                 {
                     tab = new MultipleProductTabViewModel(products!, _viewModelFactory, _dialogManager);
-                    var baseTab = Tabs.First(t => t.GetType() == tab.GetType().BaseType);
+                    var baseTab = Tabs.First(t => t != tab && tab.GetType().IsSubclassOf(t.GetType()));
                     Tabs.Insert(Tabs.IndexOf(baseTab), tab);
                     baseTab.IsVisible = false;
                     tab.PreviousTab = ActiveTab;
@@ -326,7 +326,7 @@ public class MainWindowViewModel : Screen, INotifyPropertyChanged
                 else
                 {
                     tab = new ShoppingCartTabViewModel(products!, _viewModelFactory, _dialogManager);
-                    var baseTab = Tabs.First(t => t.GetType() == tab.GetType().BaseType.BaseType);
+                    var baseTab = Tabs.First(t => t != tab && tab.GetType().IsSubclassOf(t.GetType()));
                     Tabs.Insert(Tabs.IndexOf(baseTab), tab);
                     baseTab.IsVisible = false;
                     tab.PreviousTab = ActiveTab;
@@ -407,10 +407,49 @@ public class MainWindowViewModel : Screen, INotifyPropertyChanged
         {
             if (cartOrderRequest.IsSuccessStatusCode)
             {
-                var tab = Tabs.FirstOrDefault(t => t.GetType() == typeof(LibraryTabViewModel));
-                ActiveTab = tab;
-                tab.IsSelected = true;
-                tab.IsVisible = true;
+                var createdOrder = new OrderResponseDto();
+                var timeoutAfter = TimeSpan.FromMilliseconds(3000);
+                using (var cancellationTokenSource = new CancellationTokenSource(timeoutAfter))
+                {
+                    var responseStream =
+                        await cartOrderRequest.Content.ReadAsStreamAsync(cancellationTokenSource.Token);
+                    createdOrder = await JsonSerializer.DeserializeAsync<OrderResponseDto>(responseStream,
+                        CustomJsonSerializerOptions.Options, cancellationToken: cancellationTokenSource.Token);
+                    if (createdOrder is null)
+                        throw new InvalidOperationException("Order is null");
+                }
+
+                var getPaymentsRequest = await WebApiService.GetCall("api/payment",  App.AuthorizationToken ?? "");
+                if (getPaymentsRequest.IsSuccessStatusCode)
+                {
+                    using var cancellationTokenSource = new CancellationTokenSource(timeoutAfter);
+                    var responseStream = await getPaymentsRequest.Content.ReadAsStreamAsync(cancellationTokenSource.Token);
+                    var payments = await JsonSerializer.DeserializeAsync<IEnumerable<Payment>>(responseStream,
+                        CustomJsonSerializerOptions.Options, cancellationToken: cancellationTokenSource.Token);
+                    
+                    var paymentDialog = _viewModelFactory.CreatePurchaseDialog(payments.ToList());
+                    var selectedPaymentMethod = await _dialogManager.ShowDialogAsync(paymentDialog);
+                    if (selectedPaymentMethod is null)
+                        throw new InvalidOperationException("Payment method not selected");
+                    
+                    var orderPurchase = new OrderPurchaseDto()
+                    {
+                        OrderId = createdOrder.Id,
+                        PaymentId = selectedPaymentMethod.Id
+                    };
+                
+                    var orderConfirmationRequest = await WebApiService.PostCall("api/orders/buy", orderPurchase, App.AuthorizationToken);
+                    if (!orderConfirmationRequest.IsSuccessStatusCode) return;
+                    var tab = Tabs.FirstOrDefault(t => t.GetType() == typeof(LibraryTabViewModel));
+                    ActiveTab = tab;
+                    tab.IsSelected = true;
+                    tab.IsVisible = true;
+                }
+                else
+                {
+                    var msg = await getPaymentsRequest.Content.ReadAsStringAsync();
+                    throw new InvalidOperationException($"{getPaymentsRequest.ReasonPhrase}\n{msg}");
+                }
             }
             else
             {
