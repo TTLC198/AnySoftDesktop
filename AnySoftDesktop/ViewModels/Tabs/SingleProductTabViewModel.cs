@@ -62,6 +62,20 @@ public class SingleProductTabViewModel : DashboardTabViewModel, INotifyPropertyC
         }
     }
 
+    public ReviewDto? NewReview { get; set; } = new();
+    
+    private bool _isReviewAdded;
+
+    public bool IsReviewAdded
+    {
+        get => _isReviewAdded;
+        set
+        {
+            _isReviewAdded = value;
+            OnPropertyChanged();
+        }
+    }
+
     public SingleProductTabViewModel(int productId, IViewModelFactory viewModelFactory, DialogManager dialogManager) : base(viewModelFactory, dialogManager)
     {
         _productId = productId;
@@ -225,6 +239,48 @@ public class SingleProductTabViewModel : DashboardTabViewModel, INotifyPropertyC
             );
             await _dialogManager.ShowDialogAsync(messageBoxDialog);
         }
+    }
+    
+    public async void OnReviewAddButtonClick()
+    {
+        if (IsReviewAdded)
+        {
+            NewReview.ProductId = Product.Id;
+            var postReviewRequest = await WebApiService.PostCall("api/reviews", NewReview, App.AuthorizationToken);
+            try
+            {
+                if (postReviewRequest.IsSuccessStatusCode)
+                {
+                    IsReviewAdded = false;
+                    var timeoutAfter = TimeSpan.FromMilliseconds(3000);
+                    using (var cancellationTokenSource = new CancellationTokenSource(timeoutAfter))
+                    {
+                        var responseStream = await postReviewRequest.Content.ReadAsStreamAsync(cancellationTokenSource.Token);
+                        var createdReview = await JsonSerializer.DeserializeAsync<ReviewResponseDto>(responseStream,
+                            CustomJsonSerializerOptions.Options, cancellationToken: cancellationTokenSource.Token);
+                    }
+                    await UpdateProduct();
+                    NewReview = new ReviewDto();
+                }
+                else
+                {
+                    var msg = await postReviewRequest.Content.ReadAsStringAsync();
+                    throw new InvalidOperationException($"{postReviewRequest.ReasonPhrase}\n{msg}");
+                }
+            }
+            catch (Exception exception)
+            {
+                var messageBoxDialog = _viewModelFactory.CreateMessageBoxViewModel(
+                    title: "Some error has occurred",
+                    message: $@"{exception.Message}".Trim(),
+                    okButtonText: "OK",
+                    cancelButtonText: null
+                );
+                await _dialogManager.ShowDialogAsync(messageBoxDialog);
+            }
+        }
+        else
+            IsReviewAdded = !IsReviewAdded;
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;

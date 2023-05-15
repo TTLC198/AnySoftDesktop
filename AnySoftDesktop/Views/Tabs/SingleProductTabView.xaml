@@ -99,10 +99,10 @@
                                         Padding="1"
                                         FontSize="12"
                                         Foreground="{DynamicResource PrimaryHueMidBrush}"
-                                        Content="{Binding Name}" 
+                                        Content="{Binding Name}"
                                         s:View.ActionTarget="{Binding DataContext, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}"
                                         Command="{s:Action OpenProductsByGenre}"
-                                        CommandParameter="{Binding Id}"/>
+                                        CommandParameter="{Binding Id}" />
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
@@ -146,9 +146,9 @@
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition
-                                    Width="*"/>
+                                    Width="*" />
                                 <ColumnDefinition
-                                    Width="*"/>
+                                    Width="*" />
                             </Grid.ColumnDefinitions>
                             <Button
                                 materialDesign:ButtonAssist.CornerRadius="15 0 0 15"
@@ -160,30 +160,30 @@
                                         BasedOn="{StaticResource MaterialDesignOutlinedButton}">
                                         <Setter
                                             Property="Content"
-                                            Value="Add to Cart"/>
+                                            Value="Add to Cart" />
                                         <Setter
                                             Property="Foreground"
-                                            Value="{StaticResource PrimaryHueMidBrush}"/>
+                                            Value="{StaticResource PrimaryHueMidBrush}" />
                                         <Style.Triggers>
                                             <DataTrigger
                                                 Binding="{Binding IsInCart}"
                                                 Value="True">
                                                 <Setter
                                                     Property="Content"
-                                                    Value="Remove from Cart"/>
+                                                    Value="Remove from Cart" />
                                                 <Setter
                                                     Property="Foreground"
-                                                    Value="Firebrick"/>
+                                                    Value="Firebrick" />
                                             </DataTrigger>
                                             <DataTrigger
                                                 Binding="{Binding IsBought}"
                                                 Value="True">
                                                 <Setter
                                                     Property="Content"
-                                                    Value="Download"/>
+                                                    Value="Download" />
                                                 <Setter
                                                     Property="Foreground"
-                                                    Value="{StaticResource PrimaryHueMidBrush}"/>
+                                                    Value="{StaticResource PrimaryHueMidBrush}" />
                                             </DataTrigger>
                                         </Style.Triggers>
                                     </Style>
@@ -246,73 +246,179 @@
                     BorderThickness="0"
                     Background="{DynamicResource SearchBarColorBrush}"
                     Padding="15">
-                    <ItemsControl
-                        HorizontalAlignment="Center"
-                        HorizontalContentAlignment="Stretch"
-                        ItemsSource="{Binding Product.Reviews}">
-                        <ItemsControl.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <StackPanel
-                                    Orientation="Vertical"
-                                    HorizontalAlignment="Stretch" />
-                            </ItemsPanelTemplate>
-                        </ItemsControl.ItemsPanel>
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate>
-                                <StackPanel
-                                    Orientation="Vertical"
-                                    HorizontalAlignment="Stretch">
-                                    <DockPanel
-                                        LastChildFill="False"
+                    <StackPanel
+                        Orientation="Vertical">
+                        <ItemsControl
+                            HorizontalAlignment="Stretch"
+                            HorizontalContentAlignment="Stretch"
+                            ItemsSource="{Binding Product.Reviews}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <StackPanel
+                                        Orientation="Vertical"
                                         HorizontalAlignment="Left"
-                                        VerticalAlignment="Stretch">
-                                        <Ellipse
-                                            Height="60"
-                                            Width="60"
-                                            Margin="6"
-                                            DockPanel.Dock="Left"
-                                            HorizontalAlignment="Stretch"
-                                            VerticalAlignment="Center">
-                                            <Ellipse.Fill>
-                                                <ImageBrush
-                                                    ImageSource="{Binding User.Image, Converter={x:Static converters:UrlToImageConverter.Instance}}" />
-                                            </Ellipse.Fill>
-                                        </Ellipse>
-                                        <!--User Description-->
+                                        VerticalAlignment="Stretch"/>
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel
+                                        Orientation="Vertical"
+                                        HorizontalAlignment="Stretch">
                                         <DockPanel
-                                            HorizontalAlignment="Stretch"
-                                            VerticalAlignment="Center"
-                                            LastChildFill="False">
-                                            <TextBlock
-                                                DockPanel.Dock="Top"
-                                                FontSize="20"
-                                                Foreground="{DynamicResource PrimaryHueMidBrush}"
-                                                Text="{Binding User.Login}" />
-                                            <TextBlock
-                                                DockPanel.Dock="Top"
-                                                FontSize="16"
-                                                TextWrapping="Wrap"
-                                                Foreground="{DynamicResource PrimaryHueDarkBrush}"
-                                                Text="{Binding Ts, StringFormat='Posted {0:D}'}" />
-                                            <materialDesign:RatingBar
-                                                x:Name="BasicRatingBar"
-                                                FontSize="12"
-                                                IsReadOnly="True"
-                                                Value="{Binding Grade}" />
+                                            LastChildFill="True"
+                                            HorizontalAlignment="Left"
+                                            VerticalAlignment="Stretch">
+                                            <Ellipse
+                                                Height="60"
+                                                Width="60"
+                                                Margin="6"
+                                                DockPanel.Dock="Left"
+                                                HorizontalAlignment="Stretch"
+                                                VerticalAlignment="Center">
+                                                <Ellipse.Fill>
+                                                    <ImageBrush
+                                                        ImageSource="{Binding User.Image, Converter={x:Static converters:UrlToImageConverter.Instance}}" />
+                                                </Ellipse.Fill>
+                                            </Ellipse>
+                                            <!--User Description-->
+                                            <DockPanel
+                                                HorizontalAlignment="Stretch"
+                                                DockPanel.Dock="Left"
+                                                VerticalAlignment="Center"
+                                                LastChildFill="False">
+                                                <TextBlock
+                                                    DockPanel.Dock="Top"
+                                                    FontSize="20"
+                                                    Foreground="{DynamicResource PrimaryHueMidBrush}"
+                                                    Text="{Binding User.Login}" />
+                                                <TextBlock
+                                                    DockPanel.Dock="Top"
+                                                    FontSize="14"
+                                                    TextWrapping="Wrap"
+                                                    Foreground="{DynamicResource PrimaryHueDarkBrush}"
+                                                    Text="{Binding Ts, StringFormat='Posted {0:D}'}" />
+                                                <materialDesign:RatingBar
+                                                    FontSize="12"
+                                                    IsReadOnly="True"
+                                                    VerticalAlignment="Center"
+                                                    Foreground="{DynamicResource PrimaryHueDarkBrush}"
+                                                    Value="{Binding Grade}" />
+                                            </DockPanel>
                                         </DockPanel>
-                                    </DockPanel>
-                                    <TextBlock
-                                        DockPanel.Dock="Top"
-                                        HorizontalAlignment="Stretch"
-                                        Margin="5, 7"
-                                        FontSize="14"
-                                        TextWrapping="Wrap"
-                                        Foreground="{DynamicResource PrimaryHueDarkBrush}"
-                                        Text="{Binding Text}" />
-                                </StackPanel>
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
+                                        <TextBlock
+                                            DockPanel.Dock="Top"
+                                            HorizontalAlignment="Stretch"
+                                            Margin="5, 7"
+                                            FontSize="14"
+                                            TextWrapping="Wrap"
+                                            Foreground="{DynamicResource PrimaryHueDarkBrush}"
+                                            Text="{Binding Text}" />
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                        <StackPanel
+                            Visibility="{Binding IsReviewAdded, Converter={x:Static converters:BoolToVisibleConverter.Instance}}"
+                            Orientation="Vertical"
+                            HorizontalAlignment="Stretch">
+                            <DockPanel>
+                                <TextBlock
+                                    DockPanel.Dock="Top"
+                                    HorizontalAlignment="Left"
+                                    VerticalAlignment="Center"
+                                    Margin="5, 7"
+                                    FontSize="14"
+                                    TextWrapping="Wrap"
+                                    Foreground="{DynamicResource PrimaryHueDarkBrush}"
+                                    Text="Your grade:" />
+                                <materialDesign:RatingBar
+                                    DockPanel.Dock="Top"
+                                    FontSize="12"
+                                    IsReadOnly="False"
+                                    VerticalAlignment="Center"
+                                    IsPreviewValueEnabled="True"
+                                    Max="5"
+                                    Min="1"
+                                    Foreground="{DynamicResource PrimaryHueDarkBrush}"
+                                    Value="{Binding NewReview.Grade}" />
+                            </DockPanel>
+                            <DockPanel>
+                                <TextBlock
+                                    DockPanel.Dock="Top"
+                                    HorizontalAlignment="Left"
+                                    VerticalAlignment="Center"
+                                    Margin="5, 7"
+                                    FontSize="14"
+                                    TextWrapping="Wrap"
+                                    Foreground="{DynamicResource PrimaryHueDarkBrush}"
+                                    Text="Your opinion:" />
+                                <TextBox
+                                    DockPanel.Dock="Top"
+                                    Margin="5, 7"
+                                    FontSize="14"
+                                    materialDesign:ValidationAssist.Background="Transparent"
+                                    Foreground="{DynamicResource PrimaryHueDarkBrush}"
+                                    VerticalAlignment="Stretch"
+                                    materialDesign:HintAssist.Hint="Review text"
+                                    AcceptsReturn="True"
+                                    SpellCheck.IsEnabled="True"
+                                    Text="{Binding NewReview.Text}"
+                                    TextWrapping="Wrap"
+                                    VerticalScrollBarVisibility="Auto">
+                                </TextBox>
+                            </DockPanel>
+                        </StackPanel>
+                        <Button
+                            Margin="15, 5"
+                            Command="{s:Action OnReviewAddButtonClick}"
+                            Visibility="{Binding IsBought, Converter={x:Static converters:BoolToVisibleConverter.Instance}}">
+                            <Button.Style>
+                                <Style
+                                    TargetType="Button"
+                                    BasedOn="{StaticResource MaterialDesignFlatDarkButton}">
+                                    <Setter
+                                        Property="Content">
+                                        <Setter.Value>
+                                            <StackPanel
+                                                Orientation="Horizontal">
+                                                <materialDesign:PackIcon
+                                                    Width="20"
+                                                    Height="20"
+                                                    Kind="MessageDraw" />
+                                                <TextBlock
+                                                    Margin="5, 0"
+                                                    Text="Add review"
+                                                    VerticalAlignment="Center" />
+                                            </StackPanel>
+                                        </Setter.Value>
+                                    </Setter>
+                                    <Style.Triggers>
+                                        <DataTrigger
+                                            Binding="{Binding IsReviewAdded}"
+                                            Value="True">
+                                            <Setter
+                                                Property="Content">
+                                                <Setter.Value>
+                                                    <StackPanel
+                                                        Orientation="Horizontal">
+                                                        <materialDesign:PackIcon
+                                                            Width="20"
+                                                            Height="20"
+                                                            Kind="MessageCheck" />
+                                                        <TextBlock
+                                                            Margin="5, 0"
+                                                            Text="Save changes"
+                                                            VerticalAlignment="Center" />
+                                                    </StackPanel>
+                                                </Setter.Value>
+                                            </Setter>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+                        </Button>
+                    </StackPanel>
                 </Border>
             </StackPanel>
         </Grid>
