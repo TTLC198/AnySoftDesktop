@@ -106,7 +106,7 @@ public class MainWindowViewModel : Screen, INotifyPropertyChanged
         var singleProductTab = Tabs.FirstOrDefault(t => t.GetType() == typeof(SingleProductTabViewModel));
         if (singleProductTab is not null)
         {
-            var baseTab = Tabs.First(t => t.GetType() == singleProductTab.GetType().BaseType);
+            var baseTab = Tabs.First(t => t != singleProductTab && singleProductTab.GetType().IsSubclassOf(t.GetType()));
             baseTab.IsVisible = true;
             Tabs.Remove(singleProductTab);
         }
@@ -145,7 +145,7 @@ public class MainWindowViewModel : Screen, INotifyPropertyChanged
         if (currentTab is not SingleProductTabViewModel)
             return;
 
-        var baseTab = Tabs.First(t => t.GetType() == currentTab.GetType().BaseType);
+        var baseTab = Tabs.First(t => t != currentTab && currentTab.GetType().IsSubclassOf(t.GetType()));
         baseTab.IsVisible = true;
         Tabs.Remove(currentTab);
         
@@ -184,7 +184,7 @@ public class MainWindowViewModel : Screen, INotifyPropertyChanged
 
         var tab = new SingleProductTabViewModel(id, _viewModelFactory, _dialogManager);
 
-        var baseTab = Tabs.First(t => t.GetType() == tab.GetType().BaseType);
+        var baseTab = Tabs.First(t => t != tab && tab.GetType().IsSubclassOf(t.GetType().BaseType));
         Tabs.Insert(Tabs.IndexOf(baseTab), tab);
         baseTab.IsVisible = false;
 
@@ -208,7 +208,7 @@ public class MainWindowViewModel : Screen, INotifyPropertyChanged
         {
             tab = new ProfileTabViewModel(CurrentUser, _viewModelFactory, _dialogManager);
 
-            var baseTab = Tabs.First(t => t.GetType() == tab.GetType().BaseType);
+            var baseTab = Tabs.First(t => t != tab && tab.GetType().IsSubclassOf(t.GetType()));
             Tabs.Insert(Tabs.IndexOf(baseTab), tab);
             baseTab.IsVisible = false;
 
@@ -442,6 +442,7 @@ public class MainWindowViewModel : Screen, INotifyPropertyChanged
                     if (!orderConfirmationRequest.IsSuccessStatusCode) return;
                     var tab = Tabs.FirstOrDefault(t => t.GetType() == typeof(LibraryTabViewModel));
                     ActiveTab = tab;
+                    tab.OnTabSelected(EventArgs.Empty);
                     tab.IsSelected = true;
                     tab.IsVisible = true;
                 }
