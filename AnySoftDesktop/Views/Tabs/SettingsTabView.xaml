@@ -36,10 +36,29 @@
                 IsEnabled="{Binding DataContext.IsAuthorized, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}"
                 IsExpanded="{Binding DataContext.IsAuthorized, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}">
                 <DockPanel
-                    LastChildFill="True">
+                    LastChildFill="True"
+                    VerticalAlignment="Top"
+                    HorizontalAlignment="Stretch">
                     <Button
                         HorizontalContentAlignment="Left"
-                        DockPanel.Dock="Left"
+                        DockPanel.Dock="Top"
+                        Style="{StaticResource MaterialDesignFlatButton}"
+                        s:View.ActionTarget="{Binding DataContext, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}"
+                        Command="{s:Action OnProfileButtonClick}">
+                        <StackPanel
+                            Orientation="Horizontal">
+                            <materialDesign:PackIcon
+                                Margin="0, 0, 10, 0"
+                                Kind="AccountSettings" />
+                            <TextBlock
+                                VerticalAlignment="Center"
+                                Style="{StaticResource MaterialDesignButtonTextBlock}"
+                                Text="Profile settings"/>
+                        </StackPanel>
+                    </Button>
+                    <Button
+                        HorizontalContentAlignment="Left"
+                        DockPanel.Dock="Top"
                         Style="{StaticResource MaterialDesignFlatButton}"
                         s:View.ActionTarget="{Binding DataContext, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}"
                         Command="{s:Action Logout}">
