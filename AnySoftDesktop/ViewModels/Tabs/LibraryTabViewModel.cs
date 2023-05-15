@@ -51,6 +51,7 @@ public class LibraryTabViewModel : TabBaseViewModel, INotifyPropertyChanged
                     CustomJsonSerializerOptions.Options, cancellationToken: cancellationTokenSource.Token);
                 Products = new ObservableCollection<ProductResponseDto>(
                     orders
+                        .Where(o => o.Status == "Paid")
                         .Select(o => o.PurchasedProducts)
                         .SelectMany(p => p)
                 );

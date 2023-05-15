@@ -99,6 +99,7 @@ public class SingleProductTabViewModel : DashboardTabViewModel, INotifyPropertyC
                         var orders = await JsonSerializer.DeserializeAsync<IEnumerable<OrderResponseDto>>(responseStream,
                             CustomJsonSerializerOptions.Options, cancellationToken: cancellationTokenSource.Token);
                         if (orders
+                            .Where(o => o.Status == "Paid")
                             .SelectMany(o => o.PurchasedProducts)
                             .Any(p => p.Id == Product.Id))
                             IsBought = true;
