@@ -17,20 +17,81 @@
              Background="Transparent"
              TextElement.Foreground="{DynamicResource PrimaryHueDarkBrush}">
     <Grid
+        Background="{DynamicResource MaterialDesignPaper}"
+        VerticalAlignment="Stretch"
+        Margin="2, 0, 0, 0"
         Loaded="{s:Action OnViewFullyLoaded}">
-        <ComboBox
-            Margin="5, 0"
-            MinWidth="72"
-            materialDesign:HintAssist.Hint="Genres"
-            ItemsSource="{Binding Genres}"
-            SelectedValue="{Binding SelectedGenre}">
-            <ComboBox.ItemTemplate>
-                <DataTemplate>
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="{Binding Path=Name}" />
-                    </StackPanel>
-                </DataTemplate>
-            </ComboBox.ItemTemplate>
-        </ComboBox>
+        <Grid.RowDefinitions>
+            <RowDefinition
+                Height="Auto" />
+            <RowDefinition
+                Height="*" />
+            <RowDefinition
+                Height="Auto" />
+        </Grid.RowDefinitions>
+        <DockPanel
+            Grid.Row="0"
+            LastChildFill="False"
+            Background="{DynamicResource PrimaryHueLightBrush}">
+            <TextBlock
+                FontSize="16"
+                Text="Choose a payment method"
+                Margin="5" />
+            <Button
+                Height="Auto"
+                Width="Auto"
+                DockPanel.Dock="Right"
+                Margin="1"
+                Padding="1"
+                Style="{DynamicResource MaterialDesignFlatDarkButton}"
+                ToolTip="Close dialog"
+                Command="{s:Action CloseView}">
+                <materialDesign:PackIcon
+                    Width="20"
+                    Height="20"
+                    Kind="WindowClose" />
+            </Button>
+        </DockPanel>
+        <StackPanel
+            Grid.Row="1"
+            Orientation="Vertical"
+            Margin="5">
+            <ComboBox
+                Margin="5"
+                MinWidth="72"
+                materialDesign:HintAssist.Hint="Select bank card"
+                ItemsSource="{Binding PaymentMethods}"
+                SelectedValue="{Binding SelectedPaymentMethod}">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="{Binding Path=Number}" />
+                        </StackPanel>
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+            </ComboBox>
+            <CheckBox
+                Margin="5"
+                Content="I confirm the purchase"
+                IsChecked="{Binding Confirmation}" />
+        </StackPanel>
+        <Button
+            Grid.Row="2"
+            Style="{DynamicResource MaterialDesignFlatDarkButton}"
+            Background="{DynamicResource PrimaryHueLightBrush}"
+            Command="{s:Action OnConfirmation}"
+            Margin="3, 0, 0, 0">
+            <StackPanel
+                Orientation="Horizontal">
+                <materialDesign:PackIcon
+                    Width="20"
+                    Height="20"
+                    Kind="CreditCard" />
+                <TextBlock
+                    Margin="5, 0"
+                    Text="Buy"
+                    VerticalAlignment="Center" />
+            </StackPanel>
+        </Button>
     </Grid>
 </UserControl>

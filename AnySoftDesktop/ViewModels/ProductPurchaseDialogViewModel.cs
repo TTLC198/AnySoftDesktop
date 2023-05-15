@@ -19,9 +19,11 @@ public class ProductPurchaseDialogViewModel : DialogScreen<Payment>, INotifyProp
     private readonly DialogManager _dialogManager;
     private readonly IViewModelFactory _viewModelFactory;
 
-    public IReadOnlyList<Payment> PaymentMethods { get; }
+    public List<Payment> PaymentMethods { get; set; }
+    public Payment? SelectedPaymentMethod { get; set; }
+    public bool Confirmation { get; set; }
 
-    public ProductPurchaseDialogViewModel(DialogManager dialogManager, IViewModelFactory viewModelFactory, IReadOnlyList<Payment> paymentMethods)
+    public ProductPurchaseDialogViewModel(DialogManager dialogManager, IViewModelFactory viewModelFactory, List<Payment> paymentMethods)
     {
         _dialogManager = dialogManager;
         _viewModelFactory = viewModelFactory;
@@ -32,9 +34,28 @@ public class ProductPurchaseDialogViewModel : DialogScreen<Payment>, INotifyProp
     {
         
     }
+    
+    public void OnConfirmation()
+    {
+        if (Confirmation && SelectedPaymentMethod is not null)
+            Close(SelectedPaymentMethod);
+    }
 
     public void CloseView()
     {
         Close(null!);
+    }
+}
+
+public static class ProductPurchaseDialogViewModelExtensions
+{
+    public static ProductPurchaseDialogViewModel CreatePurchaseDialog(
+        this IViewModelFactory factory,
+        List<Payment> paymentMethods)
+    {
+        var viewModel = factory.CreatePurchaseDialog();
+        viewModel.PaymentMethods = paymentMethods;
+
+        return viewModel;
     }
 }
