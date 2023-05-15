@@ -37,23 +37,42 @@ public class LibraryTabViewModel : TabBaseViewModel, INotifyPropertyChanged
 
     private async void UpdateOrders(object? sender, EventArgs e)
     {
-        if (Products is not {Count: 0})
-            return;
         try
         {
             var getOrdersRequest = await WebApiService.GetCall("api/orders",  App.AuthorizationToken ?? "");
             if (getOrdersRequest.IsSuccessStatusCode)
             {
+                var orders = new List<OrderResponseDto>();
                 var timeoutAfter = TimeSpan.FromMilliseconds(3000);
-                using var cancellationTokenSource = new CancellationTokenSource(timeoutAfter);
-                var responseStream = await getOrdersRequest.Content.ReadAsStreamAsync(cancellationTokenSource.Token);
-                var orders = await JsonSerializer.DeserializeAsync<IEnumerable<OrderResponseDto>>(responseStream,
-                    CustomJsonSerializerOptions.Options, cancellationToken: cancellationTokenSource.Token);
+                using (var cancellationTokenSource = new CancellationTokenSource(timeoutAfter))
+                {
+                    var responseStream = await getOrdersRequest.Content.ReadAsStreamAsync(cancellationTokenSource.Token);
+                    var receivedOrders = await JsonSerializer.DeserializeAsync<IEnumerable<OrderResponseDto>>(responseStream,
+                        CustomJsonSerializerOptions.Options, cancellationToken: cancellationTokenSource.Token);
+                    orders = receivedOrders.ToList();
+                }
+                var products = new List<ProductResponseDto>();
+                foreach (var productId in orders
+                             .Where(o => o.Status == "Paid")
+                             .SelectMany(o => o.PurchasedProductsIds))
+                {
+                    var getProductRequest = await WebApiService.GetCall($"api/products/{productId}",  App.AuthorizationToken ?? "");
+                    if (getProductRequest.IsSuccessStatusCode)
+                    {
+                        using (var cancellationTokenSource = new CancellationTokenSource(timeoutAfter))
+                        {
+                            var responseStream =
+                                await getProductRequest.Content.ReadAsStreamAsync(cancellationTokenSource.Token);
+                            var product = await JsonSerializer.DeserializeAsync<ProductResponseDto>(
+                                responseStream,
+                                CustomJsonSerializerOptions.Options,
+                                cancellationToken: cancellationTokenSource.Token);
+                            products.Add(product);
+                        }
+                    }
+                }
                 Products = new ObservableCollection<ProductResponseDto>(
-                    orders
-                        .Where(o => o.Status == "Paid")
-                        .Select(o => o.PurchasedProducts)
-                        .SelectMany(p => p)
+                    products
                 );
             }
             else
