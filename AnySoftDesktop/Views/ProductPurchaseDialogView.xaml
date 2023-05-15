@@ -1,0 +1,36 @@
+﻿<UserControl x:Class="AnySoftDesktop.Views.ProductPurchaseDialogView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:viewModels="clr-namespace:AnySoftDesktop.ViewModels"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:s="https://github.com/canton7/Stylet"
+             xmlns:validation="clr-namespace:AnySoftDesktop.Utils.Validation"
+             xmlns:converters="clr-namespace:AnySoftDesktop.Utils.Converters"
+             d:DataContext="{d:DesignInstance Type=viewModels:ProductPurchaseDialogViewModel}"
+             mc:Ignorable="d"
+             d:DesignHeight="400"
+             d:DesignWidth="400"
+             MinWidth="370"
+             Style="{DynamicResource MaterialDesignRoot}"
+             Background="Transparent"
+             TextElement.Foreground="{DynamicResource PrimaryHueDarkBrush}">
+    <Grid
+        Loaded="{s:Action OnViewFullyLoaded}">
+        <ComboBox
+            Margin="5, 0"
+            MinWidth="72"
+            materialDesign:HintAssist.Hint="Genres"
+            ItemsSource="{Binding Genres}"
+            SelectedValue="{Binding SelectedGenre}">
+            <ComboBox.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="{Binding Path=Name}" />
+                    </StackPanel>
+                </DataTemplate>
+            </ComboBox.ItemTemplate>
+        </ComboBox>
+    </Grid>
+</UserControl>
