@@ -6,6 +6,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Threading;
+using System.Threading.Tasks;
 using AnySoftDesktop.Models;
 using AnySoftDesktop.Services;
 using AnySoftDesktop.Utils;
@@ -29,7 +30,7 @@ public class ProfileTabViewModel : SettingsTabViewModel, INotifyPropertyChanged
             OnPropertyChanged();
         }
     }
-    
+
     private ObservableCollection<Payment> _paymentMethods;
 
     public ObservableCollection<Payment> PaymentMethods
@@ -41,14 +42,31 @@ public class ProfileTabViewModel : SettingsTabViewModel, INotifyPropertyChanged
             OnPropertyChanged();
         }
     }
-    
+
+    private bool _isPaymentAdded;
+
+    public bool IsPaymentAdded
+    {
+        get => _isPaymentAdded;
+        set
+        {
+            _isPaymentAdded = value;
+            OnPropertyChanged();
+        }
+    }
+
     public TabBaseViewModel? PreviousTab { get; set; }
-    
+
     public async void OnViewFullyLoaded()
+    {
+        await UpdatePayments();
+    }
+
+    public async Task UpdatePayments()
     {
         try
         {
-            var getPaymentsRequest = await WebApiService.GetCall("api/payment",  App.AuthorizationToken ?? "");
+            var getPaymentsRequest = await WebApiService.GetCall("api/payment", App.AuthorizationToken ?? "");
             if (getPaymentsRequest.IsSuccessStatusCode)
             {
                 var timeoutAfter = TimeSpan.FromMilliseconds(3000);
@@ -75,21 +93,33 @@ public class ProfileTabViewModel : SettingsTabViewModel, INotifyPropertyChanged
             await _dialogManager.ShowDialogAsync(messageBoxDialog);
         }
     }
-    
+
     public async void AddPayment()
     {
         PaymentMethods.Add(new Payment());
-        /*var postProductsToCartRequest = await WebApiService.PostCall($"api/payment", payment, App.AuthorizationToken);
+    }
+
+    public async void SavePayment(Payment payment)
+    {
+        var paymentDto = new PaymentDto()
+        {
+            Number = payment.Number,
+            ExpirationDate = payment.ExpirationDate,
+            Cvc = payment.Cvc
+        };
+        var postPaymentMethodRequest =
+            await WebApiService.PostCall($"api/payment", paymentDto, App.AuthorizationToken);
         try
         {
-            if (postProductsToCartRequest.IsSuccessStatusCode)
+            if (postPaymentMethodRequest.IsSuccessStatusCode)
             {
-                IsInCart = false;
+                await UpdatePayments();
+                IsPaymentAdded = false;
             }
             else
             {
-                var msg = await postProductsToCartRequest.Content.ReadAsStringAsync();
-                throw new InvalidOperationException($"{postProductsToCartRequest.ReasonPhrase}\n{msg}");
+                var msg = await postPaymentMethodRequest.Content.ReadAsStringAsync();
+                throw new InvalidOperationException($"{postPaymentMethodRequest.ReasonPhrase}\n{msg}");
             }
         }
         catch (Exception exception)
@@ -101,9 +131,9 @@ public class ProfileTabViewModel : SettingsTabViewModel, INotifyPropertyChanged
                 cancelButtonText: null
             );
             await _dialogManager.ShowDialogAsync(messageBoxDialog);
-        }*/
+        }
     }
-    
+
     public async void EditPayment(Payment payment)
     {
         var paymentEditDto = new PaymentEditDto()
@@ -149,9 +179,11 @@ public class ProfileTabViewModel : SettingsTabViewModel, INotifyPropertyChanged
             await _dialogManager.ShowDialogAsync(messageBoxDialog);
         }
     }
-    
+
     public async void RemovePayment(int id)
     {
+        if (id == 0)
+            await UpdatePayments();
         var postProductsToCartRequest = await WebApiService.DeleteCall($"api/payment/{id}", App.AuthorizationToken);
         try
         {
@@ -187,7 +219,8 @@ public class ProfileTabViewModel : SettingsTabViewModel, INotifyPropertyChanged
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 
-    public ProfileTabViewModel(ApplicationUser applicationUser, IViewModelFactory viewModelFactory, DialogManager dialogManager) : base(viewModelFactory, dialogManager)
+    public ProfileTabViewModel(ApplicationUser applicationUser, IViewModelFactory viewModelFactory,
+        DialogManager dialogManager) : base(viewModelFactory, dialogManager)
     {
         ApplicationUser = applicationUser;
         _viewModelFactory = viewModelFactory;
