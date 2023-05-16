@@ -43,18 +43,6 @@ public class ProfileTabViewModel : SettingsTabViewModel, INotifyPropertyChanged
         }
     }
 
-    private bool _isPaymentAdded;
-
-    public bool IsPaymentAdded
-    {
-        get => _isPaymentAdded;
-        set
-        {
-            _isPaymentAdded = value;
-            OnPropertyChanged();
-        }
-    }
-
     public TabBaseViewModel? PreviousTab { get; set; }
 
     public async void OnViewFullyLoaded()
@@ -108,13 +96,12 @@ public class ProfileTabViewModel : SettingsTabViewModel, INotifyPropertyChanged
             Cvc = payment.Cvc
         };
         var postPaymentMethodRequest =
-            await WebApiService.PostCall($"api/payment", paymentDto, App.AuthorizationToken);
+            await WebApiService.PostCall("api/payment", paymentDto, App.AuthorizationToken);
         try
         {
             if (postPaymentMethodRequest.IsSuccessStatusCode)
             {
                 await UpdatePayments();
-                IsPaymentAdded = false;
             }
             else
             {
@@ -183,7 +170,10 @@ public class ProfileTabViewModel : SettingsTabViewModel, INotifyPropertyChanged
     public async void RemovePayment(int id)
     {
         if (id == 0)
+        {
             await UpdatePayments();
+            return;
+        }
         var postProductsToCartRequest = await WebApiService.DeleteCall($"api/payment/{id}", App.AuthorizationToken);
         try
         {

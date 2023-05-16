@@ -8,6 +8,7 @@
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:converters="clr-namespace:AnySoftDesktop.Utils.Converters"
              xmlns:validation="clr-namespace:AnySoftDesktop.Utils.Validation"
+             xmlns:system="clr-namespace:System;assembly=System.Runtime"
              Background="{DynamicResource MaterialDesignPaper}"
              FontFamily="{DynamicResource MaterialDesignFont}"
              TextElement.Foreground="{StaticResource PrimaryHueMidBrush}"
@@ -239,6 +240,7 @@
                                     Margin="0, 6"
                                     HorizontalAlignment="Stretch"
                                     materialDesign:HintAssist.HelperText="Card number"
+                                    MaxLength="16"
                                     FontSize="18"
                                     materialDesign:ValidationAssist.Background="Transparent"
                                     materialDesign:TextFieldAssist.HasClearButton="True">
@@ -264,21 +266,17 @@
                                     </TextBox.Text>
                                 </TextBox>
                                 <!--Card CVC & Expiration Data-->
-                                <Grid
+                                <DockPanel
                                     Grid.Row="1"
                                     DockPanel.Dock="Top"
                                     Margin="0, 6"
-                                    HorizontalAlignment="Stretch">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition
-                                            Width="*" />
-                                        <ColumnDefinition
-                                            Width="*" />
-                                    </Grid.ColumnDefinitions>
+                                    HorizontalAlignment="Stretch"
+                                    LastChildFill="False">
                                     <TextBox
-                                        Grid.Column="0"
+                                        DockPanel.Dock="Left"
                                         HorizontalAlignment="Left"
                                         materialDesign:HintAssist.HelperText="CVC"
+                                        MaxLength="3"
                                         FontSize="18"
                                         materialDesign:ValidationAssist.Background="Transparent"
                                         materialDesign:TextFieldAssist.HasClearButton="True">
@@ -303,41 +301,63 @@
                                             </Binding>
                                         </TextBox.Text>
                                     </TextBox>
-                                    <StackPanel
-                                        Grid.Column="1"
-                                        Orientation="Horizontal"
-                                        HorizontalAlignment="Right">
-                                        <TextBox
-                                            HorizontalAlignment="Left"
-                                            materialDesign:HintAssist.HelperText="Month"
-                                            FontSize="18"
-                                            materialDesign:ValidationAssist.Background="Transparent">
-                                            <materialDesign:HintAssist.Hint>
-                                                <StackPanel Orientation="Horizontal">
-                                                    <materialDesign:PackIcon
-                                                        Kind="CalendarMonth"
-                                                        VerticalAlignment="Top" />
-                                                    <TextBlock
-                                                        Margin="4, 0"
-                                                        Text="{Binding ExpirationDate, Mode=OneTime, StringFormat='{}{0:MM}'}" />
+                                    <ContentControl
+                                        DockPanel.Dock="Right"
+                                        Content="{Binding ExpirationDate}"
+                                        HorizontalAlignment="Stretch"
+                                        HorizontalContentAlignment="Stretch">
+                                        <ContentControl.ContentTemplate>
+                                            <DataTemplate
+                                                DataType="{x:Type system:DateTime}">
+                                                <StackPanel
+                                                    HorizontalAlignment="Left"
+                                                    Orientation="Horizontal">
+                                                    <TextBox
+                                                        MinWidth="30"
+                                                        HorizontalAlignment="Left"
+                                                        materialDesign:HintAssist.HelperText="Month"
+                                                        materialDesign:TextFieldAssist.CharacterCounterVisibility="Collapsed"
+                                                        FontSize="18"
+                                                        MaxLength="2"
+                                                        materialDesign:ValidationAssist.Background="Transparent">
+                                                        <materialDesign:HintAssist.Hint>
+                                                            <StackPanel Orientation="Horizontal">
+                                                                <materialDesign:PackIcon
+                                                                    Kind="CalendarMonth"
+                                                                    VerticalAlignment="Top" />
+                                                                <TextBlock
+                                                                    HorizontalAlignment="Center"
+                                                                    Margin="4, 0"
+                                                                    Text="{Binding Month, Mode=OneTime, StringFormat='00'}" />
+                                                            </StackPanel>
+                                                        </materialDesign:HintAssist.Hint>
+                                                    </TextBox>
+                                                    <TextBox
+                                                        MinWidth="60"
+                                                        Margin="5, 0,0 ,0"
+                                                        HorizontalAlignment="Right"
+                                                        materialDesign:HintAssist.HelperText="Year"
+                                                        materialDesign:TextFieldAssist.CharacterCounterVisibility="Collapsed"
+                                                        FontSize="18"
+                                                        MaxLength="4"
+                                                        materialDesign:ValidationAssist.Background="Transparent">
+                                                        <materialDesign:HintAssist.Hint>
+                                                            <StackPanel Orientation="Horizontal">
+                                                                <materialDesign:PackIcon
+                                                                    Kind="CalendarMonth"
+                                                                    VerticalAlignment="Top" />
+                                                                <TextBlock
+                                                                    HorizontalAlignment="Center"
+                                                                    Margin="4, 0"
+                                                                    Text="{Binding Year, Mode=OneTime, StringFormat='0000'}" />
+                                                            </StackPanel>
+                                                        </materialDesign:HintAssist.Hint>
+                                                    </TextBox>
                                                 </StackPanel>
-                                            </materialDesign:HintAssist.Hint>
-                                        </TextBox>
-                                        <TextBox
-                                            HorizontalAlignment="Right"
-                                            materialDesign:HintAssist.HelperText="Year"
-                                            FontSize="18"
-                                            materialDesign:ValidationAssist.Background="Transparent">
-                                            <materialDesign:HintAssist.Hint>
-                                                <StackPanel Orientation="Horizontal">
-                                                    <TextBlock
-                                                        Margin="4, 0"
-                                                        Text="{Binding ExpirationDate, Mode=OneTime, StringFormat='{}{0:yy}'}" />
-                                                </StackPanel>
-                                            </materialDesign:HintAssist.Hint>
-                                        </TextBox>
-                                    </StackPanel>
-                                </Grid>
+                                            </DataTemplate>
+                                        </ContentControl.ContentTemplate>
+                                    </ContentControl>
+                                </DockPanel>
                                 <Grid
                                     Grid.Row="2"
                                     DockPanel.Dock="Top"
@@ -370,6 +390,7 @@
                                     </Button>
                                     <Button
                                         Grid.Column="1"
+                                        Visibility="{Binding Id, Converter={x:Static converters:NullToVisibilityConverter.Instance}}"
                                         Style="{DynamicResource MaterialDesignFlatDarkButton}"
                                         Background="{DynamicResource PrimaryHueLightBrush}"
                                         Command="{s:Action EditPayment}"
@@ -389,7 +410,7 @@
                                     </Button>
                                     <Button
                                         Grid.Column="1"
-                                        Visibility="{Binding Id, Converter={x:Static converters:NullToVisibilityConverter.Instance}}"
+                                        Visibility="{Binding Id, Converter={x:Static converters:InverseNullToVisibilityConverter.Instance}}"
                                         Style="{DynamicResource MaterialDesignFlatDarkButton}"
                                         Background="{DynamicResource PrimaryHueLightBrush}"
                                         Command="{s:Action SavePayment}"
