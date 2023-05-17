@@ -121,9 +121,11 @@
                     <Binding
                         Path="UserCredentials.Email"
                         UpdateSourceTrigger="LostFocus"
-                        ValidatesOnExceptions="True" >
+                        ValidatesOnExceptions="True">
                         <Binding.ValidationRules>
                             <validation:NotEmptyValidationRule
+                                ValidatesOnTargetUpdated="False"/>
+                            <validation:EmailValidationRule
                                 ValidatesOnTargetUpdated="False"/>
                         </Binding.ValidationRules>
                     </Binding>
