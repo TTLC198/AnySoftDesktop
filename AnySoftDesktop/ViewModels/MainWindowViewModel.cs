@@ -78,7 +78,7 @@ public class MainWindowViewModel : Screen, INotifyPropertyChanged
                 var responseStream = await getGenresRequest.Content.ReadAsStreamAsync(cancellationTokenSource.Token);
                 var genres = await JsonSerializer.DeserializeAsync<IEnumerable<Genre>>(responseStream,
                     CustomJsonSerializerOptions.Options, cancellationToken: cancellationTokenSource.Token);
-                Genres = new ObservableCollection<Genre>(genres.OrderBy(g => g.Name).Prepend(new Genre() {Id = -1, Name = "Empty"}));
+                Genres = new ObservableCollection<Genre>(genres.OrderBy(g => g.Name).Prepend(new Genre {Id = -1, Name = "Genres"}));
             }
             if (getPropertiesRequest.IsSuccessStatusCode)
             {
@@ -86,7 +86,7 @@ public class MainWindowViewModel : Screen, INotifyPropertyChanged
                 var responseStream = await getPropertiesRequest.Content.ReadAsStreamAsync(cancellationTokenSource.Token);
                 var properties = await JsonSerializer.DeserializeAsync<IEnumerable<Property>>(responseStream,
                     CustomJsonSerializerOptions.Options, cancellationToken: cancellationTokenSource.Token);
-                Properties = new ObservableCollection<Property>(properties.OrderBy(p => p.Name).Prepend(new Property() {Id = -1, Name = "Empty"}));
+                Properties = new ObservableCollection<Property>(properties.OrderBy(p => p.Name).Prepend(new Property {Id = -1, Name = "Properties"}));
             }
         }
         catch (Exception exception)
