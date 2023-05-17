@@ -9,6 +9,8 @@
              xmlns:converters="clr-namespace:AnySoftDesktop.Utils.Converters"
              xmlns:validation="clr-namespace:AnySoftDesktop.Utils.Validation"
              xmlns:system="clr-namespace:System;assembly=System.Runtime"
+             xmlns:models="clr-namespace:AnySoftDesktop.Models"
+             xmlns:controls="clr-namespace:AnySoftDesktop.Controls"
              Background="{DynamicResource MaterialDesignPaper}"
              FontFamily="{DynamicResource MaterialDesignFont}"
              TextElement.Foreground="{StaticResource PrimaryHueMidBrush}"
@@ -83,8 +85,14 @@
                         HorizontalAlignment="Stretch"
                         VerticalAlignment="Top">
                         <Ellipse.Fill>
-                            <ImageBrush
-                                ImageSource="{Binding ApplicationUser.Image, Converter={x:Static converters:UrlToImageConverter.Instance}}" />
+                            <VisualBrush>
+                                <VisualBrush.Visual>
+                                    <controls:AlternativeSourceImage
+                                        Stretch="Uniform"
+                                        Source="{Binding ApplicationUser.Image, Converter={x:Static converters:UrlToImageConverter.Instance}}"
+                                        AlternativeSource="{StaticResource EmptyImage}"/>
+                                </VisualBrush.Visual>
+                            </VisualBrush>
                         </Ellipse.Fill>
                     </Ellipse>
                     <!--User Description-->
@@ -303,12 +311,12 @@
                                     </TextBox>
                                     <ContentControl
                                         DockPanel.Dock="Right"
-                                        Content="{Binding ExpirationDate}"
+                                        Content="{Binding ExpirationDate, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={x:Static converters:CustomDateToDateTimeConverter.Instance}}"
                                         HorizontalAlignment="Stretch"
                                         HorizontalContentAlignment="Stretch">
                                         <ContentControl.ContentTemplate>
                                             <DataTemplate
-                                                DataType="{x:Type system:DateTime}">
+                                                DataType="{x:Type models:CustomDate}">
                                                 <StackPanel
                                                     HorizontalAlignment="Left"
                                                     Orientation="Horizontal">
@@ -319,6 +327,7 @@
                                                         materialDesign:TextFieldAssist.CharacterCounterVisibility="Collapsed"
                                                         FontSize="18"
                                                         MaxLength="2"
+                                                        Text="{Binding Month}"
                                                         materialDesign:ValidationAssist.Background="Transparent">
                                                         <materialDesign:HintAssist.Hint>
                                                             <StackPanel Orientation="Horizontal">
@@ -340,6 +349,7 @@
                                                         materialDesign:TextFieldAssist.CharacterCounterVisibility="Collapsed"
                                                         FontSize="18"
                                                         MaxLength="4"
+                                                        Text="{Binding Year}"
                                                         materialDesign:ValidationAssist.Background="Transparent">
                                                         <materialDesign:HintAssist.Hint>
                                                             <StackPanel Orientation="Horizontal">

@@ -7,6 +7,7 @@
              xmlns:s="https://github.com/canton7/Stylet"
              xmlns:tabs="clr-namespace:AnySoftDesktop.ViewModels.Tabs"
              xmlns:converters="clr-namespace:AnySoftDesktop.Utils.Converters"
+             xmlns:controls="clr-namespace:AnySoftDesktop.Controls"
              Background="{DynamicResource MaterialDesignPaper}"
              FontFamily="{DynamicResource MaterialDesignFont}"
              TextElement.FontFamily="{StaticResource Outfit}"
@@ -232,9 +233,14 @@
                                                 HorizontalAlignment="Center"
                                                 VerticalAlignment="Center">
                                                 <Border.Background>
-                                                    <ImageBrush
-                                                        Stretch="UniformToFill"
-                                                        ImageSource="{Binding Images[0], Converter={x:Static converters:UrlToImageConverter.Instance}}" />
+                                                    <VisualBrush>
+                                                        <VisualBrush.Visual>
+                                                            <controls:AlternativeSourceImage
+                                                                Stretch="Uniform"
+                                                                Source="{Binding Images[0], Converter={x:Static converters:UrlToImageConverter.Instance}}"
+                                                                AlternativeSource="{StaticResource EmptyImage}"/>
+                                                        </VisualBrush.Visual>
+                                                    </VisualBrush>
                                                 </Border.Background>
                                             </Border>
                                         </Border>

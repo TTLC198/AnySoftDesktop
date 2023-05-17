@@ -7,6 +7,7 @@
              xmlns:s="https://github.com/canton7/Stylet"
              xmlns:converters="clr-namespace:AnySoftDesktop.Utils.Converters"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:controls="clr-namespace:AnySoftDesktop.Controls"
              Background="{DynamicResource MaterialDesignPaper}"
              FontFamily="{DynamicResource MaterialDesignFont}"
              TextElement.FontFamily="{StaticResource Outfit}"
@@ -45,9 +46,14 @@
                             HorizontalAlignment="Stretch"
                             VerticalAlignment="Stretch">
                             <Border.Background>
-                                <ImageBrush
-                                    Stretch="Fill"
-                                    ImageSource="{Binding Images[0], Converter={x:Static converters:UrlToImageConverter.Instance}}" />
+                                <VisualBrush>
+                                    <VisualBrush.Visual>
+                                        <controls:AlternativeSourceImage
+                                            Stretch="Uniform"
+                                            Source="{Binding Images[0], Converter={x:Static converters:UrlToImageConverter.Instance}}"
+                                            AlternativeSource="{StaticResource EmptyImage}"/>
+                                    </VisualBrush.Visual>
+                                </VisualBrush>
                             </Border.Background>
                         </Border>
                         <materialDesign:Snackbar
@@ -119,17 +125,6 @@
                                             Command="{s:Action OnProductButtonClick}"
                                             CommandParameter="{Binding Id}" />
                                     </Grid>
-                                    <!--<StackPanel
-                                        Orientation="Vertical">
-                                        <TextBlock
-                                            Margin="0, 5"
-                                            Style="{StaticResource MaterialDesignHeadline6TextBlock}"
-                                            Foreground="{StaticResource PrimaryHueMidBrush}"
-                                            HorizontalAlignment="Center"
-                                            VerticalAlignment="Stretch"
-                                            Text="{Binding Name}" />
-                                        
-                                    </StackPanel>-->
                                 </materialDesign:SnackbarMessage.Content>
                             </materialDesign:SnackbarMessage>
                             <materialDesign:Snackbar.Style>

@@ -7,6 +7,7 @@
              xmlns:s="https://github.com/canton7/Stylet"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:converters="clr-namespace:AnySoftDesktop.Utils.Converters"
+             xmlns:controls="clr-namespace:AnySoftDesktop.Controls"
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300"
              Background="Transparent">
@@ -75,9 +76,14 @@
                         HorizontalAlignment="Stretch"
                         VerticalAlignment="Stretch">
                         <Border.Background>
-                            <ImageBrush
-                                Stretch="UniformToFill"
-                                ImageSource="{Binding ., Converter={x:Static converters:UrlToImageConverter.Instance}}"/>
+                            <VisualBrush>
+                                <VisualBrush.Visual>
+                                    <controls:AlternativeSourceImage
+                                        Stretch="Uniform"
+                                        Source="{Binding ., Converter={x:Static converters:UrlToImageConverter.Instance}}"
+                                        AlternativeSource="{StaticResource EmptyImage}"/>
+                                </VisualBrush.Visual>
+                            </VisualBrush>
                         </Border.Background>
                     </Border>
                 </DataTemplate>
