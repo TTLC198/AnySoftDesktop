@@ -377,9 +377,10 @@
                                             FontSize="14"
                                             TextWrapping="Wrap"
                                             IsReadOnly="{Binding DataContext.IsReviewModified, Converter={x:Static converters:InverseBoolToBoolConverter.Instance}, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=UserControl}}"
+                                            IsReadOnlyCaretVisible="False"
                                             Foreground="{DynamicResource PrimaryHueDarkBrush}"
+                                            BorderThickness="0"
                                             Text="{Binding Text}"
-                                            materialDesign:TextFieldAssist.UnderlineBrush="Transparent"
                                             materialDesign:HintAssist.Hint="{Binding Text, Mode=OneTime}">
                                             <TextBox.Style>
                                                 <Style
@@ -388,6 +389,9 @@
                                                     <Setter
                                                         Property="materialDesign:TextFieldAssist.UnderlineBrush"
                                                         Value="Transparent"/>
+                                                    <Setter
+                                                        Property="BorderThickness"
+                                                        Value="0"/>
                                                     <Style.Triggers>
                                                         <DataTrigger
                                                             Binding="{Binding DataContext.IsReviewModified, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=UserControl}}"
@@ -395,6 +399,9 @@
                                                             <Setter
                                                                 Property="materialDesign:TextFieldAssist.UnderlineBrush"
                                                                 Value="{StaticResource PrimaryHueDarkBrush}"/>
+                                                            <Setter
+                                                                Property="BorderThickness"
+                                                                Value="0,0,0,1"/>
                                                         </DataTrigger>
                                                     </Style.Triggers>
                                                 </Style>
