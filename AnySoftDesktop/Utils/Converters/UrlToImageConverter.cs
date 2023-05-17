@@ -13,7 +13,7 @@ public class UrlToImageConverter : IValueConverter
         var path = (value ?? "").ToString();
         if (path.StartsWith('/'))
             path = path[1..];
-        return $"{App.ApiUrl}{path}";
+        return $"{App.CdnUrl}{path}";
     }
 
     public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
