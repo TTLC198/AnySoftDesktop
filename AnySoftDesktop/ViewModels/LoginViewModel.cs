@@ -94,7 +94,6 @@ public class LoginViewModel : DialogScreen<ApplicationUser?>, INotifyPropertyCha
                 {
                     var responseStream = await getTokenRequest.Content.ReadAsStreamAsync(cancellationTokenSource.Token);
                     tokenString = await JsonSerializer.DeserializeAsync<string>(responseStream, CustomJsonSerializerOptions.Options, cancellationToken: cancellationTokenSource.Token);
-                    App.AuthorizationToken = tokenString;
                     var handler = new JwtSecurityTokenHandler();
                     var token = handler.ReadJwtToken(tokenString);
                     userId = token.Payload.Claims.First(cl => cl.Type == "id").Value;
@@ -107,14 +106,17 @@ public class LoginViewModel : DialogScreen<ApplicationUser?>, INotifyPropertyCha
                     var responseStream = await getUserRequest.Content.ReadAsStreamAsync(cancellationTokenSource.Token);
                     var responseUserResult = await JsonSerializer.DeserializeAsync<UserResponseDto>(responseStream, CustomJsonSerializerOptions.Options, cancellationToken: cancellationTokenSource.Token);
                     if (responseUserResult != null)
-                        Close(new ApplicationUser
+                    {
+                        App.ApplicationUser = new ApplicationUser()
                         {
                             Id = responseUserResult.Id,
                             Login = responseUserResult.Login,
                             Email = responseUserResult.Email,
                             JwtToken = tokenString,
                             Image = responseUserResult.Image
-                        });
+                        };
+                        Close(App.ApplicationUser);
+                    }
                 }
             }
             else

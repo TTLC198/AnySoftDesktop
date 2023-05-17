@@ -39,7 +39,7 @@ public class LibraryTabViewModel : TabBaseViewModel, INotifyPropertyChanged
     {
         try
         {
-            var getOrdersRequest = await WebApiService.GetCall("api/orders",  App.AuthorizationToken ?? "");
+            var getOrdersRequest = await WebApiService.GetCall("api/orders",  App.ApplicationUser?.JwtToken!);
             if (getOrdersRequest.IsSuccessStatusCode)
             {
                 var orders = new List<OrderResponseDto>();
@@ -56,7 +56,7 @@ public class LibraryTabViewModel : TabBaseViewModel, INotifyPropertyChanged
                              .Where(o => o.Status == "Paid")
                              .SelectMany(o => o.PurchasedProductsIds))
                 {
-                    var getProductRequest = await WebApiService.GetCall($"api/products/{productId}",  App.AuthorizationToken ?? "");
+                    var getProductRequest = await WebApiService.GetCall($"api/products/{productId}", App.ApplicationUser?.JwtToken!);
                     if (getProductRequest.IsSuccessStatusCode)
                     {
                         using (var cancellationTokenSource = new CancellationTokenSource(timeoutAfter))

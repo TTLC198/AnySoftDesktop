@@ -308,7 +308,7 @@ public class MainWindowViewModel : Screen, INotifyPropertyChanged
         if (ActiveTab is not null)
             ActiveTab.IsSelected = false;
 
-        var getProductsRequest = await WebApiService.GetCall($"api/cart", App.AuthorizationToken ?? "");
+        var getProductsRequest = await WebApiService.GetCall($"api/cart", App.ApplicationUser?.JwtToken!);
         try
         {
             if (getProductsRequest.IsSuccessStatusCode)
@@ -364,7 +364,7 @@ public class MainWindowViewModel : Screen, INotifyPropertyChanged
             Email = applicationUser.Email,
             Password = applicationUser.Password
         };
-        var putChangesOfUserRequest = await WebApiService.PutCall("api/users", userEdit, App.AuthorizationToken);
+        var putChangesOfUserRequest = await WebApiService.PutCall("api/users", userEdit, App.ApplicationUser?.JwtToken!);
         try
         {
             if (putChangesOfUserRequest.IsSuccessStatusCode)
@@ -402,7 +402,7 @@ public class MainWindowViewModel : Screen, INotifyPropertyChanged
     
     public async void OnOrderRequest()
     {
-        var cartOrderRequest = await WebApiService.PostCall("api/cart/order", null!, App.AuthorizationToken);
+        var cartOrderRequest = await WebApiService.PostCall("api/cart/order", null!, App.ApplicationUser?.JwtToken!);
         try
         {
             if (cartOrderRequest.IsSuccessStatusCode)
@@ -419,7 +419,7 @@ public class MainWindowViewModel : Screen, INotifyPropertyChanged
                         throw new InvalidOperationException("Order is null");
                 }
 
-                var getPaymentsRequest = await WebApiService.GetCall("api/payment",  App.AuthorizationToken ?? "");
+                var getPaymentsRequest = await WebApiService.GetCall("api/payment",  App.ApplicationUser?.JwtToken!);
                 if (getPaymentsRequest.IsSuccessStatusCode)
                 {
                     using var cancellationTokenSource = new CancellationTokenSource(timeoutAfter);
@@ -435,10 +435,10 @@ public class MainWindowViewModel : Screen, INotifyPropertyChanged
                     var orderPurchase = new OrderPurchaseDto()
                     {
                         OrderId = createdOrder.Id,
-                        PaymentId = selectedPaymentMethod.Id
+                        PaymentId = selectedPaymentMethod.Id.Value
                     };
                 
-                    var orderConfirmationRequest = await WebApiService.PostCall("api/orders/buy", orderPurchase, App.AuthorizationToken);
+                    var orderConfirmationRequest = await WebApiService.PostCall("api/orders/buy", orderPurchase, App.ApplicationUser?.JwtToken!);
                     if (!orderConfirmationRequest.IsSuccessStatusCode) return;
                     var tab = Tabs.FirstOrDefault(t => t.GetType() == typeof(LibraryTabViewModel));
                     ActiveTab = tab;

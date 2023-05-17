@@ -54,7 +54,7 @@ public class ProfileTabViewModel : SettingsTabViewModel, INotifyPropertyChanged
     {
         try
         {
-            var getPaymentsRequest = await WebApiService.GetCall("api/payment", App.AuthorizationToken ?? "");
+            var getPaymentsRequest = await WebApiService.GetCall("api/payment", App.ApplicationUser?.JwtToken!);
             if (getPaymentsRequest.IsSuccessStatusCode)
             {
                 var timeoutAfter = TimeSpan.FromMilliseconds(3000);
@@ -96,7 +96,7 @@ public class ProfileTabViewModel : SettingsTabViewModel, INotifyPropertyChanged
             Cvc = payment.Cvc
         };
         var postPaymentMethodRequest =
-            await WebApiService.PostCall("api/payment", paymentDto, App.AuthorizationToken);
+            await WebApiService.PostCall("api/payment", paymentDto, App.ApplicationUser?.JwtToken!);
         try
         {
             if (postPaymentMethodRequest.IsSuccessStatusCode)
@@ -125,12 +125,12 @@ public class ProfileTabViewModel : SettingsTabViewModel, INotifyPropertyChanged
     {
         var paymentEditDto = new PaymentEditDto()
         {
-            Id = payment.Id,
+            Id = payment.Id.Value,
             Number = payment.Number,
             ExpirationDate = payment.ExpirationDate,
             Cvc = payment.Cvc
         };
-        var putPaymentRequest = await WebApiService.PutCall($"api/payment", paymentEditDto, App.AuthorizationToken);
+        var putPaymentRequest = await WebApiService.PutCall($"api/payment", paymentEditDto, App.ApplicationUser?.JwtToken!);
         try
         {
             if (putPaymentRequest.IsSuccessStatusCode)
@@ -174,7 +174,7 @@ public class ProfileTabViewModel : SettingsTabViewModel, INotifyPropertyChanged
             await UpdatePayments();
             return;
         }
-        var postProductsToCartRequest = await WebApiService.DeleteCall($"api/payment/{id}", App.AuthorizationToken);
+        var postProductsToCartRequest = await WebApiService.DeleteCall($"api/payment/{id}", App.ApplicationUser?.JwtToken!);
         try
         {
             if (postProductsToCartRequest.IsSuccessStatusCode)

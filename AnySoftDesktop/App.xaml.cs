@@ -7,6 +7,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
+using AnySoftDesktop.Models;
 
 namespace AnySoftDesktop
 {
@@ -22,8 +23,8 @@ namespace AnySoftDesktop
         public static Version Version { get; } = Assembly.GetName().Version!;
         
         public static string ApiUrl { get; } = "https://localhost:5001/";
-        
-        public static string? AuthorizationToken { get; set; }
+
+        public static ApplicationUser? ApplicationUser { get; set; } = new ApplicationUser();
 
         public static string VersionString { get; } = "v" + Version.ToString(3).Trim();
 
