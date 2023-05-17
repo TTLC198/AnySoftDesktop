@@ -218,7 +218,7 @@
             <!--Media block-->
             <StackPanel
                 Grid.Row="1"
-                Visibility="{Binding Product.Images, Converter={x:Static converters:NullToVisibilityConverter.Instance}}">
+                Visibility="{Binding Product.Images, Converter={x:Static converters:EmptyToVisibilityConverter.Instance}}">
                 <TextBlock
                     HorizontalAlignment="Left"
                     Margin="5, 7"
@@ -234,7 +234,7 @@
             <!--Reviews block-->
             <StackPanel
                 Grid.Row="2"
-                Visibility="{Binding Product.Reviews, Converter={x:Static converters:NullToVisibilityConverter.Instance}}">
+                Visibility="{Binding Product.Reviews, Converter={x:Static converters:EmptyToVisibilityConverter.Instance}}">
                 <TextBlock
                     HorizontalAlignment="Left"
                     Margin="5, 7"
