@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
@@ -30,7 +31,7 @@ public class SingleProductTabViewModel : MultipleProductTabViewModel, INotifyPro
             OnPropertyChanged();
         }
     }
-    
+
     public TabBaseViewModel? PreviousTab { get; set; }
 
     private bool _isInCart;
@@ -44,7 +45,7 @@ public class SingleProductTabViewModel : MultipleProductTabViewModel, INotifyPro
             OnPropertyChanged();
         }
     }
-    
+
     private bool _isBought;
 
     public bool IsBought
@@ -58,7 +59,7 @@ public class SingleProductTabViewModel : MultipleProductTabViewModel, INotifyPro
     }
 
     public ReviewDto? NewReview { get; set; } = new();
-    
+
     private bool _isReviewAdded;
 
     public bool IsReviewAdded
@@ -71,7 +72,8 @@ public class SingleProductTabViewModel : MultipleProductTabViewModel, INotifyPro
         }
     }
 
-    public SingleProductTabViewModel(int productId, IViewModelFactory viewModelFactory, DialogManager dialogManager) : base(viewModelFactory, dialogManager)
+    public SingleProductTabViewModel(int productId, IViewModelFactory viewModelFactory, DialogManager dialogManager) :
+        base(viewModelFactory, dialogManager)
     {
         _productId = productId;
         _viewModelFactory = viewModelFactory;
@@ -94,18 +96,29 @@ public class SingleProductTabViewModel : MultipleProductTabViewModel, INotifyPro
                 var timeoutAfter = TimeSpan.FromMilliseconds(3000);
                 using (var cancellationTokenSource = new CancellationTokenSource(timeoutAfter))
                 {
-                    var responseStream = await getProductsRequest.Content.ReadAsStreamAsync(cancellationTokenSource.Token);
+                    var responseStream =
+                        await getProductsRequest.Content.ReadAsStreamAsync(cancellationTokenSource.Token);
                     var product = await JsonSerializer.DeserializeAsync<ProductResponseDto>(responseStream,
                         CustomJsonSerializerOptions.Options, cancellationToken: cancellationTokenSource.Token);
-                    Product = product ?? throw new InvalidOperationException("Product is null");
+                    if (product is null)
+                        throw new InvalidOperationException("Product is null");
+                    product.Reviews?
+                        .Where(r => (r.User ?? new UserResponseDto()).Id == App.ApplicationUser?.Id)
+                        .ToList()
+                        .ForEach(r => r.IsOwn = true);
+
+                    Product = product;
                 }
-                var getOrdersRequest = await WebApiService.GetCall("api/orders",  App.AuthorizationToken ?? "");
+
+                var getOrdersRequest = await WebApiService.GetCall("api/orders", App.ApplicationUser?.JwtToken!);
                 if (getOrdersRequest.IsSuccessStatusCode)
                 {
                     using (var cancellationTokenSource = new CancellationTokenSource(timeoutAfter))
                     {
-                        var responseStream = await getOrdersRequest.Content.ReadAsStreamAsync(cancellationTokenSource.Token);
-                        var orders = await JsonSerializer.DeserializeAsync<IEnumerable<OrderResponseDto>>(responseStream,
+                        var responseStream =
+                            await getOrdersRequest.Content.ReadAsStreamAsync(cancellationTokenSource.Token);
+                        var orders = await JsonSerializer.DeserializeAsync<IEnumerable<OrderResponseDto>>(
+                            responseStream,
                             CustomJsonSerializerOptions.Options, cancellationToken: cancellationTokenSource.Token);
                         if (orders
                             .Where(o => o.Status == "Paid")
@@ -114,13 +127,15 @@ public class SingleProductTabViewModel : MultipleProductTabViewModel, INotifyPro
                             IsBought = true;
                     }
                 }
-                
-                var getProductsInCartRequest = await WebApiService.GetCall($"api/cart", App.AuthorizationToken ?? "");
+
+                var getProductsInCartRequest = await WebApiService.GetCall($"api/cart", App.ApplicationUser?.JwtToken!);
                 if (getProductsInCartRequest.IsSuccessStatusCode)
                 {
                     using var cancellationTokenSource = new CancellationTokenSource(timeoutAfter);
-                    var responseStream = await getProductsInCartRequest.Content.ReadAsStreamAsync(cancellationTokenSource.Token);
-                    var products = await JsonSerializer.DeserializeAsync<IEnumerable<ProductResponseDto>>(responseStream,
+                    var responseStream =
+                        await getProductsInCartRequest.Content.ReadAsStreamAsync(cancellationTokenSource.Token);
+                    var products = await JsonSerializer.DeserializeAsync<IEnumerable<ProductResponseDto>>(
+                        responseStream,
                         CustomJsonSerializerOptions.Options, cancellationToken: cancellationTokenSource.Token);
                     if (products
                         .Any(p => p.Id == Product.Id))
@@ -144,7 +159,7 @@ public class SingleProductTabViewModel : MultipleProductTabViewModel, INotifyPro
             await _dialogManager.ShowDialogAsync(messageBoxDialog);
         }
     }
-    
+
     public async void OnCartButtonClick(int id)
     {
         try
@@ -153,7 +168,7 @@ public class SingleProductTabViewModel : MultipleProductTabViewModel, INotifyPro
                 return;
             if (IsInCart)
                 OnRemoveFromCartButtonClick(id);
-            else 
+            else
                 OnAddToCartButtonClick(id);
         }
         catch (Exception exception)
@@ -167,6 +182,7 @@ public class SingleProductTabViewModel : MultipleProductTabViewModel, INotifyPro
             await _dialogManager.ShowDialogAsync(messageBoxDialog);
         }
     }
+
     public async void OnAddToCartButtonClick(int id)
     {
         var jsonObject = new
@@ -176,14 +192,15 @@ public class SingleProductTabViewModel : MultipleProductTabViewModel, INotifyPro
                 id
             }
         };
-        var postProductsToCartRequest = await WebApiService.PostCall("api/cart", jsonObject, App.AuthorizationToken);
+        var postProductsToCartRequest = await WebApiService.PostCall("api/cart", jsonObject, App.ApplicationUser?.JwtToken!);
         try
         {
             if (postProductsToCartRequest.IsSuccessStatusCode)
             {
                 var timeoutAfter = TimeSpan.FromMilliseconds(3000);
                 using var cancellationTokenSource = new CancellationTokenSource(timeoutAfter);
-                var responseStream = await postProductsToCartRequest.Content.ReadAsStreamAsync(cancellationTokenSource.Token);
+                var responseStream =
+                    await postProductsToCartRequest.Content.ReadAsStreamAsync(cancellationTokenSource.Token);
                 var cart = await JsonSerializer.DeserializeAsync<ShoppingCartResponseDto>(responseStream,
                     CustomJsonSerializerOptions.Options, cancellationToken: cancellationTokenSource.Token);
                 if (cart.Products.Any(p => p.Id == Product.Id))
@@ -208,10 +225,11 @@ public class SingleProductTabViewModel : MultipleProductTabViewModel, INotifyPro
             await _dialogManager.ShowDialogAsync(messageBoxDialog);
         }
     }
-    
+
     public async void OnRemoveFromCartButtonClick(int id)
     {
-        var postProductsToCartRequest = await WebApiService.DeleteCall($"api/cart?productId={id}", App.AuthorizationToken);
+        var postProductsToCartRequest =
+            await WebApiService.DeleteCall($"api/cart?productId={id}", App.ApplicationUser?.JwtToken!);
         try
         {
             if (postProductsToCartRequest.IsSuccessStatusCode)
@@ -235,13 +253,13 @@ public class SingleProductTabViewModel : MultipleProductTabViewModel, INotifyPro
             await _dialogManager.ShowDialogAsync(messageBoxDialog);
         }
     }
-    
+
     public async void OnReviewAddButtonClick()
     {
         if (IsReviewAdded)
         {
             NewReview.ProductId = Product.Id;
-            var postReviewRequest = await WebApiService.PostCall("api/reviews", NewReview, App.AuthorizationToken);
+            var postReviewRequest = await WebApiService.PostCall("api/reviews", NewReview, App.ApplicationUser?.JwtToken!);
             try
             {
                 if (postReviewRequest.IsSuccessStatusCode)
@@ -250,10 +268,12 @@ public class SingleProductTabViewModel : MultipleProductTabViewModel, INotifyPro
                     var timeoutAfter = TimeSpan.FromMilliseconds(3000);
                     using (var cancellationTokenSource = new CancellationTokenSource(timeoutAfter))
                     {
-                        var responseStream = await postReviewRequest.Content.ReadAsStreamAsync(cancellationTokenSource.Token);
+                        var responseStream =
+                            await postReviewRequest.Content.ReadAsStreamAsync(cancellationTokenSource.Token);
                         var createdReview = await JsonSerializer.DeserializeAsync<ReviewResponseDto>(responseStream,
                             CustomJsonSerializerOptions.Options, cancellationToken: cancellationTokenSource.Token);
                     }
+
                     await UpdateProduct();
                     NewReview = new ReviewDto();
                 }
@@ -276,6 +296,39 @@ public class SingleProductTabViewModel : MultipleProductTabViewModel, INotifyPro
         }
         else
             IsReviewAdded = !IsReviewAdded;
+    }
+    
+    public async void OnReviewEditButtonClick()
+    {
+        
+    }
+    
+    public async void OnReviewRemoveButtonClick(int id)
+    {
+        var deleteReviewRequest =
+            await WebApiService.DeleteCall($"api/reviews/{id}", App.ApplicationUser?.JwtToken!);
+        try
+        {
+            if (deleteReviewRequest.IsSuccessStatusCode)
+            {
+                await UpdateProduct();
+            }
+            else
+            {
+                var msg = await deleteReviewRequest.Content.ReadAsStringAsync();
+                throw new InvalidOperationException($"{deleteReviewRequest.ReasonPhrase}\n{msg}");
+            }
+        }
+        catch (Exception exception)
+        {
+            var messageBoxDialog = _viewModelFactory.CreateMessageBoxViewModel(
+                title: "Some error has occurred",
+                message: $@"{exception.Message}".Trim(),
+                okButtonText: "OK",
+                cancelButtonText: null
+            );
+            await _dialogManager.ShowDialogAsync(messageBoxDialog);
+        }
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;
