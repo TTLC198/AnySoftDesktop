@@ -239,10 +239,6 @@ public class MainWindowViewModel : Screen, INotifyPropertyChanged
 
     public async void OpenSearchPage()
     {
-        // Deactivate previously selected tab
-        if (ActiveTab is not null)
-            ActiveTab.IsSelected = false;
-        
         var productRequestDto = new ProductRequestDto
         {
             Name = string.IsNullOrEmpty(SearchString) 
@@ -267,6 +263,8 @@ public class MainWindowViewModel : Screen, INotifyPropertyChanged
                 var products = await JsonSerializer.DeserializeAsync<IEnumerable<ProductResponseDto>>(responseStream,
                     CustomJsonSerializerOptions.Options, cancellationToken: cancellationTokenSource.Token);
                 
+                if (ActiveTab is not null)
+                    ActiveTab.IsSelected = false;
                 if (Tabs.FirstOrDefault(t => t.GetType() == typeof(MultipleProductTabViewModel)) is MultipleProductTabViewModel tab)
                 {
                     tab.Products = new ObservableCollection<ProductResponseDto>(products!);
@@ -305,9 +303,6 @@ public class MainWindowViewModel : Screen, INotifyPropertyChanged
     
     public async void OpenShoppingCart()
     {
-        if (ActiveTab is not null)
-            ActiveTab.IsSelected = false;
-
         var getProductsRequest = await WebApiService.GetCall($"api/cart", App.ApplicationUser?.JwtToken!);
         try
         {
@@ -319,6 +314,9 @@ public class MainWindowViewModel : Screen, INotifyPropertyChanged
                 var products = await JsonSerializer.DeserializeAsync<IEnumerable<ProductResponseDto>>(responseStream,
                     CustomJsonSerializerOptions.Options, cancellationToken: cancellationTokenSource.Token);
                 
+                if (ActiveTab is not null)
+                    ActiveTab.IsSelected = false;
+                
                 if (Tabs.FirstOrDefault(t => t.GetType() == typeof(ShoppingCartTabViewModel)) is ShoppingCartTabViewModel tab)
                 {
                     tab.Products = new ObservableCollection<ProductResponseDto>(products!);
@@ -326,7 +324,7 @@ public class MainWindowViewModel : Screen, INotifyPropertyChanged
                 else
                 {
                     tab = new ShoppingCartTabViewModel(products!, _viewModelFactory, _dialogManager);
-                    var baseTab = Tabs.First(t => t != tab && tab.GetType().IsSubclassOf(t.GetType()));
+                    var baseTab = Tabs.First(t => t != tab && tab.GetType().IsSubclassOf(t.GetType().BaseType!));
                     Tabs.Insert(Tabs.IndexOf(baseTab), tab);
                     baseTab.IsVisible = false;
                     tab.PreviousTab = ActiveTab;
