@@ -267,8 +267,8 @@
                                         Orientation="Vertical"
                                         HorizontalAlignment="Stretch">
                                         <DockPanel
-                                            LastChildFill="True"
-                                            HorizontalAlignment="Left"
+                                            LastChildFill="False"
+                                            HorizontalAlignment="Stretch"
                                             VerticalAlignment="Stretch">
                                             <Ellipse
                                                 Height="60"
@@ -301,20 +301,105 @@
                                                     Text="{Binding Ts, StringFormat='Posted {0:D}'}" />
                                                 <materialDesign:RatingBar
                                                     FontSize="12"
-                                                    IsReadOnly="True"
+                                                    IsReadOnly="{Binding DataContext.IsReviewModified, Converter={x:Static converters:InverseBoolToBoolConverter.Instance}, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=UserControl}}"
                                                     VerticalAlignment="Center"
                                                     Foreground="{DynamicResource PrimaryHueDarkBrush}"
-                                                    Value="{Binding Grade}" />
+                                                    Value="{Binding Grade, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                            </DockPanel>
+                                            <!--Edit/Delete Menu-->
+                                            <DockPanel
+                                                DockPanel.Dock="Right"
+                                                Visibility="{Binding IsOwn, Converter={x:Static converters:BoolToVisibleConverter.Instance}}"
+                                                LastChildFill="False">
+                                                <Button
+                                                    Height="Auto"
+                                                    Width="Auto"
+                                                    Margin="2"
+                                                    Padding="4"
+                                                    DockPanel.Dock="Left"
+                                                    HorizontalAlignment="Center"
+                                                    VerticalAlignment="Center"
+                                                    Command="{s:Action OnReviewEditButtonClick}"
+                                                    CommandParameter="{Binding .}">
+                                                    <Button.Style>
+                                                        <Style
+                                                            TargetType="Button"
+                                                            BasedOn="{StaticResource MaterialDesignFlatDarkButton}">
+                                                            <Setter
+                                                                Property="Content">
+                                                                <Setter.Value>
+                                                                    <materialDesign:PackIcon
+                                                                        Width="30"
+                                                                        Height="30"
+                                                                        Kind="CommentEdit" />
+                                                                </Setter.Value>
+                                                            </Setter>
+                                                            <Style.Triggers>
+                                                                <DataTrigger
+                                                                    Binding="{Binding DataContext.IsReviewModified, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=UserControl}}"
+                                                                    Value="True">
+                                                                    <Setter
+                                                                        Property="Content">
+                                                                        <Setter.Value>
+                                                                            <materialDesign:PackIcon
+                                                                                Width="30"
+                                                                                Height="30"
+                                                                                Kind="CommentCheck" />
+                                                                        </Setter.Value>
+                                                                    </Setter>
+                                                                </DataTrigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </Button.Style>
+                                                </Button>
+                                                <Button
+                                                    Height="Auto"
+                                                    Width="Auto"
+                                                    Margin="2"
+                                                    Padding="4"
+                                                    Style="{DynamicResource MaterialDesignFlatDarkButton}"
+                                                    DockPanel.Dock="Left"
+                                                    HorizontalAlignment="Center"
+                                                    VerticalAlignment="Center"
+                                                    Command="{s:Action OnReviewRemoveButtonClick}"
+                                                    CommandParameter="{Binding Id}">
+                                                    <materialDesign:PackIcon
+                                                        Width="30"
+                                                        Height="30"
+                                                        Kind="CommentRemove" />
+                                                </Button>
                                             </DockPanel>
                                         </DockPanel>
-                                        <TextBlock
+                                        <TextBox
                                             DockPanel.Dock="Top"
                                             HorizontalAlignment="Stretch"
                                             Margin="5, 7"
                                             FontSize="14"
                                             TextWrapping="Wrap"
+                                            IsReadOnly="{Binding DataContext.IsReviewModified, Converter={x:Static converters:InverseBoolToBoolConverter.Instance}, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=UserControl}}"
                                             Foreground="{DynamicResource PrimaryHueDarkBrush}"
-                                            Text="{Binding Text}" />
+                                            Text="{Binding Text}"
+                                            materialDesign:TextFieldAssist.UnderlineBrush="Transparent"
+                                            materialDesign:HintAssist.Hint="{Binding Text, Mode=OneTime}">
+                                            <TextBox.Style>
+                                                <Style
+                                                    TargetType="TextBox"
+                                                    BasedOn="{StaticResource MaterialDesignTextBox}">
+                                                    <Setter
+                                                        Property="materialDesign:TextFieldAssist.UnderlineBrush"
+                                                        Value="Transparent"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger
+                                                            Binding="{Binding DataContext.IsReviewModified, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=UserControl}}"
+                                                            Value="True">
+                                                            <Setter
+                                                                Property="materialDesign:TextFieldAssist.UnderlineBrush"
+                                                                Value="{StaticResource PrimaryHueDarkBrush}"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TextBox.Style>
+                                        </TextBox>
                                     </StackPanel>
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
@@ -342,7 +427,7 @@
                                     Max="5"
                                     Min="1"
                                     Foreground="{DynamicResource PrimaryHueDarkBrush}"
-                                    Value="{Binding NewReview.Grade}" />
+                                    Value="{Binding NewReview.Grade, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                             </DockPanel>
                             <DockPanel>
                                 <TextBlock
@@ -386,7 +471,7 @@
                                                 <materialDesign:PackIcon
                                                     Width="20"
                                                     Height="20"
-                                                    Kind="MessageDraw" />
+                                                    Kind="CommentAdd" />
                                                 <TextBlock
                                                     Margin="5, 0"
                                                     Text="Add review"
@@ -406,7 +491,7 @@
                                                         <materialDesign:PackIcon
                                                             Width="20"
                                                             Height="20"
-                                                            Kind="MessageCheck" />
+                                                            Kind="CommentCheck" />
                                                         <TextBlock
                                                             Margin="5, 0"
                                                             Text="Save changes"
