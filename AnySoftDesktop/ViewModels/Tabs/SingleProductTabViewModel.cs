@@ -58,7 +58,7 @@ public class SingleProductTabViewModel : MultipleProductTabViewModel, INotifyPro
         }
     }
 
-    public ReviewDto? NewReview { get; set; } = new();
+    public Review? NewReview { get; set; } = new();
 
     private bool _isReviewAdded;
 
@@ -68,6 +68,18 @@ public class SingleProductTabViewModel : MultipleProductTabViewModel, INotifyPro
         set
         {
             _isReviewAdded = value;
+            OnPropertyChanged();
+        }
+    }
+    
+    private bool _isReviewModified;
+
+    public bool IsReviewModified
+    {
+        get => _isReviewModified;
+        set
+        {
+            _isReviewModified = value;
             OnPropertyChanged();
         }
     }
@@ -256,26 +268,35 @@ public class SingleProductTabViewModel : MultipleProductTabViewModel, INotifyPro
 
     public async void OnReviewAddButtonClick()
     {
+        if (Product.Reviews is not null)
+            if (Product.Reviews.Any(r => r.IsOwn))
+            {
+                var messageBoxDialog = _viewModelFactory.CreateMessageBoxViewModel(
+                    title: "Some error has occurred",
+                    message: @"You can only add one review per product".Trim(),
+                    okButtonText: "OK",
+                    cancelButtonText: null
+                );
+                await _dialogManager.ShowDialogAsync(messageBoxDialog);
+                return;
+            }
         if (IsReviewAdded)
         {
-            NewReview.ProductId = Product.Id;
-            var postReviewRequest = await WebApiService.PostCall("api/reviews", NewReview, App.ApplicationUser?.JwtToken!);
+            var reviewDto = new ReviewDto()
+            {
+                Grade = NewReview!.Grade,
+                ProductId = Product.Id,
+                Text = NewReview.Text
+            };
+            var postReviewRequest = await WebApiService.PostCall("api/reviews", reviewDto, App.ApplicationUser?.JwtToken!);
             try
             {
                 if (postReviewRequest.IsSuccessStatusCode)
                 {
                     IsReviewAdded = false;
-                    var timeoutAfter = TimeSpan.FromMilliseconds(3000);
-                    using (var cancellationTokenSource = new CancellationTokenSource(timeoutAfter))
-                    {
-                        var responseStream =
-                            await postReviewRequest.Content.ReadAsStreamAsync(cancellationTokenSource.Token);
-                        var createdReview = await JsonSerializer.DeserializeAsync<ReviewResponseDto>(responseStream,
-                            CustomJsonSerializerOptions.Options, cancellationToken: cancellationTokenSource.Token);
-                    }
 
                     await UpdateProduct();
-                    NewReview = new ReviewDto();
+                    NewReview = new Review();
                 }
                 else
                 {
@@ -298,9 +319,47 @@ public class SingleProductTabViewModel : MultipleProductTabViewModel, INotifyPro
             IsReviewAdded = !IsReviewAdded;
     }
     
-    public async void OnReviewEditButtonClick()
+    public async void OnReviewEditButtonClick(ReviewResponseDto reviewResponseDto)
     {
-        
+        if (IsReviewModified)
+        {
+            var reviewEditDto = new ReviewEditDto
+            {
+                Id = reviewResponseDto.Id,
+                Grade = reviewResponseDto.Grade,
+                Text = reviewResponseDto.Text
+            };
+            var putReviewRequest = await WebApiService.PutCall("api/reviews", reviewEditDto, App.ApplicationUser?.JwtToken!);
+            try
+            {
+                if (putReviewRequest.IsSuccessStatusCode)
+                {
+                    IsReviewModified = false;
+                    
+                    await UpdateProduct();
+                    NewReview = new Review();
+                }
+                else
+                {
+                    var msg = await putReviewRequest.Content.ReadAsStringAsync();
+                    throw new InvalidOperationException($"{putReviewRequest.ReasonPhrase}\n{msg}");
+                }
+            }
+            catch (Exception exception)
+            {
+                var messageBoxDialog = _viewModelFactory.CreateMessageBoxViewModel(
+                    title: "Some error has occurred",
+                    message: $@"{exception.Message}".Trim(),
+                    okButtonText: "OK",
+                    cancelButtonText: null
+                );
+                await _dialogManager.ShowDialogAsync(messageBoxDialog);
+            }
+        }
+        else
+        {
+            IsReviewModified = true;
+        }
     }
     
     public async void OnReviewRemoveButtonClick(int id)
