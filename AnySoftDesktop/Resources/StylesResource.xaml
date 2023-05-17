@@ -27,4 +27,5 @@
         pack://application:,,,/Resources/Fonts/#Outfit-Regular
     </FontFamily>
     
+    <BitmapImage x:Key="EmptyImage" UriSource="../Resources/Images/imageEmpty.png" />
 </ResourceDictionary>
