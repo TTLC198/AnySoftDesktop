@@ -312,7 +312,7 @@
                                     </TextBox>
                                     <ContentControl
                                         DockPanel.Dock="Right"
-                                        Content="{Binding ExpirationDate, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Converter={x:Static converters:CustomDateToDateTimeConverter.Instance}}"
+                                        Content="{Binding ExpirationDate, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                         HorizontalAlignment="Stretch"
                                         HorizontalContentAlignment="Stretch">
                                         <ContentControl.ContentTemplate>

@@ -31,9 +31,9 @@ public class ProfileTabViewModel : SettingsTabViewModel, INotifyPropertyChanged
         }
     }
 
-    private ObservableCollection<Payment> _paymentMethods;
+    private ObservableCollection<CustomPayment> _paymentMethods;
 
-    public ObservableCollection<Payment> PaymentMethods
+    public ObservableCollection<CustomPayment> PaymentMethods
     {
         get => _paymentMethods;
         set
@@ -42,8 +42,6 @@ public class ProfileTabViewModel : SettingsTabViewModel, INotifyPropertyChanged
             OnPropertyChanged();
         }
     }
-
-    public TabBaseViewModel? PreviousTab { get; set; }
 
     public async void OnViewFullyLoaded()
     {
@@ -62,7 +60,17 @@ public class ProfileTabViewModel : SettingsTabViewModel, INotifyPropertyChanged
                 var responseStream = await getPaymentsRequest.Content.ReadAsStreamAsync(cancellationTokenSource.Token);
                 var payments = await JsonSerializer.DeserializeAsync<IEnumerable<Payment>>(responseStream,
                     CustomJsonSerializerOptions.Options, cancellationToken: cancellationTokenSource.Token);
-                PaymentMethods = new ObservableCollection<Payment>(payments);
+                PaymentMethods = new ObservableCollection<CustomPayment>(payments
+                    .ToList()
+                    .Select(p => new CustomPayment()
+                    {
+                        Id = p.Id,
+                        Number = p.Number,
+                        Cvc = p.Cvc,
+                        ExpirationDate = new CustomDate() { Month = p.ExpirationDate.Month, Year = p.ExpirationDate.Year},
+                        UserId = p.UserId,
+                        IsActive = p.IsActive
+                    }));
             }
             else
             {
@@ -84,21 +92,21 @@ public class ProfileTabViewModel : SettingsTabViewModel, INotifyPropertyChanged
 
     public async void AddPayment()
     {
-        PaymentMethods.Add(new Payment());
+        PaymentMethods.Add(new CustomPayment());
     }
 
-    public async void SavePayment(Payment payment)
+    public async void SavePayment(CustomPayment payment)
     {
-        var paymentDto = new PaymentDto()
-        {
-            Number = payment.Number,
-            ExpirationDate = payment.ExpirationDate,
-            Cvc = payment.Cvc
-        };
-        var postPaymentMethodRequest =
-            await WebApiService.PostCall("api/payment", paymentDto, App.ApplicationUser?.JwtToken!);
         try
         {
+            var paymentDto = new PaymentDto()
+            {
+                Number = payment.Number,
+                ExpirationDate = new DateTime(payment.ExpirationDate!.Year, payment.ExpirationDate.Month, 1),
+                Cvc = payment.Cvc
+            };
+            var postPaymentMethodRequest =
+                await WebApiService.PostCall("api/payment", paymentDto, App.ApplicationUser?.JwtToken!);
             if (postPaymentMethodRequest.IsSuccessStatusCode)
             {
                 await UpdatePayments();
@@ -121,18 +129,18 @@ public class ProfileTabViewModel : SettingsTabViewModel, INotifyPropertyChanged
         }
     }
 
-    public async void EditPayment(Payment payment)
+    public async void EditPayment(CustomPayment payment)
     {
-        var paymentEditDto = new PaymentEditDto()
-        {
-            Id = payment.Id.Value,
-            Number = payment.Number,
-            ExpirationDate = payment.ExpirationDate,
-            Cvc = payment.Cvc
-        };
-        var putPaymentRequest = await WebApiService.PutCall($"api/payment", paymentEditDto, App.ApplicationUser?.JwtToken!);
         try
         {
+            var paymentEditDto = new PaymentEditDto()
+            {
+                Id = payment.Id.Value,
+                Number = payment.Number,
+                ExpirationDate = new DateTime(payment.ExpirationDate!.Year, payment.ExpirationDate.Month, 1),
+                Cvc = payment.Cvc
+            };
+            var putPaymentRequest = await WebApiService.PutCall($"api/payment", paymentEditDto, App.ApplicationUser?.JwtToken!);
             if (putPaymentRequest.IsSuccessStatusCode)
             {
                 var timeoutAfter = TimeSpan.FromMilliseconds(3000);
@@ -146,7 +154,7 @@ public class ProfileTabViewModel : SettingsTabViewModel, INotifyPropertyChanged
                 if (existedPayment is null)
                     throw new InvalidOperationException("Existed payment does not exist");
                 existedPayment.Number = editedPayment.Number;
-                existedPayment.ExpirationDate = editedPayment.ExpirationDate;
+                existedPayment.ExpirationDate = new CustomDate() { Month = editedPayment.ExpirationDate.Month, Year = editedPayment.ExpirationDate.Year };
                 existedPayment.Cvc = editedPayment.Cvc;
             }
             else
@@ -169,14 +177,14 @@ public class ProfileTabViewModel : SettingsTabViewModel, INotifyPropertyChanged
 
     public async void RemovePayment(int id)
     {
-        if (id == 0)
-        {
-            await UpdatePayments();
-            return;
-        }
-        var postProductsToCartRequest = await WebApiService.DeleteCall($"api/payment/{id}", App.ApplicationUser?.JwtToken!);
         try
         {
+            if (id == 0)
+            {
+                await UpdatePayments();
+                return;
+            }
+            var postProductsToCartRequest = await WebApiService.DeleteCall($"api/payment/{id}", App.ApplicationUser?.JwtToken!);
             if (postProductsToCartRequest.IsSuccessStatusCode)
             {
                 var paymentToDelete = PaymentMethods.FirstOrDefault(p => p.Id == id);
