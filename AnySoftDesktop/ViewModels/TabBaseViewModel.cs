@@ -10,8 +10,10 @@ public abstract class TabBaseViewModel : PropertyChangedBase
     public string Name { get; }
 
     public bool IsSelected { get; set; }
-
-    public bool IsVisible { get; set; } = true;
+    
+    public TabBaseViewModel? BaseTab { get; set; }
+    
+    public TabBaseViewModel? PreviousTab { get; set; }
     
     public event EventHandler? TabSelected;
     

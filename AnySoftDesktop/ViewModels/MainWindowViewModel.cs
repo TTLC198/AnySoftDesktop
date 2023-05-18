@@ -26,8 +26,8 @@ public class MainWindowViewModel : Screen, INotifyPropertyChanged
     private readonly IViewModelFactory _viewModelFactory;
     private readonly DialogManager _dialogManager;
     
-    public ObservableCollection<Genre> Genres { get; set; }
-    public ObservableCollection<Property> Properties { get; set; }
+    public ObservableCollection<Genre>? Genres { get; private set; }
+    public ObservableCollection<Property>? Properties { get; private set; }
     public ObservableCollection<TabBaseViewModel> Tabs { get; }
     public TabBaseViewModel? ActiveTab { get; private set; }
 
@@ -78,7 +78,7 @@ public class MainWindowViewModel : Screen, INotifyPropertyChanged
                 var responseStream = await getGenresRequest.Content.ReadAsStreamAsync(cancellationTokenSource.Token);
                 var genres = await JsonSerializer.DeserializeAsync<IEnumerable<Genre>>(responseStream,
                     CustomJsonSerializerOptions.Options, cancellationToken: cancellationTokenSource.Token);
-                Genres = new ObservableCollection<Genre>(genres.OrderBy(g => g.Name).Prepend(new Genre {Id = -1, Name = "Genres"}));
+                Genres = new ObservableCollection<Genre>(genres?.OrderBy(g => g.Name).Prepend(new Genre {Id = -1, Name = "Genres"})!);
             }
             if (getPropertiesRequest.IsSuccessStatusCode)
             {
@@ -86,7 +86,7 @@ public class MainWindowViewModel : Screen, INotifyPropertyChanged
                 var responseStream = await getPropertiesRequest.Content.ReadAsStreamAsync(cancellationTokenSource.Token);
                 var properties = await JsonSerializer.DeserializeAsync<IEnumerable<Property>>(responseStream,
                     CustomJsonSerializerOptions.Options, cancellationToken: cancellationTokenSource.Token);
-                Properties = new ObservableCollection<Property>(properties.OrderBy(p => p.Name).Prepend(new Property {Id = -1, Name = "Properties"}));
+                Properties = new ObservableCollection<Property>(properties?.OrderBy(p => p.Name).Prepend(new Property {Id = -1, Name = "Properties"})!);
             }
         }
         catch (Exception exception)
@@ -103,14 +103,6 @@ public class MainWindowViewModel : Screen, INotifyPropertyChanged
 
     public void ActivateTab(TabBaseViewModel tab)
     {
-        var singleProductTab = Tabs.FirstOrDefault(t => t.GetType() == typeof(SingleProductTabViewModel));
-        if (singleProductTab is not null)
-        {
-            var baseTab = Tabs.First(t => t != singleProductTab && singleProductTab.GetType().IsSubclassOf(t.GetType()));
-            baseTab.IsVisible = true;
-            Tabs.Remove(singleProductTab);
-        }
-
         // Deactivate previously selected tab
         if (ActiveTab is not null)
             ActiveTab.IsSelected = false;
@@ -120,63 +112,22 @@ public class MainWindowViewModel : Screen, INotifyPropertyChanged
         tab.IsSelected = true;
     }
     
-    public void BackFromProfile() //костыль
+    public void BackFromTab(TabBaseViewModel currentTab)
     {
-        var currentTab = Tabs.FirstOrDefault(t => t.GetType() == typeof(ProfileTabViewModel));
-        if (currentTab is not ProfileTabViewModel)
+        if (currentTab.BaseTab is null)
             return;
-
-        var baseTab = Tabs.First(t => t.GetType() == currentTab.GetType().BaseType);
-        baseTab.IsVisible = true;
+        
+        Tabs.Insert(Tabs.IndexOf(currentTab), currentTab.BaseTab);
         Tabs.Remove(currentTab);
         
-        // Deactivate previously selected tab
         if (ActiveTab is not null)
             ActiveTab.IsSelected = false;
         
-        ActiveTab = Tabs.First(t => t == (currentTab as ProfileTabViewModel).PreviousTab);
-        ActiveTab.OnTabSelected(EventArgs.Empty);
-        ActiveTab.IsSelected = true;
-    }
-
-    public void BackFromProduct() //костыль
-    {
-        var currentTab = Tabs.FirstOrDefault(t => t.GetType() == typeof(SingleProductTabViewModel));
-        if (currentTab is not SingleProductTabViewModel)
-            return;
-
-        var baseTab = Tabs.First(t => t != currentTab && currentTab.GetType().IsSubclassOf(t.GetType()));
-        baseTab.IsVisible = true;
-        Tabs.Remove(currentTab);
-        
-        // Deactivate previously selected tab
-        if (ActiveTab is not null)
-            ActiveTab.IsSelected = false;
-        
-        ActiveTab = Tabs.First(t => t == (currentTab as SingleProductTabViewModel).PreviousTab);
+        ActiveTab = currentTab.PreviousTab ?? currentTab.BaseTab;
         ActiveTab.OnTabSelected(EventArgs.Empty);
         ActiveTab.IsSelected = true;
     }
     
-    public void BackFromProducts() //костыль
-    {
-        var currentTab = Tabs.FirstOrDefault(t => t is MultipleProductTabViewModel);
-        if (currentTab is not MultipleProductTabViewModel)
-            return;
-
-        var baseTab = Tabs.First(t => t != currentTab && currentTab.GetType().IsSubclassOf(t.GetType()));
-        baseTab.IsVisible = true;
-        Tabs.Remove(currentTab);
-        
-        // Deactivate previously selected tab
-        if (ActiveTab is not null)
-            ActiveTab.IsSelected = false;
-        
-        ActiveTab = Tabs.First(t => t == (currentTab as MultipleProductTabViewModel).PreviousTab);
-        ActiveTab.OnTabSelected(EventArgs.Empty);
-        ActiveTab.IsSelected = true;
-    }
-
     public void OnProductButtonClick(int id)
     {
         if (ActiveTab is not null)
@@ -184,15 +135,15 @@ public class MainWindowViewModel : Screen, INotifyPropertyChanged
 
         var tab = new SingleProductTabViewModel(id, _viewModelFactory, _dialogManager);
 
-        var baseTab = Tabs.First(t => t != tab && tab.GetType().IsSubclassOf(t.GetType().BaseType));
+        var baseTab = Tabs.First(t => t != tab && tab.GetType().IsSubclassOf(t.GetType().BaseType!));
         Tabs.Insert(Tabs.IndexOf(baseTab), tab);
-        baseTab.IsVisible = false;
+        Tabs.Remove(baseTab);
 
+        tab.BaseTab = baseTab;
         tab.PreviousTab = ActiveTab;
         ActiveTab = tab;
         tab.OnTabSelected(EventArgs.Empty);
         tab.IsSelected = true;
-        tab.IsVisible = true;
     }
     
     public void OnProfileButtonClick()
@@ -210,15 +161,14 @@ public class MainWindowViewModel : Screen, INotifyPropertyChanged
 
             var baseTab = Tabs.First(t => t != tab && tab.GetType().IsSubclassOf(t.GetType()));
             Tabs.Insert(Tabs.IndexOf(baseTab), tab);
-            baseTab.IsVisible = false;
+            Tabs.Remove(baseTab);
 
             tab.PreviousTab = ActiveTab;
+            tab.BaseTab = baseTab;
+            ActiveTab = tab;
+            tab.OnTabSelected(EventArgs.Empty);
+            tab.IsSelected = true;
         }
-        
-        ActiveTab = tab;
-        tab.OnTabSelected(EventArgs.Empty);
-        tab.IsSelected = true;
-        tab.IsVisible = true;
     }
 
     public async void OpenLoginPage()
@@ -233,11 +183,11 @@ public class MainWindowViewModel : Screen, INotifyPropertyChanged
     
     public async void OpenProductsByGenre(int id)
     {
-        SelectedGenre = Genres.First(g => g.Id == id);
+        SelectedGenre = Genres?.First(g => g.Id == id);
         OpenSearchPage();
     }
 
-    public async void OpenSearchPage()
+    private async void OpenSearchPage()
     {
         var productRequestDto = new ProductRequestDto
         {
@@ -272,16 +222,17 @@ public class MainWindowViewModel : Screen, INotifyPropertyChanged
                 else
                 {
                     tab = new MultipleProductTabViewModel(products!, _viewModelFactory, _dialogManager);
+                    
                     var baseTab = Tabs.First(t => t != tab && tab.GetType().IsSubclassOf(t.GetType()));
                     Tabs.Insert(Tabs.IndexOf(baseTab), tab);
-                    baseTab.IsVisible = false;
+                    Tabs.Remove(baseTab);
+
                     tab.PreviousTab = ActiveTab;
+                    tab.BaseTab = baseTab;
+                    ActiveTab = tab;
+                    tab.OnTabSelected(EventArgs.Empty);
+                    tab.IsSelected = true;
                 }
-                
-                ActiveTab = tab;
-                tab.OnTabSelected(EventArgs.Empty);
-                tab.IsSelected = true;
-                tab.IsVisible = true;
             }
             else
             {
@@ -324,16 +275,17 @@ public class MainWindowViewModel : Screen, INotifyPropertyChanged
                 else
                 {
                     tab = new ShoppingCartTabViewModel(products!, _viewModelFactory, _dialogManager);
-                    var baseTab = Tabs.First(t => t != tab && tab.GetType().IsSubclassOf(t.GetType().BaseType!));
+                    
+                    var baseTab = Tabs.First(t => t != tab && tab.GetType().IsSubclassOf(t.GetType()));
                     Tabs.Insert(Tabs.IndexOf(baseTab), tab);
-                    baseTab.IsVisible = false;
+                    Tabs.Remove(baseTab);
+
                     tab.PreviousTab = ActiveTab;
+                    tab.BaseTab = baseTab;
+                    ActiveTab = tab;
+                    tab.OnTabSelected(EventArgs.Empty);
+                    tab.IsSelected = true;
                 }
-                
-                ActiveTab = tab;
-                tab.OnTabSelected(EventArgs.Empty);
-                tab.IsSelected = true;
-                tab.IsVisible = true;
             }
             else
             {
@@ -425,7 +377,7 @@ public class MainWindowViewModel : Screen, INotifyPropertyChanged
                     var payments = await JsonSerializer.DeserializeAsync<IEnumerable<Payment>>(responseStream,
                         CustomJsonSerializerOptions.Options, cancellationToken: cancellationTokenSource.Token);
                     
-                    var paymentDialog = _viewModelFactory.CreatePurchaseDialog(payments.ToList());
+                    var paymentDialog = _viewModelFactory.CreatePurchaseDialog(payments?.ToList()!);
                     var selectedPaymentMethod = await _dialogManager.ShowDialogAsync(paymentDialog);
                     if (selectedPaymentMethod is null)
                         throw new InvalidOperationException("Payment method not selected");
@@ -433,16 +385,23 @@ public class MainWindowViewModel : Screen, INotifyPropertyChanged
                     var orderPurchase = new OrderPurchaseDto()
                     {
                         OrderId = createdOrder.Id,
-                        PaymentId = selectedPaymentMethod.Id.Value
+                        PaymentId = selectedPaymentMethod.Id ?? -1
                     };
                 
                     var orderConfirmationRequest = await WebApiService.PostCall("api/orders/buy", orderPurchase, App.ApplicationUser?.JwtToken!);
                     if (!orderConfirmationRequest.IsSuccessStatusCode) return;
                     var tab = Tabs.FirstOrDefault(t => t.GetType() == typeof(LibraryTabViewModel));
+                    if (tab is null)
+                        return;
+                    var baseTab = Tabs.First(t => t != tab && tab.GetType().IsSubclassOf(t.GetType()));
+                    Tabs.Insert(Tabs.IndexOf(baseTab), tab);
+                    Tabs.Remove(baseTab);
+
+                    tab.PreviousTab = ActiveTab;
+                    tab.BaseTab = baseTab;
                     ActiveTab = tab;
                     tab.OnTabSelected(EventArgs.Empty);
                     tab.IsSelected = true;
-                    tab.IsVisible = true;
                 }
                 else
                 {
@@ -480,9 +439,9 @@ public class MainWindowViewModel : Screen, INotifyPropertyChanged
     public void ToggleMenu() =>
         IsMenuExpanded = !IsMenuExpanded;
     
-    public event PropertyChangedEventHandler? PropertyChanged;
+    public new event PropertyChangedEventHandler? PropertyChanged;
 
-    protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+    protected override void OnPropertyChanged([CallerMemberName] string? propertyName = null)
     {
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
