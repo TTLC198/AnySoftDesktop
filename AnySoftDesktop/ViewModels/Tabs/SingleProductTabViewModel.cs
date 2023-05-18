@@ -32,8 +32,6 @@ public class SingleProductTabViewModel : MultipleProductTabViewModel, INotifyPro
         }
     }
 
-    public TabBaseViewModel? PreviousTab { get; set; }
-
     private bool _isInCart;
 
     public bool IsInCart
