@@ -78,7 +78,7 @@
                                     <controls:AlternativeSourceImage
                                         Stretch="Uniform"
                                         Source="{Binding Product.Images[0], Converter={x:Static converters:UrlToImageConverter.Instance}}"
-                                        AlternativeSource="{StaticResource EmptyImage}"/>
+                                        AlternativeSource="{StaticResource EmptyImage}" />
                                 </VisualBrush.Visual>
                             </VisualBrush>
                         </Border.Background>
@@ -240,8 +240,7 @@
             </StackPanel>
             <!--Reviews block-->
             <StackPanel
-                Grid.Row="2"
-                Visibility="{Binding Product.Reviews, Converter={x:Static converters:EmptyToVisibilityConverter.Instance}}">
+                Grid.Row="2">
                 <TextBlock
                     HorizontalAlignment="Left"
                     Margin="5, 7"
@@ -253,7 +252,8 @@
                     CornerRadius="15"
                     BorderThickness="0"
                     Background="{DynamicResource SearchBarColorBrush}"
-                    Padding="15">
+                    Padding="15"
+                    Visibility="{Binding Product.Reviews, Converter={x:Static converters:EmptyToVisibilityConverter.Instance}}">
                     <StackPanel
                         Orientation="Vertical">
                         <ItemsControl
@@ -264,8 +264,8 @@
                                 <ItemsPanelTemplate>
                                     <StackPanel
                                         Orientation="Vertical"
-                                        HorizontalAlignment="Left"
-                                        VerticalAlignment="Stretch"/>
+                                        HorizontalAlignment="Stretch"
+                                        VerticalAlignment="Stretch" />
                                 </ItemsPanelTemplate>
                             </ItemsControl.ItemsPanel>
                             <ItemsControl.ItemTemplate>
@@ -290,7 +290,7 @@
                                                             <controls:AlternativeSourceImage
                                                                 Stretch="Uniform"
                                                                 Source="{Binding User.Image, Converter={x:Static converters:UrlToImageConverter.Instance}}"
-                                                                AlternativeSource="{StaticResource EmptyImage}"/>
+                                                                AlternativeSource="{StaticResource EmptyImage}" />
                                                         </VisualBrush.Visual>
                                                     </VisualBrush>
                                                 </Ellipse.Fill>
@@ -401,20 +401,20 @@
                                                     BasedOn="{StaticResource MaterialDesignTextBox}">
                                                     <Setter
                                                         Property="materialDesign:TextFieldAssist.UnderlineBrush"
-                                                        Value="Transparent"/>
+                                                        Value="Transparent" />
                                                     <Setter
                                                         Property="BorderThickness"
-                                                        Value="0"/>
+                                                        Value="0" />
                                                     <Style.Triggers>
                                                         <DataTrigger
                                                             Binding="{Binding DataContext.IsReviewModified, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=UserControl}}"
                                                             Value="True">
                                                             <Setter
                                                                 Property="materialDesign:TextFieldAssist.UnderlineBrush"
-                                                                Value="{StaticResource PrimaryHueDarkBrush}"/>
+                                                                Value="{StaticResource PrimaryHueDarkBrush}" />
                                                             <Setter
                                                                 Property="BorderThickness"
-                                                                Value="0,0,0,1"/>
+                                                                Value="0,0,0,1" />
                                                         </DataTrigger>
                                                     </Style.Triggers>
                                                 </Style>
@@ -424,10 +424,24 @@
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
+                    </StackPanel>
+                </Border>
+                <!--New review menu-->
+                <StackPanel
+                    Visibility="{Binding IsOwnReviewExists, Converter={x:Static converters:InverseBoolToVisibleConverter.Instance}}">
+                    <Border
+                    CornerRadius="15"
+                    BorderThickness="0"
+                    Margin="0, 15"
+                    Background="{DynamicResource SearchBarColorBrush}"
+                    Padding="15"
+                    Visibility="{Binding IsBought, Converter={x:Static converters:BoolToVisibleConverter.Instance}}">
+                    <StackPanel
+                        Orientation="Vertical">
                         <StackPanel
-                            Visibility="{Binding IsReviewAdded, Converter={x:Static converters:BoolToVisibleConverter.Instance}}"
                             Orientation="Vertical"
-                            HorizontalAlignment="Stretch">
+                            HorizontalAlignment="Stretch"
+                            Visibility="{Binding IsReviewAdded, Converter={x:Static converters:BoolToVisibleConverter.Instance}}">
                             <DockPanel>
                                 <TextBlock
                                     DockPanel.Dock="Top"
@@ -477,8 +491,7 @@
                         </StackPanel>
                         <Button
                             Margin="15, 5"
-                            Command="{s:Action OnReviewAddButtonClick}"
-                            Visibility="{Binding IsBought, Converter={x:Static converters:BoolToVisibleConverter.Instance}}">
+                            Command="{s:Action OnReviewAddButtonClick}">
                             <Button.Style>
                                 <Style
                                     TargetType="Button"
@@ -526,6 +539,7 @@
                         </Button>
                     </StackPanel>
                 </Border>
+                </StackPanel>
             </StackPanel>
         </Grid>
     </Grid>

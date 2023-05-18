@@ -81,6 +81,18 @@ public class SingleProductTabViewModel : MultipleProductTabViewModel, INotifyPro
             OnPropertyChanged();
         }
     }
+    
+    private bool _isOwnReviewExists;
+
+    public bool IsOwnReviewExists
+    {
+        get => _isOwnReviewExists;
+        set
+        {
+            _isOwnReviewExists = value;
+            OnPropertyChanged();
+        }
+    }
 
     public SingleProductTabViewModel(int productId, IViewModelFactory viewModelFactory, DialogManager dialogManager) :
         base(viewModelFactory, dialogManager)
@@ -116,7 +128,7 @@ public class SingleProductTabViewModel : MultipleProductTabViewModel, INotifyPro
                         .Where(r => (r.User ?? new UserResponseDto()).Id == App.ApplicationUser?.Id)
                         .ToList()
                         .ForEach(r => r.IsOwn = true);
-
+                    IsOwnReviewExists = product.Reviews?.Any(r => r.IsOwn) ?? false;
                     Product = product;
                 }
 
@@ -388,14 +400,14 @@ public class SingleProductTabViewModel : MultipleProductTabViewModel, INotifyPro
         }
     }
 
-    public event PropertyChangedEventHandler? PropertyChanged;
+    public new event PropertyChangedEventHandler? PropertyChanged;
 
-    protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+    protected override void OnPropertyChanged([CallerMemberName] string? propertyName = null)
     {
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 
-    protected bool SetField<T>(ref T field, T value, [CallerMemberName] string? propertyName = null)
+    protected new bool SetField<T>(ref T field, T value, [CallerMemberName] string? propertyName = null)
     {
         if (EqualityComparer<T>.Default.Equals(field, value)) return false;
         field = value;
