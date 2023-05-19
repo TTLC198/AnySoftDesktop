@@ -76,7 +76,80 @@
                     LastChildFill="True"
                     HorizontalAlignment="Stretch"
                     VerticalAlignment="Stretch">
-                    <Ellipse
+                    <Button
+                        x:Name="ProfileIconButton"
+                        Height="180"
+                        Width="180"
+                        Margin="6"
+                        DockPanel.Dock="Left"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Background="Transparent"
+                        BorderBrush="Transparent"
+                        Command="{s:Action OpenFileDialog}">
+                        <Button.Style>
+                            <Style
+                                TargetType="Button"
+                                BasedOn="{StaticResource MaterialDesignIconButton}">
+                                <Setter
+                                    Property="Content">
+                                    <Setter.Value>
+                                        <Ellipse
+                                            Height="180"
+                                            Width="180">
+                                            <Ellipse.Fill>
+                                                <VisualBrush>
+                                                    <VisualBrush.Visual>
+                                                        <Image
+                                                            Stretch="Uniform"
+                                                            Source="{Binding ApplicationUser.Image, Converter={x:Static converters:UrlToImageConverter.Instance}}"/>
+                                                    </VisualBrush.Visual>
+                                                </VisualBrush>
+                                            </Ellipse.Fill>
+                                        </Ellipse>
+                                    </Setter.Value>
+                                </Setter>
+                                <Style.Triggers>
+                                    <DataTrigger
+                                        Binding="{Binding ElementName=ProfileIconButton, Path=IsMouseOver}"
+                                        Value="True">
+                                        <Setter
+                                            Property="Content">
+                                            <Setter.Value>
+                                                <Grid>
+                                                    <materialDesign:PackIcon
+                                                        Grid.Row="0"
+                                                        Panel.ZIndex="2"
+                                                        Width="20"
+                                                        Height="20"
+                                                        Kind="ImageEdit" 
+                                                        Foreground="{StaticResource PrimaryHueMidBrush}"
+                                                        VerticalAlignment="Center"
+                                                        HorizontalAlignment="Center"/>
+                                                    <Ellipse
+                                                        Grid.Row="0"
+                                                        Panel.ZIndex="1"
+                                                        Height="180"
+                                                        Width="180">
+                                                        <Ellipse.Fill>
+                                                            <VisualBrush>
+                                                                <VisualBrush.Visual>
+                                                                    <Image
+                                                                        Stretch="Uniform"
+                                                                        Source="{Binding ApplicationUser.Image, Converter={x:Static converters:UrlToImageConverter.Instance}}"/>
+                                                                </VisualBrush.Visual>
+                                                            </VisualBrush>
+                                                        </Ellipse.Fill>
+                                                    </Ellipse>
+                                                </Grid>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+                    <!--<Ellipse
                         Height="180"
                         Width="180"
                         Margin="6"
@@ -92,7 +165,7 @@
                                 </VisualBrush.Visual>
                             </VisualBrush>
                         </Ellipse.Fill>
-                    </Ellipse>
+                    </Ellipse>-->
                     <!--User Description-->
                     <DockPanel
                         HorizontalAlignment="Stretch"
@@ -509,7 +582,7 @@
                 Style="{DynamicResource MaterialDesignFlatDarkButton}"
                 s:View.ActionTarget="{Binding DataContext, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}"
                 Command="{s:Action OnProfileChanged}"
-                CommandParameter="{Binding ApplicationUser}"
+                CommandParameter="{Binding UserImagePath}"
                 DockPanel.Dock="Right"
                 HorizontalAlignment="Right"
                 VerticalAlignment="Center">

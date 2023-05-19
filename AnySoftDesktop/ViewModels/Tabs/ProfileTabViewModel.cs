@@ -33,12 +33,25 @@ public class ProfileTabViewModel : SettingsTabViewModel, INotifyPropertyChanged
 
     private ObservableCollection<CustomPayment> _paymentMethods;
 
+    
     public ObservableCollection<CustomPayment> PaymentMethods
     {
         get => _paymentMethods;
         set
         {
             _paymentMethods = value;
+            OnPropertyChanged();
+        }
+    }
+    
+    private string _userImagePath;
+
+    public string UserImagePath
+    {
+        get => _userImagePath;
+        set
+        {
+            _userImagePath = value;
             OnPropertyChanged();
         }
     }
@@ -89,6 +102,21 @@ public class ProfileTabViewModel : SettingsTabViewModel, INotifyPropertyChanged
             );
             await _dialogManager.ShowDialogAsync(messageBoxDialog);
         }
+    }
+    
+    public async void OpenFileDialog()
+    {
+        var dlg = new Microsoft.Win32.OpenFileDialog
+        {
+            DefaultExt = ".png",
+            Filter = "Picture files (*.jpeg, *.png, *.jpg, *.gif)|*.jpeg;*.png;*.jpg;*.gif"
+        };
+
+        var result = dlg.ShowDialog();
+
+        if (result != true) return;
+        var filename = dlg.FileName;
+        UserImagePath = filename;
     }
 
     public async void AddPayment()

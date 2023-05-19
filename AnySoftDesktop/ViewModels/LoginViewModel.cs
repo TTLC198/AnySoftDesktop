@@ -7,9 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Net.Http.Json;
 using System.Runtime.CompilerServices;
-using System.Security.Policy;
 using System.Text.Json;
 using System.Threading;
 using System.Web;
@@ -17,9 +15,7 @@ using AnySoftDesktop.Models;
 using AnySoftDesktop.Services;
 using AnySoftDesktop.Utils;
 using AnySoftDesktop.ViewModels.Framework;
-using Microsoft.IdentityModel.Tokens;
 using RPM_Project_Backend.Domain;
-using RPM_Project_Backend.Helpers;
 using RPM_Project_Backend.Models;
 
 namespace AnySoftDesktop.ViewModels;
@@ -61,8 +57,7 @@ public class LoginViewModel : DialogScreen<ApplicationUser?>, INotifyPropertyCha
         var dlg = new Microsoft.Win32.OpenFileDialog
         {
             DefaultExt = ".png",
-            Filter =
-                "JPEG Files (*.jpeg)|*.jpeg|PNG Files (*.png)|*.png|JPG Files (*.jpg)|*.jpg|GIF Files (*.gif)|*.gif"
+            Filter = "Picture files (*.jpeg, *.png, *.jpg, *.gif)|*.jpeg;*.png;*.jpg;*.gif"
         };
 
         var result = dlg.ShowDialog();
@@ -207,7 +202,7 @@ public class LoginViewModel : DialogScreen<ApplicationUser?>, INotifyPropertyCha
                             using var cancellationTokenSource = new CancellationTokenSource(timeoutAfter);
                             var responseStream =
                                 await postImageRequest.Content.ReadAsStreamAsync(cancellationTokenSource.Token);
-                            var image = await JsonSerializer.DeserializeAsync<RPM_Project_Backend.Domain.Image>(responseStream,
+                            var image = await JsonSerializer.DeserializeAsync<Image>(responseStream,
                                 CustomJsonSerializerOptions.Options, cancellationToken: cancellationTokenSource.Token);
                             user.Image = HttpUtility.UrlPathEncode("/resources/image/" + string.Join(@"/", image!.ImagePath
                                 .Split('\\')
