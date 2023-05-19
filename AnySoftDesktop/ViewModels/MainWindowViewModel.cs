@@ -73,7 +73,7 @@ public class MainWindowViewModel : Screen, INotifyPropertyChanged
         {
             var getGenresRequest = await WebApiService.GetCall("api/genres");
             var getPropertiesRequest = await WebApiService.GetCall("api/properties");
-            var timeoutAfter = TimeSpan.FromMilliseconds(300);
+            var timeoutAfter = TimeSpan.FromMilliseconds(3000);
             if (getGenresRequest.IsSuccessStatusCode)
             {
                 using var cancellationTokenSource = new CancellationTokenSource(timeoutAfter);
@@ -155,7 +155,7 @@ public class MainWindowViewModel : Screen, INotifyPropertyChanged
         if (ActiveTab is not null)
             ActiveTab.IsSelected = false;
 
-        if (Tabs.FirstOrDefault(t => t.GetType() == typeof(ProfileTabViewModel)) is ProfileTabViewModel tab)
+        if (Tabs.FirstOrDefault(t => t.GetType() == typeof(ProfileTabViewModel)) is not null and ProfileTabViewModel tab)
         {
             tab.ApplicationUser = CurrentUser;
         }
@@ -274,8 +274,7 @@ public class MainWindowViewModel : Screen, INotifyPropertyChanged
                 if (ActiveTab is not null)
                     ActiveTab.IsSelected = false;
 
-                if (Tabs.FirstOrDefault(t => t.GetType() == typeof(ShoppingCartTabViewModel)) is
-                    ShoppingCartTabViewModel tab)
+                if (Tabs.FirstOrDefault(t => t.GetType() == typeof(ShoppingCartTabViewModel)) is not null and ShoppingCartTabViewModel tab)
                 {
                     tab.Products = new ObservableCollection<ProductResponseDto>(products!);
                 }
@@ -314,16 +313,15 @@ public class MainWindowViewModel : Screen, INotifyPropertyChanged
 
     public async void OnProfileChanged(string imagePath)
     {
-        var userEdit = new UserEditDto()
-        {
-            Id = CurrentUser.Id ?? 0,
-            Login = CurrentUser.Login,
-            Email = CurrentUser.Email,
-            Password = CurrentUser.Password
-        };
-
         try
         {
+            var userEdit = new UserEditDto()
+            {
+                Id = CurrentUser.Id ?? 0,
+                Login = CurrentUser.Login,
+                Email = CurrentUser.Email,
+                Password = CurrentUser.Password
+            };
             var putChangesOfUserRequest =
                 await WebApiService.PutCall("api/users", userEdit, App.ApplicationUser?.JwtToken!);
             if (putChangesOfUserRequest.IsSuccessStatusCode)
@@ -338,13 +336,15 @@ public class MainWindowViewModel : Screen, INotifyPropertyChanged
                     if (editedUser is null)
                         throw new InvalidOperationException("User is null");
                 }
-                
+
                 if (string.IsNullOrEmpty(imagePath))
                     return;
 
-                var deletePreviousImageRequest = await WebApiService.DeleteCall($"resources/image/delete/{CurrentUser.Image?.Split('/').Last().Split('.').First()}", App.ApplicationUser?.JwtToken!);
+                var deletePreviousImageRequest = await WebApiService.DeleteCall(
+                    $"resources/image/delete/{CurrentUser.Image?.Split('/').Last().Split('.').First()}",
+                    App.ApplicationUser?.JwtToken!);
                 if (!deletePreviousImageRequest.IsSuccessStatusCode) return;
-                
+
                 var formContent = new MultipartFormDataContent();
 
                 var stream = File.OpenRead(imagePath);
@@ -395,9 +395,10 @@ public class MainWindowViewModel : Screen, INotifyPropertyChanged
 
     public async void OnOrderRequest()
     {
-        var cartOrderRequest = await WebApiService.PostCall("api/cart/order", null!, App.ApplicationUser?.JwtToken!);
         try
         {
+            var cartOrderRequest =
+                await WebApiService.PostCall("api/cart/order", null!, App.ApplicationUser?.JwtToken!);
             if (cartOrderRequest.IsSuccessStatusCode)
             {
                 var createdOrder = new OrderResponseDto();
@@ -458,6 +459,58 @@ public class MainWindowViewModel : Screen, INotifyPropertyChanged
             {
                 var msg = await cartOrderRequest.Content.ReadAsStringAsync();
                 throw new InvalidOperationException($"{cartOrderRequest.ReasonPhrase}\n{msg}");
+            }
+        }
+        catch (Exception exception)
+        {
+            var messageBoxDialog = _viewModelFactory.CreateMessageBoxViewModel(
+                title: "Some error has occurred",
+                message: $@"{exception.Message}".Trim(),
+                okButtonText: "OK",
+                cancelButtonText: null
+            );
+            await _dialogManager.ShowDialogAsync(messageBoxDialog);
+        }
+    }
+
+    public async void OnOrderPayment(int orderId)
+    {
+        try
+        {
+            var getPaymentsRequest = await WebApiService.GetCall("api/payment", App.ApplicationUser?.JwtToken!);
+            var timeoutAfter = TimeSpan.FromMilliseconds(3000);
+            if (getPaymentsRequest.IsSuccessStatusCode)
+            {
+                using var cancellationTokenSource = new CancellationTokenSource(timeoutAfter);
+                var responseStream =
+                    await getPaymentsRequest.Content.ReadAsStreamAsync(cancellationTokenSource.Token);
+                var payments = await JsonSerializer.DeserializeAsync<IEnumerable<Payment>>(responseStream,
+                    CustomJsonSerializerOptions.Options, cancellationToken: cancellationTokenSource.Token);
+
+                var paymentDialog = _viewModelFactory.CreatePurchaseDialog(payments?.ToList()!);
+                var selectedPaymentMethod = await _dialogManager.ShowDialogAsync(paymentDialog);
+                if (selectedPaymentMethod is null)
+                    throw new InvalidOperationException("Payment method not selected");
+
+                var orderPurchase = new OrderPurchaseDto()
+                {
+                    OrderId = orderId,
+                    PaymentId = selectedPaymentMethod.Id ?? -1
+                };
+
+                var orderConfirmationRequest = await WebApiService.PostCall("api/orders/buy", orderPurchase,
+                    App.ApplicationUser?.JwtToken!);
+                if (!orderConfirmationRequest.IsSuccessStatusCode)
+                {
+                    // ReSharper disable once MethodSupportsCancellation
+                    var msg = await orderConfirmationRequest.Content.ReadAsStringAsync();
+                    throw new InvalidOperationException($"{orderConfirmationRequest.ReasonPhrase}\n{msg}");
+                }
+            }
+            else
+            {
+                var msg = await getPaymentsRequest.Content.ReadAsStringAsync();
+                throw new InvalidOperationException($"{getPaymentsRequest.ReasonPhrase}\n{msg}");
             }
         }
         catch (Exception exception)
