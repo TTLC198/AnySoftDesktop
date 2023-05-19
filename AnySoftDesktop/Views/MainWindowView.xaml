@@ -108,8 +108,7 @@
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
                             <Border
-                                BorderThickness="0,0,3,0"
-                                Visibility="{Binding IsVisible, Converter={x:Static converters:BoolToVisibleConverter.Instance}}">
+                                BorderThickness="0,0,3,0">
                                 <Border.Style>
                                     <Style TargetType="{x:Type Border}">
                                         <Style.Triggers>
@@ -363,6 +362,7 @@
                                             Margin="5, 0"
                                             MinWidth="72"
                                             materialDesign:HintAssist.Hint="Genres"
+                                            materialDesign:TextFieldAssist.HasClearButton="True"
                                             ItemsSource="{Binding Genres}"
                                             SelectedValue="{Binding SelectedGenre}">
                                             <ComboBox.ItemTemplate>
@@ -378,6 +378,7 @@
                                             Margin="5, 0"
                                             MinWidth="72"
                                             materialDesign:HintAssist.Hint="Properties"
+                                            materialDesign:TextFieldAssist.HasClearButton="True"
                                             ItemsSource="{Binding Properties}"
                                             SelectedValue="{Binding SelectedProperty}">
                                             <ComboBox.ItemTemplate>

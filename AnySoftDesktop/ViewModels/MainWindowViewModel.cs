@@ -69,10 +69,10 @@ public class MainWindowViewModel : Screen, INotifyPropertyChanged
 
     public async void OnViewFullyLoaded()
     {
-        var getGenresRequest = await WebApiService.GetCall("api/genres");
-        var getPropertiesRequest = await WebApiService.GetCall("api/properties");
         try
         {
+            var getGenresRequest = await WebApiService.GetCall("api/genres");
+            var getPropertiesRequest = await WebApiService.GetCall("api/properties");
             var timeoutAfter = TimeSpan.FromMilliseconds(300);
             if (getGenresRequest.IsSuccessStatusCode)
             {
@@ -80,8 +80,7 @@ public class MainWindowViewModel : Screen, INotifyPropertyChanged
                 var responseStream = await getGenresRequest.Content.ReadAsStreamAsync(cancellationTokenSource.Token);
                 var genres = await JsonSerializer.DeserializeAsync<IEnumerable<Genre>>(responseStream,
                     CustomJsonSerializerOptions.Options, cancellationToken: cancellationTokenSource.Token);
-                Genres = new ObservableCollection<Genre>(genres?.OrderBy(g => g.Name)
-                    .Prepend(new Genre {Id = -1, Name = "Genres"})!);
+                Genres = new ObservableCollection<Genre>(genres?.OrderBy(g => g.Name)!);
             }
 
             if (getPropertiesRequest.IsSuccessStatusCode)
@@ -91,8 +90,7 @@ public class MainWindowViewModel : Screen, INotifyPropertyChanged
                     await getPropertiesRequest.Content.ReadAsStreamAsync(cancellationTokenSource.Token);
                 var properties = await JsonSerializer.DeserializeAsync<IEnumerable<Property>>(responseStream,
                     CustomJsonSerializerOptions.Options, cancellationToken: cancellationTokenSource.Token);
-                Properties = new ObservableCollection<Property>(properties?.OrderBy(p => p.Name)
-                    .Prepend(new Property {Id = -1, Name = "Properties"})!);
+                Properties = new ObservableCollection<Property>(properties?.OrderBy(p => p.Name)!);
             }
         }
         catch (Exception exception)
@@ -195,23 +193,23 @@ public class MainWindowViewModel : Screen, INotifyPropertyChanged
 
     public async void OpenSearchPage()
     {
-        var productRequestDto = new ProductRequestDto
-        {
-            Name = string.IsNullOrEmpty(SearchString)
-                ? null
-                : SearchString,
-            Genres = SelectedGenre is {Id: > 0}
-                ? new List<int>() {SelectedGenre.Id}
-                : null,
-            Properties = SelectedProperty is {Id: > 0}
-                ? new List<int>() {SelectedProperty.Id}
-                : null,
-        };
-        var productRequestQueryJson =
-            HttpUtility.UrlEncode(JsonSerializer.Serialize(productRequestDto, CustomJsonSerializerOptions.Options));
-        var getProductsRequest = await WebApiService.GetCall($"api/products?Query={productRequestQueryJson}");
         try
         {
+            var productRequestDto = new ProductRequestDto
+            {
+                Name = string.IsNullOrEmpty(SearchString)
+                    ? null
+                    : SearchString,
+                Genres = SelectedGenre is {Id: > 0}
+                    ? new List<int>() {SelectedGenre.Id}
+                    : null,
+                Properties = SelectedProperty is {Id: > 0}
+                    ? new List<int>() {SelectedProperty.Id}
+                    : null,
+            };
+            var productRequestQueryJson =
+                HttpUtility.UrlEncode(JsonSerializer.Serialize(productRequestDto, CustomJsonSerializerOptions.Options));
+            var getProductsRequest = await WebApiService.GetCall($"api/products?Query={productRequestQueryJson}");
             if (getProductsRequest.IsSuccessStatusCode)
             {
                 var timeoutAfter = TimeSpan.FromMilliseconds(3000);
@@ -262,9 +260,9 @@ public class MainWindowViewModel : Screen, INotifyPropertyChanged
 
     public async void OpenShoppingCart()
     {
-        var getProductsRequest = await WebApiService.GetCall($"api/cart", App.ApplicationUser?.JwtToken!);
         try
         {
+            var getProductsRequest = await WebApiService.GetCall($"api/cart", App.ApplicationUser?.JwtToken!);
             if (getProductsRequest.IsSuccessStatusCode)
             {
                 var timeoutAfter = TimeSpan.FromMilliseconds(3000);
@@ -323,7 +321,7 @@ public class MainWindowViewModel : Screen, INotifyPropertyChanged
             Email = CurrentUser.Email,
             Password = CurrentUser.Password
         };
-        
+
         try
         {
             var putChangesOfUserRequest =
@@ -341,7 +339,7 @@ public class MainWindowViewModel : Screen, INotifyPropertyChanged
                         throw new InvalidOperationException("User is null");
                 }
                 
-                if (imagePath == string.Empty)
+                if (string.IsNullOrEmpty(imagePath))
                     return;
 
                 var deletePreviousImageRequest = await WebApiService.DeleteCall($"resources/image/delete/{CurrentUser.Image?.Split('/').Last().Split('.').First()}", App.ApplicationUser?.JwtToken!);
@@ -361,7 +359,7 @@ public class MainWindowViewModel : Screen, INotifyPropertyChanged
                     "resources/image/upload",
                     formContent,
                     App.ApplicationUser?.JwtToken!);
-                
+
                 if (postImageRequest.IsSuccessStatusCode)
                 {
                     using var cancellationTokenSource = new CancellationTokenSource(timeoutAfter);
@@ -369,10 +367,12 @@ public class MainWindowViewModel : Screen, INotifyPropertyChanged
                         await postImageRequest.Content.ReadAsStreamAsync(cancellationTokenSource.Token);
                     var image = await JsonSerializer.DeserializeAsync<Image>(responseStream,
                         CustomJsonSerializerOptions.Options, cancellationToken: cancellationTokenSource.Token);
-                    CurrentUser.Image = HttpUtility.UrlPathEncode("/resources/image/" + string.Join(@"/", image!.ImagePath
-                        .Split('\\')
-                        .SkipWhile(s => s != "wwwroot")
-                        .Skip(1)));
+                    CurrentUser.Image = HttpUtility.UrlPathEncode("/resources/image/" + string.Join(@"/",
+                        image!.ImagePath
+                            .Split('\\')
+                            .SkipWhile(s => s != "wwwroot")
+                            .Skip(1)));
+                    Refresh();
                 }
             }
             else
@@ -476,6 +476,7 @@ public class MainWindowViewModel : Screen, INotifyPropertyChanged
     {
         IsAuthorized = false;
         CurrentUser = new ApplicationUser();
+        Refresh();
     }
 
     public void ToggleMaximized() =>
