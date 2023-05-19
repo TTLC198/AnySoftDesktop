@@ -3,8 +3,6 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:local="clr-namespace:AnySoftDesktop.UsersControls"
-             xmlns:s="https://github.com/canton7/Stylet"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:converters="clr-namespace:AnySoftDesktop.Utils.Converters"
              mc:Ignorable="d"
@@ -27,7 +25,7 @@
                             Background="{TemplateBinding Background}"
                             BorderThickness="0"
                             CornerRadius="5">
-                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
                         </Border>
                     </ControlTemplate>
                 </Setter.Value>
@@ -71,7 +69,7 @@
             </materialDesign:Transitioner.Resources>
             <materialDesign:Transitioner.ItemTemplate>
                 <DataTemplate>
-                    <Border 
+                    <Border
                         CornerRadius="15"
                         HorizontalAlignment="Stretch"
                         VerticalAlignment="Stretch">
@@ -79,11 +77,9 @@
                             <VisualBrush>
                                 <VisualBrush.Visual>
                                     <Image
-                                        Stretch="Uniform"
                                         Source="{Binding .,
-                                        TargetNullValue={StaticResource EmptyImage},
-                                        FallbackValue={StaticResource EmptyImage},
-                                         Converter={x:Static converters:UrlToImageConverter.Instance}}"/>
+                                        Converter={x:Static converters:UrlToImageConverter.Instance}}">
+                                    </Image>
                                 </VisualBrush.Visual>
                             </VisualBrush>
                         </Border.Background>

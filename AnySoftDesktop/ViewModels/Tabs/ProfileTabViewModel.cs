@@ -31,8 +31,9 @@ public class ProfileTabViewModel : SettingsTabViewModel, INotifyPropertyChanged
         }
     }
 
-    private ObservableCollection<CustomPayment> _paymentMethods;
+    private ObservableCollection<CustomPayment> _paymentMethods = new ObservableCollection<CustomPayment>();
 
+    
     public ObservableCollection<CustomPayment> PaymentMethods
     {
         get => _paymentMethods;
@@ -42,10 +43,36 @@ public class ProfileTabViewModel : SettingsTabViewModel, INotifyPropertyChanged
             OnPropertyChanged();
         }
     }
+    
+    private ObservableCollection<OrderResponseDto> _orders = new ObservableCollection<OrderResponseDto>();
 
-    public async void OnViewFullyLoaded()
+    
+    public ObservableCollection<OrderResponseDto> Orders
+    {
+        get => _orders;
+        set
+        {
+            _orders = value;
+            OnPropertyChanged();
+        }
+    }
+    
+    private string _userImagePath;
+
+    public string UserImagePath
+    {
+        get => _userImagePath;
+        set
+        {
+            _userImagePath = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public new async void OnViewFullyLoaded()
     {
         await UpdatePayments();
+        await UpdateOrders();
     }
 
     public async Task UpdatePayments()
@@ -73,10 +100,32 @@ public class ProfileTabViewModel : SettingsTabViewModel, INotifyPropertyChanged
                         IsActive = p.IsActive
                     }));
             }
-            else
+        }
+        catch (Exception exception)
+        {
+            var messageBoxDialog = _viewModelFactory.CreateMessageBoxViewModel(
+                title: "Some error has occurred",
+                message: $@"{exception.Message}".Trim(),
+                okButtonText: "OK",
+                cancelButtonText: null
+            );
+            await _dialogManager.ShowDialogAsync(messageBoxDialog);
+        }
+    }
+    
+    public async Task UpdateOrders()
+    {
+        try
+        {
+            var getOrdersRequest = await WebApiService.GetCall("api/orders", App.ApplicationUser?.JwtToken!);
+            if (getOrdersRequest.IsSuccessStatusCode)
             {
-                var msg = await getPaymentsRequest.Content.ReadAsStringAsync();
-                throw new InvalidOperationException($"{getPaymentsRequest.ReasonPhrase}\n{msg}");
+                var timeoutAfter = TimeSpan.FromMilliseconds(3000);
+                using var cancellationTokenSource = new CancellationTokenSource(timeoutAfter);
+                var responseStream = await getOrdersRequest.Content.ReadAsStreamAsync(cancellationTokenSource.Token);
+                var orders = await JsonSerializer.DeserializeAsync<IEnumerable<OrderResponseDto>>(responseStream,
+                    CustomJsonSerializerOptions.Options, cancellationToken: cancellationTokenSource.Token);
+                Orders = new ObservableCollection<OrderResponseDto>(orders.ToList());
             }
         }
         catch (Exception exception)
@@ -90,10 +139,25 @@ public class ProfileTabViewModel : SettingsTabViewModel, INotifyPropertyChanged
             await _dialogManager.ShowDialogAsync(messageBoxDialog);
         }
     }
+    
+    public async void OpenFileDialog()
+    {
+        var dlg = new Microsoft.Win32.OpenFileDialog
+        {
+            DefaultExt = ".png",
+            Filter = "Picture files (*.jpeg, *.png, *.jpg, *.gif)|*.jpeg;*.png;*.jpg;*.gif"
+        };
+
+        var result = dlg.ShowDialog();
+
+        if (result != true) return;
+        var filename = dlg.FileName;
+        UserImagePath = filename;
+    }
 
     public async void AddPayment()
     {
-        PaymentMethods.Add(new CustomPayment());
+        PaymentMethods.Add(new CustomPayment() { Number = "", Cvc = "", IsEditComplete = true });
     }
 
     public async void SavePayment(CustomPayment payment)

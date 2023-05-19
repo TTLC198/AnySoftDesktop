@@ -17,10 +17,22 @@
              d:DesignHeight="600"
              d:DesignWidth="800"
              d:DataContext="{d:DesignInstance Type=tabs:ProfileTabViewModel}">
+    <UserControl.Resources>
+        <Style TargetType="TextBlock">
+            <Setter
+                Property="TextAlignment"
+                Value="Center" />
+            <Setter
+                Property="Foreground"
+                Value="{StaticResource PrimaryHueMidBrush}" />
+        </Style>
+    </UserControl.Resources>
     <Grid
         Loaded="{s:Action OnViewFullyLoaded}"
         Margin="0, 0, 0, 12">
         <Grid.RowDefinitions>
+            <RowDefinition
+                Height="Auto" />
             <RowDefinition
                 Height="Auto" />
             <RowDefinition
@@ -76,23 +88,79 @@
                     LastChildFill="True"
                     HorizontalAlignment="Stretch"
                     VerticalAlignment="Stretch">
-                    <Ellipse
+                    <Button
+                        x:Name="ProfileIconButton"
                         Height="180"
                         Width="180"
                         Margin="6"
                         DockPanel.Dock="Left"
-                        HorizontalAlignment="Stretch"
-                        VerticalAlignment="Top">
-                        <Ellipse.Fill>
-                            <VisualBrush>
-                                <VisualBrush.Visual>
-                                    <Image
-                                        Stretch="Uniform"
-                                        Source="{Binding ApplicationUser.Image, Converter={x:Static converters:UrlToImageConverter.Instance}}"/>
-                                </VisualBrush.Visual>
-                            </VisualBrush>
-                        </Ellipse.Fill>
-                    </Ellipse>
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Background="Transparent"
+                        BorderBrush="Transparent"
+                        Command="{s:Action OpenFileDialog}">
+                        <Button.Style>
+                            <Style
+                                TargetType="Button"
+                                BasedOn="{StaticResource MaterialDesignIconButton}">
+                                <Setter
+                                    Property="Content">
+                                    <Setter.Value>
+                                        <Ellipse
+                                            Height="180"
+                                            Width="180">
+                                            <Ellipse.Fill>
+                                                <VisualBrush>
+                                                    <VisualBrush.Visual>
+                                                        <Image
+                                                            Stretch="Uniform"
+                                                            Source="{Binding ApplicationUser.Image, Converter={x:Static converters:UrlToImageConverter.Instance}}" />
+                                                    </VisualBrush.Visual>
+                                                </VisualBrush>
+                                            </Ellipse.Fill>
+                                        </Ellipse>
+                                    </Setter.Value>
+                                </Setter>
+                                <Style.Triggers>
+                                    <DataTrigger
+                                        Binding="{Binding ElementName=ProfileIconButton, Path=IsMouseOver}"
+                                        Value="True">
+                                        <Setter
+                                            Property="Content">
+                                            <Setter.Value>
+                                                <Grid>
+                                                    <materialDesign:PackIcon
+                                                        Grid.Row="0"
+                                                        Panel.ZIndex="2"
+                                                        Width="20"
+                                                        Height="20"
+                                                        Kind="ImageEdit"
+                                                        Foreground="{StaticResource PrimaryHueMidBrush}"
+                                                        VerticalAlignment="Center"
+                                                        HorizontalAlignment="Center" />
+                                                    <Ellipse
+                                                        Grid.Row="0"
+                                                        Panel.ZIndex="1"
+                                                        Height="180"
+                                                        Width="180">
+                                                        <Ellipse.Fill>
+                                                            <VisualBrush>
+                                                                <VisualBrush.Visual>
+                                                                    <Image
+                                                                        Stretch="Uniform"
+                                                                        Source="{Binding ApplicationUser.Image, Converter={x:Static converters:UrlToImageConverter.Instance}}" />
+                                                                </VisualBrush.Visual>
+                                                            </VisualBrush>
+                                                        </Ellipse.Fill>
+                                                    </Ellipse>
+                                                </Grid>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
                     <!--User Description-->
                     <DockPanel
                         HorizontalAlignment="Stretch"
@@ -157,6 +225,8 @@
                                     <Binding.ValidationRules>
                                         <validation:NotEmptyValidationRule
                                             ValidatesOnTargetUpdated="True" />
+                                        <validation:EmailValidationRule
+                                            ValidatesOnTargetUpdated="True" />
                                     </Binding.ValidationRules>
                                 </Binding>
                             </TextBox.Text>
@@ -204,7 +274,114 @@
                 FontSize="14"
                 TextWrapping="Wrap"
                 Foreground="{DynamicResource PrimaryHueDarkBrush}"
-                Text="Payment" />
+                Text="Orders" />
+            <!--Orders field-->
+            <Border
+                CornerRadius="15"
+                BorderThickness="0"
+                Background="{DynamicResource SearchBarColorBrush}"
+                Padding="15"
+                Margin="15, 0, 15, 15">
+                <DataGrid
+                    Background="Transparent"
+                    ItemsSource="{Binding Orders}"
+                    AutoGenerateColumns="False"
+                    HorizontalAlignment="Stretch"
+                    HorizontalContentAlignment="Stretch"
+                    TextElement.Foreground="{StaticResource PrimaryHueMidBrush}"
+                    Foreground="{StaticResource PrimaryHueMidBrush}"
+                    IsReadOnly="True"
+                    IsHitTestVisible="True">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn 
+                            Header="Id"
+                            Binding="{Binding Id}"
+                            IsReadOnly="True"
+                            Width="0.2*"/>
+                        <DataGridTextColumn 
+                            Header="Status"
+                            Binding="{Binding Status}"
+                            IsReadOnly="True"
+                            Width="*"/>
+                        <DataGridTextColumn 
+                            Header="Date" 
+                            Binding="{Binding Ts}" 
+                            IsReadOnly="True"
+                            Width="*"/>
+                        <DataGridTemplateColumn
+                            Header="Options"
+                            Width="*">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Button
+                                        Visibility="{Binding Status, Converter={x:Static converters:OrderStatusToVisibilityConverter.Instance}}"
+                                        Margin="4"
+                                        Height="Auto"
+                                        Width="Auto"
+                                        Style="{DynamicResource MaterialDesignFlatDarkButton}"
+                                        s:View.ActionTarget="{Binding DataContext, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}"
+                                        Command="{s:Action OnOrderPayment}"
+                                        CommandParameter="{Binding Id}"
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center">
+                                        <materialDesign:PackIcon
+                                            Width="20"
+                                            Height="20"
+                                            Kind="CreditCard" />
+                                    </Button>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
+                <!--<ItemsControl
+                    Padding="15"
+                    Margin="15, 0"
+                    HorizontalAlignment="Center"
+                    HorizontalContentAlignment="Stretch"
+                    ItemsSource="{Binding PaymentMethods}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel
+                                Orientation="Vertical"
+                                HorizontalAlignment="Stretch"
+                                VerticalAlignment="Stretch" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition
+                                        Width="*"/>
+                                    <ColumnDefinition
+                                        Width="*"/>
+                                    <ColumnDefinition
+                                        Width="*"/>
+                                    <ColumnDefinition
+                                        Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock
+                                    Grid.Column="0"
+                                    FontSize="14"
+                                    TextWrapping="Wrap"
+                                    Foreground="{DynamicResource PrimaryHueDarkBrush}"
+                                    Text="{Binding Id}"/>
+                            </Grid>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>-->
+            </Border>
+        </StackPanel>
+        <StackPanel
+            Grid.Row="3">
+            <TextBlock
+                HorizontalAlignment="Left"
+                Margin="5, 7"
+                FontSize="14"
+                TextWrapping="Wrap"
+                Foreground="{DynamicResource PrimaryHueDarkBrush}"
+                Text="Payments" />
             <!--Payments field-->
             <ItemsControl
                 Padding="15"
@@ -215,9 +392,9 @@
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
                         <UniformGrid
-                            Columns="2" 
-                            HorizontalAlignment="Stretch" 
-                            VerticalAlignment="Stretch"/>
+                            Columns="2"
+                            HorizontalAlignment="Stretch"
+                            VerticalAlignment="Stretch" />
                     </ItemsPanelTemplate>
                 </ItemsControl.ItemsPanel>
                 <ItemsControl.ItemTemplate>
@@ -248,9 +425,10 @@
                                     materialDesign:HintAssist.HelperText="Card number"
                                     MaxLength="16"
                                     FontSize="18"
-                                    IsReadOnly="{Binding IsEditComplete}"
+                                    IsReadOnly="{Binding IsEditComplete, Converter={x:Static converters:InverseBoolToBoolConverter.Instance}}"
                                     materialDesign:ValidationAssist.Background="Transparent"
-                                    materialDesign:TextFieldAssist.HasClearButton="True">
+                                    materialDesign:TextFieldAssist.CharacterCounterVisibility="Collapsed"
+                                    materialDesign:ValidationAssist.HorizontalAlignment="Right">
                                     <materialDesign:HintAssist.Hint>
                                         <StackPanel Orientation="Horizontal">
                                             <materialDesign:PackIcon
@@ -268,6 +446,8 @@
                                             <Binding.ValidationRules>
                                                 <validation:NotEmptyValidationRule
                                                     ValidatesOnTargetUpdated="True" />
+                                                <validation:DigitValidationRule
+                                                    ValidatesOnTargetUpdated="True" />
                                             </Binding.ValidationRules>
                                         </Binding>
                                     </TextBox.Text>
@@ -281,13 +461,15 @@
                                     LastChildFill="False">
                                     <TextBox
                                         DockPanel.Dock="Left"
+                                        MinWidth="80"
                                         HorizontalAlignment="Left"
                                         materialDesign:HintAssist.HelperText="CVC"
                                         MaxLength="3"
                                         FontSize="18"
-                                        IsReadOnly="{Binding IsEditComplete}"
+                                        IsReadOnly="{Binding IsEditComplete, Converter={x:Static converters:InverseBoolToBoolConverter.Instance}}"
                                         materialDesign:ValidationAssist.Background="Transparent"
-                                        materialDesign:TextFieldAssist.HasClearButton="True">
+                                        materialDesign:TextFieldAssist.CharacterCounterVisibility="Collapsed"
+                                        materialDesign:ValidationAssist.HorizontalAlignment="Right">
                                         <materialDesign:HintAssist.Hint>
                                             <StackPanel Orientation="Horizontal">
                                                 <materialDesign:PackIcon
@@ -304,6 +486,8 @@
                                                 UpdateSourceTrigger="PropertyChanged">
                                                 <Binding.ValidationRules>
                                                     <validation:NotEmptyValidationRule
+                                                        ValidatesOnTargetUpdated="True" />
+                                                    <validation:DigitValidationRule
                                                         ValidatesOnTargetUpdated="True" />
                                                 </Binding.ValidationRules>
                                             </Binding>
@@ -324,12 +508,24 @@
                                                         MinWidth="30"
                                                         HorizontalAlignment="Left"
                                                         materialDesign:HintAssist.HelperText="Month"
-                                                        materialDesign:TextFieldAssist.CharacterCounterVisibility="Collapsed"
                                                         FontSize="18"
                                                         MaxLength="2"
-                                                        Text="{Binding Month}"
-                                                        IsReadOnly="{Binding IsEditComplete, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataTemplate}}"
-                                                        materialDesign:ValidationAssist.Background="Transparent">
+                                                        IsReadOnly="{Binding  DataContext.IsEditComplete, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ContentControl}, Converter={x:Static converters:InverseBoolToBoolConverter.Instance}}"
+                                                        materialDesign:ValidationAssist.Background="Transparent"
+                                                        materialDesign:TextFieldAssist.CharacterCounterVisibility="Collapsed"
+                                                        materialDesign:ValidationAssist.HorizontalAlignment="Right">
+                                                        <TextBox.Text>
+                                                            <Binding
+                                                                Path="Month"
+                                                                UpdateSourceTrigger="PropertyChanged">
+                                                                <Binding.ValidationRules>
+                                                                    <validation:NotEmptyValidationRule
+                                                                        ValidatesOnTargetUpdated="True" />
+                                                                    <validation:DigitValidationRule
+                                                                        ValidatesOnTargetUpdated="True" />
+                                                                </Binding.ValidationRules>
+                                                            </Binding>
+                                                        </TextBox.Text>
                                                         <materialDesign:HintAssist.Hint>
                                                             <StackPanel Orientation="Horizontal">
                                                                 <materialDesign:PackIcon
@@ -347,12 +543,24 @@
                                                         Margin="5, 0,0 ,0"
                                                         HorizontalAlignment="Right"
                                                         materialDesign:HintAssist.HelperText="Year"
-                                                        materialDesign:TextFieldAssist.CharacterCounterVisibility="Collapsed"
                                                         FontSize="18"
                                                         MaxLength="4"
-                                                        IsReadOnly="{Binding IsEditComplete, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataTemplate}}"
-                                                        Text="{Binding Year}"
-                                                        materialDesign:ValidationAssist.Background="Transparent">
+                                                        IsReadOnly="{Binding  DataContext.IsEditComplete, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ContentControl}, Converter={x:Static converters:InverseBoolToBoolConverter.Instance}}"
+                                                        materialDesign:ValidationAssist.Background="Transparent"
+                                                        materialDesign:TextFieldAssist.CharacterCounterVisibility="Collapsed"
+                                                        materialDesign:ValidationAssist.HorizontalAlignment="Right">
+                                                        <TextBox.Text>
+                                                            <Binding
+                                                                Path="Year"
+                                                                UpdateSourceTrigger="PropertyChanged">
+                                                                <Binding.ValidationRules>
+                                                                    <validation:NotEmptyValidationRule
+                                                                        ValidatesOnTargetUpdated="True" />
+                                                                    <validation:DigitValidationRule
+                                                                        ValidatesOnTargetUpdated="True" />
+                                                                </Binding.ValidationRules>
+                                                            </Binding>
+                                                        </TextBox.Text>
                                                         <materialDesign:HintAssist.Hint>
                                                             <StackPanel Orientation="Horizontal">
                                                                 <materialDesign:PackIcon
@@ -479,7 +687,7 @@
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
             <Button
-                Margin="15, 5"
+                Margin="5, 0, 12, 5"
                 Style="{StaticResource MaterialDesignFlatDarkButton}"
                 Background="{DynamicResource PrimaryHueLightBrush}"
                 Command="{s:Action AddPayment}">
@@ -488,7 +696,7 @@
                     <materialDesign:PackIcon
                         Width="20"
                         Height="20"
-                        Kind="CreditCardPlus"/>
+                        Kind="CreditCardPlus" />
                     <TextBlock
                         Margin="5, 0"
                         Text="Add card"
@@ -500,7 +708,7 @@
             VerticalAlignment="Top"
             HorizontalAlignment="Stretch"
             ZIndex="1"
-            Grid.Row="3">
+            Grid.Row="4">
             <Button
                 Margin="4"
                 Padding="8"
@@ -509,7 +717,7 @@
                 Style="{DynamicResource MaterialDesignFlatDarkButton}"
                 s:View.ActionTarget="{Binding DataContext, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}"
                 Command="{s:Action OnProfileChanged}"
-                CommandParameter="{Binding ApplicationUser}"
+                CommandParameter="{Binding UserImagePath}"
                 DockPanel.Dock="Right"
                 HorizontalAlignment="Right"
                 VerticalAlignment="Center">

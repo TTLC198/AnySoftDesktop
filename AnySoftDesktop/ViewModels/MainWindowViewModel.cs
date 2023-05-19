@@ -2,21 +2,23 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
+using System.IdentityModel.Tokens.Jwt;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
-using System.Reflection;
+using System.Net.Http.Headers;
 using System.Runtime.CompilerServices;
-using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Web;
-using System.Windows.Documents;
 using AnySoftDesktop.Models;
 using AnySoftDesktop.Services;
 using AnySoftDesktop.Utils;
 using AnySoftDesktop.ViewModels.Framework;
 using AnySoftDesktop.ViewModels.Tabs;
 using RPM_Project_Backend.Domain;
+using RPM_Project_Backend.Models;
 using Stylet;
 
 namespace AnySoftDesktop.ViewModels;
@@ -25,7 +27,7 @@ public class MainWindowViewModel : Screen, INotifyPropertyChanged
 {
     private readonly IViewModelFactory _viewModelFactory;
     private readonly DialogManager _dialogManager;
-    
+
     public ObservableCollection<Genre>? Genres { get; private set; }
     public ObservableCollection<Property>? Properties { get; private set; }
     public ObservableCollection<TabBaseViewModel> Tabs { get; }
@@ -36,8 +38,8 @@ public class MainWindowViewModel : Screen, INotifyPropertyChanged
     public bool IsAuthorized { get; set; }
 
     public string? SearchString { get; set; }
-    public Genre? SelectedGenre { get; set; } 
-    public Property? SelectedProperty { get; set; } 
+    public Genre? SelectedGenre { get; set; }
+    public Property? SelectedProperty { get; set; }
 
     private ApplicationUser _currentUser = new ApplicationUser();
 
@@ -67,26 +69,28 @@ public class MainWindowViewModel : Screen, INotifyPropertyChanged
 
     public async void OnViewFullyLoaded()
     {
-        var getGenresRequest = await WebApiService.GetCall("api/genres");
-        var getPropertiesRequest = await WebApiService.GetCall("api/properties");
         try
         {
-            var timeoutAfter = TimeSpan.FromMilliseconds(300);
+            var getGenresRequest = await WebApiService.GetCall("api/genres");
+            var getPropertiesRequest = await WebApiService.GetCall("api/properties");
+            var timeoutAfter = TimeSpan.FromMilliseconds(3000);
             if (getGenresRequest.IsSuccessStatusCode)
             {
                 using var cancellationTokenSource = new CancellationTokenSource(timeoutAfter);
                 var responseStream = await getGenresRequest.Content.ReadAsStreamAsync(cancellationTokenSource.Token);
                 var genres = await JsonSerializer.DeserializeAsync<IEnumerable<Genre>>(responseStream,
                     CustomJsonSerializerOptions.Options, cancellationToken: cancellationTokenSource.Token);
-                Genres = new ObservableCollection<Genre>(genres?.OrderBy(g => g.Name).Prepend(new Genre {Id = -1, Name = "Genres"})!);
+                Genres = new ObservableCollection<Genre>(genres?.OrderBy(g => g.Name)!);
             }
+
             if (getPropertiesRequest.IsSuccessStatusCode)
             {
                 using var cancellationTokenSource = new CancellationTokenSource(timeoutAfter);
-                var responseStream = await getPropertiesRequest.Content.ReadAsStreamAsync(cancellationTokenSource.Token);
+                var responseStream =
+                    await getPropertiesRequest.Content.ReadAsStreamAsync(cancellationTokenSource.Token);
                 var properties = await JsonSerializer.DeserializeAsync<IEnumerable<Property>>(responseStream,
                     CustomJsonSerializerOptions.Options, cancellationToken: cancellationTokenSource.Token);
-                Properties = new ObservableCollection<Property>(properties?.OrderBy(p => p.Name).Prepend(new Property {Id = -1, Name = "Properties"})!);
+                Properties = new ObservableCollection<Property>(properties?.OrderBy(p => p.Name)!);
             }
         }
         catch (Exception exception)
@@ -111,23 +115,23 @@ public class MainWindowViewModel : Screen, INotifyPropertyChanged
         tab.OnTabSelected(EventArgs.Empty);
         tab.IsSelected = true;
     }
-    
+
     public void BackFromTab(TabBaseViewModel currentTab)
     {
         if (currentTab.BaseTab is null)
             return;
-        
+
         Tabs.Insert(Tabs.IndexOf(currentTab), currentTab.BaseTab);
         Tabs.Remove(currentTab);
-        
+
         if (ActiveTab is not null)
             ActiveTab.IsSelected = false;
-        
+
         ActiveTab = currentTab.PreviousTab ?? currentTab.BaseTab;
         ActiveTab.OnTabSelected(EventArgs.Empty);
         ActiveTab.IsSelected = true;
     }
-    
+
     public void OnProductButtonClick(int id)
     {
         if (ActiveTab is not null)
@@ -145,13 +149,13 @@ public class MainWindowViewModel : Screen, INotifyPropertyChanged
         tab.OnTabSelected(EventArgs.Empty);
         tab.IsSelected = true;
     }
-    
+
     public void OnProfileButtonClick()
     {
         if (ActiveTab is not null)
             ActiveTab.IsSelected = false;
 
-        if (Tabs.FirstOrDefault(t => t.GetType() == typeof(ProfileTabViewModel)) is ProfileTabViewModel tab)
+        if (Tabs.FirstOrDefault(t => t.GetType() == typeof(ProfileTabViewModel)) is not null and ProfileTabViewModel tab)
         {
             tab.ApplicationUser = CurrentUser;
         }
@@ -180,7 +184,7 @@ public class MainWindowViewModel : Screen, INotifyPropertyChanged
         IsAuthorized = true;
         CurrentUser = user;
     }
-    
+
     public async void OpenProductsByGenre(int id)
     {
         SelectedGenre = Genres?.First(g => g.Id == id);
@@ -189,22 +193,23 @@ public class MainWindowViewModel : Screen, INotifyPropertyChanged
 
     public async void OpenSearchPage()
     {
-        var productRequestDto = new ProductRequestDto
-        {
-            Name = string.IsNullOrEmpty(SearchString) 
-                ? null
-                : SearchString,
-            Genres = SelectedGenre is {Id: > 0}
-                ? new List<int>() {SelectedGenre.Id}
-                : null,
-            Properties = SelectedProperty is {Id: > 0} 
-                ? new List<int>() {SelectedProperty.Id}
-                : null,
-        };
-        var productRequestQueryJson = HttpUtility.UrlEncode(JsonSerializer.Serialize(productRequestDto, CustomJsonSerializerOptions.Options));
-        var getProductsRequest = await WebApiService.GetCall($"api/products?Query={productRequestQueryJson}");
         try
         {
+            var productRequestDto = new ProductRequestDto
+            {
+                Name = string.IsNullOrEmpty(SearchString)
+                    ? null
+                    : SearchString,
+                Genres = SelectedGenre is {Id: > 0}
+                    ? new List<int>() {SelectedGenre.Id}
+                    : null,
+                Properties = SelectedProperty is {Id: > 0}
+                    ? new List<int>() {SelectedProperty.Id}
+                    : null,
+            };
+            var productRequestQueryJson =
+                HttpUtility.UrlEncode(JsonSerializer.Serialize(productRequestDto, CustomJsonSerializerOptions.Options));
+            var getProductsRequest = await WebApiService.GetCall($"api/products?Query={productRequestQueryJson}");
             if (getProductsRequest.IsSuccessStatusCode)
             {
                 var timeoutAfter = TimeSpan.FromMilliseconds(3000);
@@ -212,17 +217,18 @@ public class MainWindowViewModel : Screen, INotifyPropertyChanged
                 var responseStream = await getProductsRequest.Content.ReadAsStreamAsync(cancellationTokenSource.Token);
                 var products = await JsonSerializer.DeserializeAsync<IEnumerable<ProductResponseDto>>(responseStream,
                     CustomJsonSerializerOptions.Options, cancellationToken: cancellationTokenSource.Token);
-                
+
                 if (ActiveTab is not null)
                     ActiveTab.IsSelected = false;
-                if (Tabs.FirstOrDefault(t => t.GetType() == typeof(MultipleProductTabViewModel)) is MultipleProductTabViewModel tab)
+                if (Tabs.FirstOrDefault(t => t.GetType() == typeof(MultipleProductTabViewModel)) is
+                    MultipleProductTabViewModel tab)
                 {
                     tab.Products = new ObservableCollection<ProductResponseDto>(products!);
                 }
                 else
                 {
                     tab = new MultipleProductTabViewModel(products!, _viewModelFactory, _dialogManager);
-                    
+
                     var baseTab = Tabs.First(t => t != tab && tab.GetType().IsSubclassOf(t.GetType()));
                     Tabs.Insert(Tabs.IndexOf(baseTab), tab);
                     Tabs.Remove(baseTab);
@@ -251,12 +257,12 @@ public class MainWindowViewModel : Screen, INotifyPropertyChanged
             await _dialogManager.ShowDialogAsync(messageBoxDialog);
         }
     }
-    
+
     public async void OpenShoppingCart()
     {
-        var getProductsRequest = await WebApiService.GetCall($"api/cart", App.ApplicationUser?.JwtToken!);
         try
         {
+            var getProductsRequest = await WebApiService.GetCall($"api/cart", App.ApplicationUser?.JwtToken!);
             if (getProductsRequest.IsSuccessStatusCode)
             {
                 var timeoutAfter = TimeSpan.FromMilliseconds(3000);
@@ -264,18 +270,18 @@ public class MainWindowViewModel : Screen, INotifyPropertyChanged
                 var responseStream = await getProductsRequest.Content.ReadAsStreamAsync(cancellationTokenSource.Token);
                 var products = await JsonSerializer.DeserializeAsync<IEnumerable<ProductResponseDto>>(responseStream,
                     CustomJsonSerializerOptions.Options, cancellationToken: cancellationTokenSource.Token);
-                
+
                 if (ActiveTab is not null)
                     ActiveTab.IsSelected = false;
-                
-                if (Tabs.FirstOrDefault(t => t.GetType() == typeof(ShoppingCartTabViewModel)) is ShoppingCartTabViewModel tab)
+
+                if (Tabs.FirstOrDefault(t => t.GetType() == typeof(ShoppingCartTabViewModel)) is not null and ShoppingCartTabViewModel tab)
                 {
                     tab.Products = new ObservableCollection<ProductResponseDto>(products!);
                 }
                 else
                 {
                     tab = new ShoppingCartTabViewModel(products!, _viewModelFactory, _dialogManager);
-                    
+
                     var baseTab = Tabs.First(t => t != tab && tab.GetType().IsSubclassOf(t.GetType()));
                     Tabs.Insert(Tabs.IndexOf(baseTab), tab);
                     Tabs.Remove(baseTab);
@@ -304,33 +310,70 @@ public class MainWindowViewModel : Screen, INotifyPropertyChanged
             await _dialogManager.ShowDialogAsync(messageBoxDialog);
         }
     }
-    
-    public async void OnProfileChanged(ApplicationUser applicationUser)
+
+    public async void OnProfileChanged(string imagePath)
     {
-        var userEdit = new UserEditDto()
-        {
-            Id = applicationUser.Id ?? 0,
-            Login = applicationUser.Login,
-            Email = applicationUser.Email,
-            Password = applicationUser.Password
-        };
-        var putChangesOfUserRequest = await WebApiService.PutCall("api/users", userEdit, App.ApplicationUser?.JwtToken!);
         try
         {
+            var userEdit = new UserEditDto()
+            {
+                Id = CurrentUser.Id ?? 0,
+                Login = CurrentUser.Login,
+                Email = CurrentUser.Email,
+                Password = CurrentUser.Password
+            };
+            var putChangesOfUserRequest =
+                await WebApiService.PutCall("api/users", userEdit, App.ApplicationUser?.JwtToken!);
             if (putChangesOfUserRequest.IsSuccessStatusCode)
             {
                 var timeoutAfter = TimeSpan.FromMilliseconds(3000);
-                using var cancellationTokenSource = new CancellationTokenSource(timeoutAfter);
-                var responseStream = await putChangesOfUserRequest.Content.ReadAsStreamAsync(cancellationTokenSource.Token);
-                var editedUser = await JsonSerializer.DeserializeAsync<User>(responseStream,
-                    CustomJsonSerializerOptions.Options, cancellationToken: cancellationTokenSource.Token);
-                if (editedUser is null)
-                    throw new InvalidOperationException("User is null");
-                CurrentUser.Id = editedUser.Id;
-                CurrentUser.Email = editedUser.Email;
-                CurrentUser.Login = editedUser.Login;
-                /*CurrentUser.Image = editedUser.Id;*/
-                //TODO image edit
+                using (var cancellationTokenSource = new CancellationTokenSource(timeoutAfter))
+                {
+                    var responseStream =
+                        await putChangesOfUserRequest.Content.ReadAsStreamAsync(cancellationTokenSource.Token);
+                    var editedUser = await JsonSerializer.DeserializeAsync<User>(responseStream,
+                        CustomJsonSerializerOptions.Options, cancellationToken: cancellationTokenSource.Token);
+                    if (editedUser is null)
+                        throw new InvalidOperationException("User is null");
+                }
+
+                if (string.IsNullOrEmpty(imagePath))
+                    return;
+
+                var deletePreviousImageRequest = await WebApiService.DeleteCall(
+                    $"resources/image/delete/{CurrentUser.Image?.Split('/').Last().Split('.').First()}",
+                    App.ApplicationUser?.JwtToken!);
+                if (!deletePreviousImageRequest.IsSuccessStatusCode) return;
+
+                var formContent = new MultipartFormDataContent();
+
+                var stream = File.OpenRead(imagePath);
+                formContent.Add(new StringContent(CurrentUser.Id.ToString()!), "userId");
+
+                var imageContent = new StreamContent(stream);
+                imageContent.Headers.ContentType =
+                    MediaTypeHeaderValue.Parse($"image/{imagePath.Split('/').Last().Split('.').Last()}");
+                formContent.Add(imageContent, "image", $"{imagePath.Split('/').Last()}");
+
+                var postImageRequest = await WebApiService.PostCall(
+                    "resources/image/upload",
+                    formContent,
+                    App.ApplicationUser?.JwtToken!);
+
+                if (postImageRequest.IsSuccessStatusCode)
+                {
+                    using var cancellationTokenSource = new CancellationTokenSource(timeoutAfter);
+                    var responseStream =
+                        await postImageRequest.Content.ReadAsStreamAsync(cancellationTokenSource.Token);
+                    var image = await JsonSerializer.DeserializeAsync<Image>(responseStream,
+                        CustomJsonSerializerOptions.Options, cancellationToken: cancellationTokenSource.Token);
+                    CurrentUser.Image = HttpUtility.UrlPathEncode("/resources/image/" + string.Join(@"/",
+                        image!.ImagePath
+                            .Split('\\')
+                            .SkipWhile(s => s != "wwwroot")
+                            .Skip(1)));
+                    Refresh();
+                }
             }
             else
             {
@@ -349,12 +392,13 @@ public class MainWindowViewModel : Screen, INotifyPropertyChanged
             await _dialogManager.ShowDialogAsync(messageBoxDialog);
         }
     }
-    
+
     public async void OnOrderRequest()
     {
-        var cartOrderRequest = await WebApiService.PostCall("api/cart/order", null!, App.ApplicationUser?.JwtToken!);
         try
         {
+            var cartOrderRequest =
+                await WebApiService.PostCall("api/cart/order", null!, App.ApplicationUser?.JwtToken!);
             if (cartOrderRequest.IsSuccessStatusCode)
             {
                 var createdOrder = new OrderResponseDto();
@@ -369,26 +413,28 @@ public class MainWindowViewModel : Screen, INotifyPropertyChanged
                         throw new InvalidOperationException("Order is null");
                 }
 
-                var getPaymentsRequest = await WebApiService.GetCall("api/payment",  App.ApplicationUser?.JwtToken!);
+                var getPaymentsRequest = await WebApiService.GetCall("api/payment", App.ApplicationUser?.JwtToken!);
                 if (getPaymentsRequest.IsSuccessStatusCode)
                 {
                     using var cancellationTokenSource = new CancellationTokenSource(timeoutAfter);
-                    var responseStream = await getPaymentsRequest.Content.ReadAsStreamAsync(cancellationTokenSource.Token);
+                    var responseStream =
+                        await getPaymentsRequest.Content.ReadAsStreamAsync(cancellationTokenSource.Token);
                     var payments = await JsonSerializer.DeserializeAsync<IEnumerable<Payment>>(responseStream,
                         CustomJsonSerializerOptions.Options, cancellationToken: cancellationTokenSource.Token);
-                    
+
                     var paymentDialog = _viewModelFactory.CreatePurchaseDialog(payments?.ToList()!);
                     var selectedPaymentMethod = await _dialogManager.ShowDialogAsync(paymentDialog);
                     if (selectedPaymentMethod is null)
                         throw new InvalidOperationException("Payment method not selected");
-                    
+
                     var orderPurchase = new OrderPurchaseDto()
                     {
                         OrderId = createdOrder.Id,
                         PaymentId = selectedPaymentMethod.Id ?? -1
                     };
-                
-                    var orderConfirmationRequest = await WebApiService.PostCall("api/orders/buy", orderPurchase, App.ApplicationUser?.JwtToken!);
+
+                    var orderConfirmationRequest = await WebApiService.PostCall("api/orders/buy", orderPurchase,
+                        App.ApplicationUser?.JwtToken!);
                     if (!orderConfirmationRequest.IsSuccessStatusCode) return;
                     var tab = Tabs.FirstOrDefault(t => t.GetType() == typeof(LibraryTabViewModel));
                     if (tab is null)
@@ -427,10 +473,63 @@ public class MainWindowViewModel : Screen, INotifyPropertyChanged
         }
     }
 
+    public async void OnOrderPayment(int orderId)
+    {
+        try
+        {
+            var getPaymentsRequest = await WebApiService.GetCall("api/payment", App.ApplicationUser?.JwtToken!);
+            var timeoutAfter = TimeSpan.FromMilliseconds(3000);
+            if (getPaymentsRequest.IsSuccessStatusCode)
+            {
+                using var cancellationTokenSource = new CancellationTokenSource(timeoutAfter);
+                var responseStream =
+                    await getPaymentsRequest.Content.ReadAsStreamAsync(cancellationTokenSource.Token);
+                var payments = await JsonSerializer.DeserializeAsync<IEnumerable<Payment>>(responseStream,
+                    CustomJsonSerializerOptions.Options, cancellationToken: cancellationTokenSource.Token);
+
+                var paymentDialog = _viewModelFactory.CreatePurchaseDialog(payments?.ToList()!);
+                var selectedPaymentMethod = await _dialogManager.ShowDialogAsync(paymentDialog);
+                if (selectedPaymentMethod is null)
+                    throw new InvalidOperationException("Payment method not selected");
+
+                var orderPurchase = new OrderPurchaseDto()
+                {
+                    OrderId = orderId,
+                    PaymentId = selectedPaymentMethod.Id ?? -1
+                };
+
+                var orderConfirmationRequest = await WebApiService.PostCall("api/orders/buy", orderPurchase,
+                    App.ApplicationUser?.JwtToken!);
+                if (!orderConfirmationRequest.IsSuccessStatusCode)
+                {
+                    // ReSharper disable once MethodSupportsCancellation
+                    var msg = await orderConfirmationRequest.Content.ReadAsStringAsync();
+                    throw new InvalidOperationException($"{orderConfirmationRequest.ReasonPhrase}\n{msg}");
+                }
+            }
+            else
+            {
+                var msg = await getPaymentsRequest.Content.ReadAsStringAsync();
+                throw new InvalidOperationException($"{getPaymentsRequest.ReasonPhrase}\n{msg}");
+            }
+        }
+        catch (Exception exception)
+        {
+            var messageBoxDialog = _viewModelFactory.CreateMessageBoxViewModel(
+                title: "Some error has occurred",
+                message: $@"{exception.Message}".Trim(),
+                okButtonText: "OK",
+                cancelButtonText: null
+            );
+            await _dialogManager.ShowDialogAsync(messageBoxDialog);
+        }
+    }
+
     public void Logout()
     {
         IsAuthorized = false;
         CurrentUser = new ApplicationUser();
+        Refresh();
     }
 
     public void ToggleMaximized() =>
@@ -438,7 +537,7 @@ public class MainWindowViewModel : Screen, INotifyPropertyChanged
 
     public void ToggleMenu() =>
         IsMenuExpanded = !IsMenuExpanded;
-    
+
     public new event PropertyChangedEventHandler? PropertyChanged;
 
     protected override void OnPropertyChanged([CallerMemberName] string? propertyName = null)
