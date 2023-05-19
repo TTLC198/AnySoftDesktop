@@ -17,10 +17,22 @@
              d:DesignHeight="600"
              d:DesignWidth="800"
              d:DataContext="{d:DesignInstance Type=tabs:ProfileTabViewModel}">
+    <UserControl.Resources>
+        <Style TargetType="TextBlock">
+            <Setter
+                Property="TextAlignment"
+                Value="Center" />
+            <Setter
+                Property="Foreground"
+                Value="{StaticResource PrimaryHueMidBrush}" />
+        </Style>
+    </UserControl.Resources>
     <Grid
         Loaded="{s:Action OnViewFullyLoaded}"
         Margin="0, 0, 0, 12">
         <Grid.RowDefinitions>
+            <RowDefinition
+                Height="Auto" />
             <RowDefinition
                 Height="Auto" />
             <RowDefinition
@@ -102,7 +114,7 @@
                                                     <VisualBrush.Visual>
                                                         <Image
                                                             Stretch="Uniform"
-                                                            Source="{Binding ApplicationUser.Image, Converter={x:Static converters:UrlToImageConverter.Instance}}"/>
+                                                            Source="{Binding ApplicationUser.Image, Converter={x:Static converters:UrlToImageConverter.Instance}}" />
                                                     </VisualBrush.Visual>
                                                 </VisualBrush>
                                             </Ellipse.Fill>
@@ -122,10 +134,10 @@
                                                         Panel.ZIndex="2"
                                                         Width="20"
                                                         Height="20"
-                                                        Kind="ImageEdit" 
+                                                        Kind="ImageEdit"
                                                         Foreground="{StaticResource PrimaryHueMidBrush}"
                                                         VerticalAlignment="Center"
-                                                        HorizontalAlignment="Center"/>
+                                                        HorizontalAlignment="Center" />
                                                     <Ellipse
                                                         Grid.Row="0"
                                                         Panel.ZIndex="1"
@@ -136,7 +148,7 @@
                                                                 <VisualBrush.Visual>
                                                                     <Image
                                                                         Stretch="Uniform"
-                                                                        Source="{Binding ApplicationUser.Image, Converter={x:Static converters:UrlToImageConverter.Instance}}"/>
+                                                                        Source="{Binding ApplicationUser.Image, Converter={x:Static converters:UrlToImageConverter.Instance}}" />
                                                                 </VisualBrush.Visual>
                                                             </VisualBrush>
                                                         </Ellipse.Fill>
@@ -149,23 +161,6 @@
                             </Style>
                         </Button.Style>
                     </Button>
-                    <!--<Ellipse
-                        Height="180"
-                        Width="180"
-                        Margin="6"
-                        DockPanel.Dock="Left"
-                        HorizontalAlignment="Stretch"
-                        VerticalAlignment="Top">
-                        <Ellipse.Fill>
-                            <VisualBrush>
-                                <VisualBrush.Visual>
-                                    <Image
-                                        Stretch="Uniform"
-                                        Source="{Binding ApplicationUser.Image, Converter={x:Static converters:UrlToImageConverter.Instance}}"/>
-                                </VisualBrush.Visual>
-                            </VisualBrush>
-                        </Ellipse.Fill>
-                    </Ellipse>-->
                     <!--User Description-->
                     <DockPanel
                         HorizontalAlignment="Stretch"
@@ -231,7 +226,7 @@
                                         <validation:NotEmptyValidationRule
                                             ValidatesOnTargetUpdated="True" />
                                         <validation:EmailValidationRule
-                                            ValidatesOnTargetUpdated="True"/>
+                                            ValidatesOnTargetUpdated="True" />
                                     </Binding.ValidationRules>
                                 </Binding>
                             </TextBox.Text>
@@ -279,7 +274,114 @@
                 FontSize="14"
                 TextWrapping="Wrap"
                 Foreground="{DynamicResource PrimaryHueDarkBrush}"
-                Text="Payment" />
+                Text="Orders" />
+            <!--Orders field-->
+            <Border
+                CornerRadius="15"
+                BorderThickness="0"
+                Background="{DynamicResource SearchBarColorBrush}"
+                Padding="15"
+                Margin="15, 0, 15, 15">
+                <DataGrid
+                    Background="Transparent"
+                    ItemsSource="{Binding Orders}"
+                    AutoGenerateColumns="False"
+                    HorizontalAlignment="Stretch"
+                    HorizontalContentAlignment="Stretch"
+                    TextElement.Foreground="{StaticResource PrimaryHueMidBrush}"
+                    Foreground="{StaticResource PrimaryHueMidBrush}"
+                    IsReadOnly="True"
+                    IsHitTestVisible="True">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn 
+                            Header="Id"
+                            Binding="{Binding Id}"
+                            IsReadOnly="True"
+                            Width="0.2*"/>
+                        <DataGridTextColumn 
+                            Header="Status"
+                            Binding="{Binding Status}"
+                            IsReadOnly="True"
+                            Width="*"/>
+                        <DataGridTextColumn 
+                            Header="Date" 
+                            Binding="{Binding Ts}" 
+                            IsReadOnly="True"
+                            Width="*"/>
+                        <DataGridTemplateColumn
+                            Header="Options"
+                            Width="*">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Button
+                                        Visibility="{Binding Status, Converter={x:Static converters:OrderStatusToVisibilityConverter.Instance}}"
+                                        Margin="4"
+                                        Height="Auto"
+                                        Width="Auto"
+                                        Style="{DynamicResource MaterialDesignFlatDarkButton}"
+                                        s:View.ActionTarget="{Binding DataContext, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}"
+                                        Command="{s:Action OnOrderPayment}"
+                                        CommandParameter="{Binding Id}"
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center">
+                                        <materialDesign:PackIcon
+                                            Width="20"
+                                            Height="20"
+                                            Kind="CreditCard" />
+                                    </Button>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
+                <!--<ItemsControl
+                    Padding="15"
+                    Margin="15, 0"
+                    HorizontalAlignment="Center"
+                    HorizontalContentAlignment="Stretch"
+                    ItemsSource="{Binding PaymentMethods}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel
+                                Orientation="Vertical"
+                                HorizontalAlignment="Stretch"
+                                VerticalAlignment="Stretch" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition
+                                        Width="*"/>
+                                    <ColumnDefinition
+                                        Width="*"/>
+                                    <ColumnDefinition
+                                        Width="*"/>
+                                    <ColumnDefinition
+                                        Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock
+                                    Grid.Column="0"
+                                    FontSize="14"
+                                    TextWrapping="Wrap"
+                                    Foreground="{DynamicResource PrimaryHueDarkBrush}"
+                                    Text="{Binding Id}"/>
+                            </Grid>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>-->
+            </Border>
+        </StackPanel>
+        <StackPanel
+            Grid.Row="3">
+            <TextBlock
+                HorizontalAlignment="Left"
+                Margin="5, 7"
+                FontSize="14"
+                TextWrapping="Wrap"
+                Foreground="{DynamicResource PrimaryHueDarkBrush}"
+                Text="Payments" />
             <!--Payments field-->
             <ItemsControl
                 Padding="15"
@@ -290,9 +392,9 @@
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
                         <UniformGrid
-                            Columns="2" 
-                            HorizontalAlignment="Stretch" 
-                            VerticalAlignment="Stretch"/>
+                            Columns="2"
+                            HorizontalAlignment="Stretch"
+                            VerticalAlignment="Stretch" />
                     </ItemsPanelTemplate>
                 </ItemsControl.ItemsPanel>
                 <ItemsControl.ItemTemplate>
@@ -343,9 +445,9 @@
                                             UpdateSourceTrigger="PropertyChanged">
                                             <Binding.ValidationRules>
                                                 <validation:NotEmptyValidationRule
-                                                    ValidatesOnTargetUpdated="True"/>
+                                                    ValidatesOnTargetUpdated="True" />
                                                 <validation:DigitValidationRule
-                                                    ValidatesOnTargetUpdated="True"/>
+                                                    ValidatesOnTargetUpdated="True" />
                                             </Binding.ValidationRules>
                                         </Binding>
                                     </TextBox.Text>
@@ -384,9 +486,9 @@
                                                 UpdateSourceTrigger="PropertyChanged">
                                                 <Binding.ValidationRules>
                                                     <validation:NotEmptyValidationRule
-                                                        ValidatesOnTargetUpdated="True"/>
+                                                        ValidatesOnTargetUpdated="True" />
                                                     <validation:DigitValidationRule
-                                                        ValidatesOnTargetUpdated="True"/>
+                                                        ValidatesOnTargetUpdated="True" />
                                                 </Binding.ValidationRules>
                                             </Binding>
                                         </TextBox.Text>
@@ -418,9 +520,9 @@
                                                                 UpdateSourceTrigger="PropertyChanged">
                                                                 <Binding.ValidationRules>
                                                                     <validation:NotEmptyValidationRule
-                                                                        ValidatesOnTargetUpdated="True"/>
+                                                                        ValidatesOnTargetUpdated="True" />
                                                                     <validation:DigitValidationRule
-                                                                        ValidatesOnTargetUpdated="True"/>
+                                                                        ValidatesOnTargetUpdated="True" />
                                                                 </Binding.ValidationRules>
                                                             </Binding>
                                                         </TextBox.Text>
@@ -453,9 +555,9 @@
                                                                 UpdateSourceTrigger="PropertyChanged">
                                                                 <Binding.ValidationRules>
                                                                     <validation:NotEmptyValidationRule
-                                                                        ValidatesOnTargetUpdated="True"/>
+                                                                        ValidatesOnTargetUpdated="True" />
                                                                     <validation:DigitValidationRule
-                                                                        ValidatesOnTargetUpdated="True"/>
+                                                                        ValidatesOnTargetUpdated="True" />
                                                                 </Binding.ValidationRules>
                                                             </Binding>
                                                         </TextBox.Text>
@@ -585,7 +687,7 @@
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
             <Button
-                Margin="15, 5"
+                Margin="5, 0, 12, 5"
                 Style="{StaticResource MaterialDesignFlatDarkButton}"
                 Background="{DynamicResource PrimaryHueLightBrush}"
                 Command="{s:Action AddPayment}">
@@ -594,7 +696,7 @@
                     <materialDesign:PackIcon
                         Width="20"
                         Height="20"
-                        Kind="CreditCardPlus"/>
+                        Kind="CreditCardPlus" />
                     <TextBlock
                         Margin="5, 0"
                         Text="Add card"
@@ -606,7 +708,7 @@
             VerticalAlignment="Top"
             HorizontalAlignment="Stretch"
             ZIndex="1"
-            Grid.Row="3">
+            Grid.Row="4">
             <Button
                 Margin="4"
                 Padding="8"

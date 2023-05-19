@@ -44,6 +44,19 @@ public class ProfileTabViewModel : SettingsTabViewModel, INotifyPropertyChanged
         }
     }
     
+    private ObservableCollection<OrderResponseDto> _orders = new ObservableCollection<OrderResponseDto>();
+
+    
+    public ObservableCollection<OrderResponseDto> Orders
+    {
+        get => _orders;
+        set
+        {
+            _orders = value;
+            OnPropertyChanged();
+        }
+    }
+    
     private string _userImagePath;
 
     public string UserImagePath
@@ -56,9 +69,10 @@ public class ProfileTabViewModel : SettingsTabViewModel, INotifyPropertyChanged
         }
     }
 
-    public async void OnViewFullyLoaded()
+    public new async void OnViewFullyLoaded()
     {
         await UpdatePayments();
+        await UpdateOrders();
     }
 
     public async Task UpdatePayments()
@@ -85,6 +99,33 @@ public class ProfileTabViewModel : SettingsTabViewModel, INotifyPropertyChanged
                         UserId = p.UserId,
                         IsActive = p.IsActive
                     }));
+            }
+        }
+        catch (Exception exception)
+        {
+            var messageBoxDialog = _viewModelFactory.CreateMessageBoxViewModel(
+                title: "Some error has occurred",
+                message: $@"{exception.Message}".Trim(),
+                okButtonText: "OK",
+                cancelButtonText: null
+            );
+            await _dialogManager.ShowDialogAsync(messageBoxDialog);
+        }
+    }
+    
+    public async Task UpdateOrders()
+    {
+        try
+        {
+            var getOrdersRequest = await WebApiService.GetCall("api/orders", App.ApplicationUser?.JwtToken!);
+            if (getOrdersRequest.IsSuccessStatusCode)
+            {
+                var timeoutAfter = TimeSpan.FromMilliseconds(3000);
+                using var cancellationTokenSource = new CancellationTokenSource(timeoutAfter);
+                var responseStream = await getOrdersRequest.Content.ReadAsStreamAsync(cancellationTokenSource.Token);
+                var orders = await JsonSerializer.DeserializeAsync<IEnumerable<OrderResponseDto>>(responseStream,
+                    CustomJsonSerializerOptions.Options, cancellationToken: cancellationTokenSource.Token);
+                Orders = new ObservableCollection<OrderResponseDto>(orders.ToList());
             }
         }
         catch (Exception exception)
