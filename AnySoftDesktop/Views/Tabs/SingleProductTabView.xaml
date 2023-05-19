@@ -9,7 +9,6 @@
              xmlns:usersControls="clr-namespace:AnySoftDesktop.UsersControls"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:tabs="clr-namespace:AnySoftDesktop.ViewModels.Tabs"
-             xmlns:controls="clr-namespace:AnySoftDesktop.Controls"
              Background="{DynamicResource MaterialDesignPaper}"
              FontFamily="{DynamicResource MaterialDesignFont}"
              TextElement.FontFamily="{StaticResource Outfit}"
@@ -75,10 +74,9 @@
                         <Border.Background>
                             <VisualBrush>
                                 <VisualBrush.Visual>
-                                    <controls:AlternativeSourceImage
+                                    <Image
                                         Stretch="Uniform"
-                                        Source="{Binding Product.Images[0], Converter={x:Static converters:UrlToImageConverter.Instance}}"
-                                        AlternativeSource="{StaticResource EmptyImage}" />
+                                        Source="{Binding Images[0], Converter={x:Static converters:UrlToImageConverter.Instance}}"/>
                                 </VisualBrush.Visual>
                             </VisualBrush>
                         </Border.Background>
@@ -287,10 +285,12 @@
                                                 <Ellipse.Fill>
                                                     <VisualBrush>
                                                         <VisualBrush.Visual>
-                                                            <controls:AlternativeSourceImage
+                                                            <Image
                                                                 Stretch="Uniform"
-                                                                Source="{Binding User.Image, Converter={x:Static converters:UrlToImageConverter.Instance}}"
-                                                                AlternativeSource="{StaticResource EmptyImage}" />
+                                                                Source="{Binding Images[0],
+                                                                TargetNullValue={StaticResource EmptyImage},
+                                                                FallbackValue={StaticResource EmptyImage},
+                                                                Converter={x:Static converters:UrlToImageConverter.Instance}}"/>
                                                         </VisualBrush.Visual>
                                                     </VisualBrush>
                                                 </Ellipse.Fill>

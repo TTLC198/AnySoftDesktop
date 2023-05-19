@@ -7,7 +7,6 @@
              xmlns:s="https://github.com/canton7/Stylet"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:converters="clr-namespace:AnySoftDesktop.Utils.Converters"
-             xmlns:controls="clr-namespace:AnySoftDesktop.Controls"
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300"
              Background="Transparent">
@@ -54,7 +53,8 @@
             Background="Transparent"
             ItemsSource="{Binding Images, RelativeSource={RelativeSource AncestorType=UserControl}}"
             SelectedItem="{Binding SelectedImage, RelativeSource={RelativeSource AncestorType=UserControl}}"
-            AutoApplyTransitionOrigins="False">
+            AutoApplyTransitionOrigins="True"
+            SelectedIndex="0">
             <materialDesign:Transitioner.Resources>
                 <Style TargetType="{x:Type materialDesign:TransitionerSlide}">
                     <Setter Property="BackwardWipe">
@@ -78,10 +78,12 @@
                         <Border.Background>
                             <VisualBrush>
                                 <VisualBrush.Visual>
-                                    <controls:AlternativeSourceImage
+                                    <Image
                                         Stretch="Uniform"
-                                        Source="{Binding ., Converter={x:Static converters:UrlToImageConverter.Instance}}"
-                                        AlternativeSource="{StaticResource EmptyImage}"/>
+                                        Source="{Binding .,
+                                        TargetNullValue={StaticResource EmptyImage},
+                                        FallbackValue={StaticResource EmptyImage},
+                                         Converter={x:Static converters:UrlToImageConverter.Instance}}"/>
                                 </VisualBrush.Visual>
                             </VisualBrush>
                         </Border.Background>

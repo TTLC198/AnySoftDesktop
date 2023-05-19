@@ -9,7 +9,6 @@
         xmlns:converters="clr-namespace:AnySoftDesktop.Utils.Converters"
         xmlns:s="https://github.com/canton7/Stylet"
         xmlns:tb="http://www.hardcodet.net/taskbar"
-        xmlns:controls="clr-namespace:AnySoftDesktop.Controls"
         Background="{DynamicResource MaterialDesignPaper}"
         FontFamily="{DynamicResource MaterialDesignFont}"
         Style="{DynamicResource MaterialDesignRoot}"
@@ -493,10 +492,9 @@
                                             <Ellipse.Fill>
                                                 <VisualBrush>
                                                     <VisualBrush.Visual>
-                                                        <controls:AlternativeSourceImage
+                                                        <Image
                                                             Stretch="Uniform"
-                                                            Source="{Binding CurrentUser.Image, Converter={x:Static converters:UrlToImageConverter.Instance}}"
-                                                            AlternativeSource="{StaticResource EmptyImage}"/>
+                                                            Source="{Binding CurrentUser.Image, Converter={x:Static converters:UrlToImageConverter.Instance}}"/>
                                                     </VisualBrush.Visual>
                                                 </VisualBrush>
                                             </Ellipse.Fill>
@@ -528,10 +526,9 @@
                                                         <Ellipse.Fill>
                                                             <VisualBrush>
                                                                 <VisualBrush.Visual>
-                                                                    <controls:AlternativeSourceImage
+                                                                    <Image
                                                                         Stretch="Uniform"
-                                                                        Source="{Binding CurrentUser.Image, Converter={x:Static converters:UrlToImageConverter.Instance}}"
-                                                                        AlternativeSource="{StaticResource EmptyImage}"/>
+                                                                        Source="{Binding CurrentUser.Image, Converter={x:Static converters:UrlToImageConverter.Instance}}"/>
                                                                 </VisualBrush.Visual>
                                                             </VisualBrush>
                                                         </Ellipse.Fill>

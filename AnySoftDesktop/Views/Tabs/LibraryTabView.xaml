@@ -7,7 +7,6 @@
              xmlns:s="https://github.com/canton7/Stylet"
              xmlns:converters="clr-namespace:AnySoftDesktop.Utils.Converters"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-             xmlns:controls="clr-namespace:AnySoftDesktop.Controls"
              Background="{DynamicResource MaterialDesignPaper}"
              FontFamily="{DynamicResource MaterialDesignFont}"
              TextElement.FontFamily="{StaticResource Outfit}"
@@ -48,10 +47,9 @@
                             <Border.Background>
                                 <VisualBrush>
                                     <VisualBrush.Visual>
-                                        <controls:AlternativeSourceImage
+                                        <Image
                                             Stretch="Uniform"
-                                            Source="{Binding Images[0], Converter={x:Static converters:UrlToImageConverter.Instance}}"
-                                            AlternativeSource="{StaticResource EmptyImage}"/>
+                                            Source="{Binding Images[0], Converter={x:Static converters:UrlToImageConverter.Instance}}"/>
                                     </VisualBrush.Visual>
                                 </VisualBrush>
                             </Border.Background>
