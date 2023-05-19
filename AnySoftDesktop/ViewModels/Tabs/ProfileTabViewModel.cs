@@ -67,7 +67,8 @@ public class ProfileTabViewModel : SettingsTabViewModel, INotifyPropertyChanged
                         Id = p.Id,
                         Number = p.Number,
                         Cvc = p.Cvc,
-                        ExpirationDate = new CustomDate() { Month = p.ExpirationDate.Month, Year = p.ExpirationDate.Year},
+                        ExpirationDate =
+                            new CustomDate() {Month = p.ExpirationDate.Month, Year = p.ExpirationDate.Year},
                         UserId = p.UserId,
                         IsActive = p.IsActive
                     }));
@@ -131,47 +132,62 @@ public class ProfileTabViewModel : SettingsTabViewModel, INotifyPropertyChanged
 
     public async void EditPayment(CustomPayment payment)
     {
-        try
+        if (payment.IsEditComplete)
         {
-            var paymentEditDto = new PaymentEditDto()
+            try
             {
-                Id = payment.Id.Value,
-                Number = payment.Number,
-                ExpirationDate = new DateTime(payment.ExpirationDate!.Year, payment.ExpirationDate.Month, 1),
-                Cvc = payment.Cvc
-            };
-            var putPaymentRequest = await WebApiService.PutCall($"api/payment", paymentEditDto, App.ApplicationUser?.JwtToken!);
-            if (putPaymentRequest.IsSuccessStatusCode)
-            {
-                var timeoutAfter = TimeSpan.FromMilliseconds(3000);
-                using var cancellationTokenSource = new CancellationTokenSource(timeoutAfter);
-                var responseStream = await putPaymentRequest.Content.ReadAsStreamAsync(cancellationTokenSource.Token);
-                var editedPayment = await JsonSerializer.DeserializeAsync<Payment>(
-                    responseStream,
-                    CustomJsonSerializerOptions.Options,
-                    cancellationToken: cancellationTokenSource.Token);
-                var existedPayment = PaymentMethods.FirstOrDefault(p => p.Id == payment.Id);
-                if (existedPayment is null)
-                    throw new InvalidOperationException("Existed payment does not exist");
-                existedPayment.Number = editedPayment.Number;
-                existedPayment.ExpirationDate = new CustomDate() { Month = editedPayment.ExpirationDate.Month, Year = editedPayment.ExpirationDate.Year };
-                existedPayment.Cvc = editedPayment.Cvc;
+                var paymentEditDto = new PaymentEditDto()
+                {
+                    Id = payment.Id.Value,
+                    Number = payment.Number,
+                    ExpirationDate = new DateTime(payment.ExpirationDate!.Year, payment.ExpirationDate.Month, 1),
+                    Cvc = payment.Cvc
+                };
+                var putPaymentRequest =
+                    await WebApiService.PutCall($"api/payment", paymentEditDto, App.ApplicationUser?.JwtToken!);
+                if (putPaymentRequest.IsSuccessStatusCode)
+                {
+                    var timeoutAfter = TimeSpan.FromMilliseconds(3000);
+                    using var cancellationTokenSource = new CancellationTokenSource(timeoutAfter);
+                    var responseStream =
+                        await putPaymentRequest.Content.ReadAsStreamAsync(cancellationTokenSource.Token);
+                    var editedPayment = await JsonSerializer.DeserializeAsync<Payment>(
+                        responseStream,
+                        CustomJsonSerializerOptions.Options,
+                        cancellationToken: cancellationTokenSource.Token);
+                    var existedPayment = PaymentMethods.FirstOrDefault(p => p.Id == payment.Id);
+                    if (editedPayment is null)
+                        throw new InvalidOperationException("Existed payment does not exist");
+                    if (existedPayment is null)
+                        throw new InvalidOperationException("Existed payment does not exist");
+                    existedPayment.IsEditComplete = false;
+                    existedPayment.Number = editedPayment.Number;
+                    existedPayment.ExpirationDate = new CustomDate()
+                        {Month = editedPayment.ExpirationDate.Month, Year = editedPayment.ExpirationDate.Year};
+                    existedPayment.Cvc = editedPayment.Cvc;
+                }
+                else
+                {
+                    var msg = await putPaymentRequest.Content.ReadAsStringAsync();
+                    throw new InvalidOperationException($"{putPaymentRequest.ReasonPhrase}\n{msg}");
+                }
             }
-            else
+            catch (Exception exception)
             {
-                var msg = await putPaymentRequest.Content.ReadAsStringAsync();
-                throw new InvalidOperationException($"{putPaymentRequest.ReasonPhrase}\n{msg}");
+                var messageBoxDialog = _viewModelFactory.CreateMessageBoxViewModel(
+                    title: "Some error has occurred",
+                    message: $@"{exception.Message}".Trim(),
+                    okButtonText: "OK",
+                    cancelButtonText: null
+                );
+                await _dialogManager.ShowDialogAsync(messageBoxDialog);
             }
         }
-        catch (Exception exception)
+        else
         {
-            var messageBoxDialog = _viewModelFactory.CreateMessageBoxViewModel(
-                title: "Some error has occurred",
-                message: $@"{exception.Message}".Trim(),
-                okButtonText: "OK",
-                cancelButtonText: null
-            );
-            await _dialogManager.ShowDialogAsync(messageBoxDialog);
+            var existedPayment = PaymentMethods.FirstOrDefault(pm => pm.Id == payment.Id);
+            if (existedPayment is not null)
+                existedPayment.IsEditComplete = true;
         }
     }
 
@@ -184,7 +200,9 @@ public class ProfileTabViewModel : SettingsTabViewModel, INotifyPropertyChanged
                 await UpdatePayments();
                 return;
             }
-            var postProductsToCartRequest = await WebApiService.DeleteCall($"api/payment/{id}", App.ApplicationUser?.JwtToken!);
+
+            var postProductsToCartRequest =
+                await WebApiService.DeleteCall($"api/payment/{id}", App.ApplicationUser?.JwtToken!);
             if (postProductsToCartRequest.IsSuccessStatusCode)
             {
                 var paymentToDelete = PaymentMethods.FirstOrDefault(p => p.Id == id);

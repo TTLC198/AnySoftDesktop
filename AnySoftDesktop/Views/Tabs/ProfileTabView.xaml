@@ -8,9 +8,7 @@
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:converters="clr-namespace:AnySoftDesktop.Utils.Converters"
              xmlns:validation="clr-namespace:AnySoftDesktop.Utils.Validation"
-             xmlns:system="clr-namespace:System;assembly=System.Runtime"
              xmlns:models="clr-namespace:AnySoftDesktop.Models"
-             xmlns:controls="clr-namespace:AnySoftDesktop.Controls"
              Background="{DynamicResource MaterialDesignPaper}"
              FontFamily="{DynamicResource MaterialDesignFont}"
              TextElement.Foreground="{StaticResource PrimaryHueMidBrush}"
@@ -88,10 +86,9 @@
                         <Ellipse.Fill>
                             <VisualBrush>
                                 <VisualBrush.Visual>
-                                    <controls:AlternativeSourceImage
+                                    <Image
                                         Stretch="Uniform"
-                                        Source="{Binding ApplicationUser.Image, Converter={x:Static converters:UrlToImageConverter.Instance}}"
-                                        AlternativeSource="{StaticResource EmptyImage}"/>
+                                        Source="{Binding ApplicationUser.Image, Converter={x:Static converters:UrlToImageConverter.Instance}}"/>
                                 </VisualBrush.Visual>
                             </VisualBrush>
                         </Ellipse.Fill>
@@ -251,6 +248,7 @@
                                     materialDesign:HintAssist.HelperText="Card number"
                                     MaxLength="16"
                                     FontSize="18"
+                                    IsReadOnly="{Binding IsEditComplete}"
                                     materialDesign:ValidationAssist.Background="Transparent"
                                     materialDesign:TextFieldAssist.HasClearButton="True">
                                     <materialDesign:HintAssist.Hint>
@@ -287,6 +285,7 @@
                                         materialDesign:HintAssist.HelperText="CVC"
                                         MaxLength="3"
                                         FontSize="18"
+                                        IsReadOnly="{Binding IsEditComplete}"
                                         materialDesign:ValidationAssist.Background="Transparent"
                                         materialDesign:TextFieldAssist.HasClearButton="True">
                                         <materialDesign:HintAssist.Hint>
@@ -329,6 +328,7 @@
                                                         FontSize="18"
                                                         MaxLength="2"
                                                         Text="{Binding Month}"
+                                                        IsReadOnly="{Binding IsEditComplete, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataTemplate}}"
                                                         materialDesign:ValidationAssist.Background="Transparent">
                                                         <materialDesign:HintAssist.Hint>
                                                             <StackPanel Orientation="Horizontal">
@@ -350,6 +350,7 @@
                                                         materialDesign:TextFieldAssist.CharacterCounterVisibility="Collapsed"
                                                         FontSize="18"
                                                         MaxLength="4"
+                                                        IsReadOnly="{Binding IsEditComplete, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataTemplate}}"
                                                         Text="{Binding Year}"
                                                         materialDesign:ValidationAssist.Background="Transparent">
                                                         <materialDesign:HintAssist.Hint>
@@ -402,22 +403,54 @@
                                     <Button
                                         Grid.Column="1"
                                         Visibility="{Binding Id, Converter={x:Static converters:NullToVisibilityConverter.Instance}}"
-                                        Style="{DynamicResource MaterialDesignFlatDarkButton}"
                                         Background="{DynamicResource PrimaryHueLightBrush}"
                                         Command="{s:Action EditPayment}"
                                         CommandParameter="{Binding .}"
                                         Margin="3, 0, 0, 0">
-                                        <StackPanel
-                                            Orientation="Horizontal">
-                                            <materialDesign:PackIcon
-                                                Width="20"
-                                                Height="20"
-                                                Kind="CreditCardEdit" />
-                                            <TextBlock
-                                                Margin="5, 0"
-                                                Text="Edit"
-                                                VerticalAlignment="Center" />
-                                        </StackPanel>
+                                        <Button.Style>
+                                            <Style
+                                                TargetType="Button"
+                                                BasedOn="{StaticResource MaterialDesignFlatDarkButton}">
+                                                <Setter
+                                                    Property="Content">
+                                                    <Setter.Value>
+                                                        <StackPanel
+                                                            Orientation="Horizontal">
+                                                            <materialDesign:PackIcon
+                                                                Width="20"
+                                                                Height="20"
+                                                                Kind="CreditCardEdit" />
+                                                            <TextBlock
+                                                                Margin="5, 0"
+                                                                Text="Edit"
+                                                                VerticalAlignment="Center" />
+                                                        </StackPanel>
+                                                    </Setter.Value>
+                                                </Setter>
+                                                <Style.Triggers>
+                                                    <DataTrigger
+                                                        Binding="{Binding IsEditComplete}"
+                                                        Value="True">
+                                                        <Setter
+                                                            Property="Content">
+                                                            <Setter.Value>
+                                                                <StackPanel
+                                                                    Orientation="Horizontal">
+                                                                    <materialDesign:PackIcon
+                                                                        Width="20"
+                                                                        Height="20"
+                                                                        Kind="CreditCardCheck" />
+                                                                    <TextBlock
+                                                                        Margin="5, 0"
+                                                                        Text="Save"
+                                                                        VerticalAlignment="Center" />
+                                                                </StackPanel>
+                                                            </Setter.Value>
+                                                        </Setter>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Button.Style>
                                     </Button>
                                     <Button
                                         Grid.Column="1"
