@@ -31,7 +31,7 @@ public class ProfileTabViewModel : SettingsTabViewModel, INotifyPropertyChanged
         }
     }
 
-    private ObservableCollection<CustomPayment> _paymentMethods;
+    private ObservableCollection<CustomPayment> _paymentMethods = new ObservableCollection<CustomPayment>();
 
     
     public ObservableCollection<CustomPayment> PaymentMethods
@@ -86,11 +86,6 @@ public class ProfileTabViewModel : SettingsTabViewModel, INotifyPropertyChanged
                         IsActive = p.IsActive
                     }));
             }
-            else
-            {
-                var msg = await getPaymentsRequest.Content.ReadAsStringAsync();
-                throw new InvalidOperationException($"{getPaymentsRequest.ReasonPhrase}\n{msg}");
-            }
         }
         catch (Exception exception)
         {
@@ -121,7 +116,7 @@ public class ProfileTabViewModel : SettingsTabViewModel, INotifyPropertyChanged
 
     public async void AddPayment()
     {
-        PaymentMethods.Add(new CustomPayment());
+        PaymentMethods.Add(new CustomPayment() { Number = "", Cvc = "", IsEditComplete = true });
     }
 
     public async void SavePayment(CustomPayment payment)

@@ -230,6 +230,8 @@
                                     <Binding.ValidationRules>
                                         <validation:NotEmptyValidationRule
                                             ValidatesOnTargetUpdated="True" />
+                                        <validation:EmailValidationRule
+                                            ValidatesOnTargetUpdated="True"/>
                                     </Binding.ValidationRules>
                                 </Binding>
                             </TextBox.Text>
@@ -321,9 +323,10 @@
                                     materialDesign:HintAssist.HelperText="Card number"
                                     MaxLength="16"
                                     FontSize="18"
-                                    IsReadOnly="{Binding IsEditComplete}"
+                                    IsReadOnly="{Binding IsEditComplete, Converter={x:Static converters:InverseBoolToBoolConverter.Instance}}"
                                     materialDesign:ValidationAssist.Background="Transparent"
-                                    materialDesign:TextFieldAssist.HasClearButton="True">
+                                    materialDesign:TextFieldAssist.CharacterCounterVisibility="Collapsed"
+                                    materialDesign:ValidationAssist.HorizontalAlignment="Right">
                                     <materialDesign:HintAssist.Hint>
                                         <StackPanel Orientation="Horizontal">
                                             <materialDesign:PackIcon
@@ -340,7 +343,9 @@
                                             UpdateSourceTrigger="PropertyChanged">
                                             <Binding.ValidationRules>
                                                 <validation:NotEmptyValidationRule
-                                                    ValidatesOnTargetUpdated="True" />
+                                                    ValidatesOnTargetUpdated="True"/>
+                                                <validation:DigitValidationRule
+                                                    ValidatesOnTargetUpdated="True"/>
                                             </Binding.ValidationRules>
                                         </Binding>
                                     </TextBox.Text>
@@ -354,13 +359,15 @@
                                     LastChildFill="False">
                                     <TextBox
                                         DockPanel.Dock="Left"
+                                        MinWidth="80"
                                         HorizontalAlignment="Left"
                                         materialDesign:HintAssist.HelperText="CVC"
                                         MaxLength="3"
                                         FontSize="18"
-                                        IsReadOnly="{Binding IsEditComplete}"
+                                        IsReadOnly="{Binding IsEditComplete, Converter={x:Static converters:InverseBoolToBoolConverter.Instance}}"
                                         materialDesign:ValidationAssist.Background="Transparent"
-                                        materialDesign:TextFieldAssist.HasClearButton="True">
+                                        materialDesign:TextFieldAssist.CharacterCounterVisibility="Collapsed"
+                                        materialDesign:ValidationAssist.HorizontalAlignment="Right">
                                         <materialDesign:HintAssist.Hint>
                                             <StackPanel Orientation="Horizontal">
                                                 <materialDesign:PackIcon
@@ -377,7 +384,9 @@
                                                 UpdateSourceTrigger="PropertyChanged">
                                                 <Binding.ValidationRules>
                                                     <validation:NotEmptyValidationRule
-                                                        ValidatesOnTargetUpdated="True" />
+                                                        ValidatesOnTargetUpdated="True"/>
+                                                    <validation:DigitValidationRule
+                                                        ValidatesOnTargetUpdated="True"/>
                                                 </Binding.ValidationRules>
                                             </Binding>
                                         </TextBox.Text>
@@ -397,12 +406,24 @@
                                                         MinWidth="30"
                                                         HorizontalAlignment="Left"
                                                         materialDesign:HintAssist.HelperText="Month"
-                                                        materialDesign:TextFieldAssist.CharacterCounterVisibility="Collapsed"
                                                         FontSize="18"
                                                         MaxLength="2"
-                                                        Text="{Binding Month}"
-                                                        IsReadOnly="{Binding IsEditComplete, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataTemplate}}"
-                                                        materialDesign:ValidationAssist.Background="Transparent">
+                                                        IsReadOnly="{Binding  DataContext.IsEditComplete, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ContentControl}, Converter={x:Static converters:InverseBoolToBoolConverter.Instance}}"
+                                                        materialDesign:ValidationAssist.Background="Transparent"
+                                                        materialDesign:TextFieldAssist.CharacterCounterVisibility="Collapsed"
+                                                        materialDesign:ValidationAssist.HorizontalAlignment="Right">
+                                                        <TextBox.Text>
+                                                            <Binding
+                                                                Path="Month"
+                                                                UpdateSourceTrigger="PropertyChanged">
+                                                                <Binding.ValidationRules>
+                                                                    <validation:NotEmptyValidationRule
+                                                                        ValidatesOnTargetUpdated="True"/>
+                                                                    <validation:DigitValidationRule
+                                                                        ValidatesOnTargetUpdated="True"/>
+                                                                </Binding.ValidationRules>
+                                                            </Binding>
+                                                        </TextBox.Text>
                                                         <materialDesign:HintAssist.Hint>
                                                             <StackPanel Orientation="Horizontal">
                                                                 <materialDesign:PackIcon
@@ -420,12 +441,24 @@
                                                         Margin="5, 0,0 ,0"
                                                         HorizontalAlignment="Right"
                                                         materialDesign:HintAssist.HelperText="Year"
-                                                        materialDesign:TextFieldAssist.CharacterCounterVisibility="Collapsed"
                                                         FontSize="18"
                                                         MaxLength="4"
-                                                        IsReadOnly="{Binding IsEditComplete, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataTemplate}}"
-                                                        Text="{Binding Year}"
-                                                        materialDesign:ValidationAssist.Background="Transparent">
+                                                        IsReadOnly="{Binding  DataContext.IsEditComplete, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ContentControl}, Converter={x:Static converters:InverseBoolToBoolConverter.Instance}}"
+                                                        materialDesign:ValidationAssist.Background="Transparent"
+                                                        materialDesign:TextFieldAssist.CharacterCounterVisibility="Collapsed"
+                                                        materialDesign:ValidationAssist.HorizontalAlignment="Right">
+                                                        <TextBox.Text>
+                                                            <Binding
+                                                                Path="Year"
+                                                                UpdateSourceTrigger="PropertyChanged">
+                                                                <Binding.ValidationRules>
+                                                                    <validation:NotEmptyValidationRule
+                                                                        ValidatesOnTargetUpdated="True"/>
+                                                                    <validation:DigitValidationRule
+                                                                        ValidatesOnTargetUpdated="True"/>
+                                                                </Binding.ValidationRules>
+                                                            </Binding>
+                                                        </TextBox.Text>
                                                         <materialDesign:HintAssist.Hint>
                                                             <StackPanel Orientation="Horizontal">
                                                                 <materialDesign:PackIcon
