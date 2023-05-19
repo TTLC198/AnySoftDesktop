@@ -76,7 +76,7 @@
                                 <VisualBrush.Visual>
                                     <Image
                                         Stretch="Uniform"
-                                        Source="{Binding Images[0], Converter={x:Static converters:UrlToImageConverter.Instance}}"/>
+                                        Source="{Binding Product.Images[0], Converter={x:Static converters:UrlToImageConverter.Instance}}"/>
                                 </VisualBrush.Visual>
                             </VisualBrush>
                         </Border.Background>
@@ -202,7 +202,18 @@
                                 VerticalAlignment="Center"
                                 HorizontalAlignment="Center"
                                 Foreground="{DynamicResource PrimaryHueMidBrush}"
-                                Text="{Binding Product.Cost, StringFormat={}{0} руб.}" />
+                                Text="{Binding Product.Cost, StringFormat={}{0} руб.}" 
+                                Visibility="{Binding IsBought, Converter={x:Static converters:InverseBoolToVisibleConverter.Instance}}"/>
+                            <Button
+                                Grid.Column="1"
+                                materialDesign:ButtonAssist.CornerRadius="0 15 15 0"
+                                Foreground="Firebrick"
+                                BorderBrush="Firebrick"
+                                Background="Transparent"
+                                Command="{s:Action OnRemoveFromOrderButtonClick}"
+                                Visibility="{Binding IsBought, Converter={x:Static converters:BoolToVisibleConverter.Instance}}"
+                                Content="Remove">
+                            </Button>
                         </Grid>
                     </Border>
                     <Border
@@ -287,7 +298,7 @@
                                                         <VisualBrush.Visual>
                                                             <Image
                                                                 Stretch="Uniform"
-                                                                Source="{Binding Images[0],
+                                                                Source="{Binding User.Image,
                                                                 TargetNullValue={StaticResource EmptyImage},
                                                                 FallbackValue={StaticResource EmptyImage},
                                                                 Converter={x:Static converters:UrlToImageConverter.Instance}}"/>
