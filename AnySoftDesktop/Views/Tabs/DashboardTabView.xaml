@@ -56,8 +56,7 @@
             <usersControls:ImageCarousel
                 Grid.Column="0"
                 MinHeight="350"
-                Images="{Binding MainProduct.Images}"
-                SelectedImage="{Binding MainProduct.Images[0]}" />
+                Images="{Binding MainProduct.Images}"/>
             <Border
                 Grid.Column="1"
                 Grid.Row="0"

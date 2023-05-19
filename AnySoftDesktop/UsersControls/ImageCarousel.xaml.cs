@@ -41,6 +41,8 @@ public partial class ImageCarousel : UserControl, INotifyPropertyChanged
     
     public ImageCarousel()
     {
+        if (Images.Count != 0)
+            SelectedImage = Images.First();
         InitializeComponent();
     }
 
@@ -65,10 +67,15 @@ public partial class ImageCarousel : UserControl, INotifyPropertyChanged
         if (SelectedImage == string.Empty)
             SelectedImage = Images.First();
         var index = Images.IndexOf(SelectedImage);
-        SelectedImage = 
-            index == 0 
-                ? Images.Last() 
-                : Images[index - 1];
+        if (index == 0)
+        {
+            Images.Reverse();
+            SelectedImage = Images.Last();
+        }
+        else
+        {
+            SelectedImage = Images[index - 1];
+        }
     }
 
     private void RightButton_OnClick(object sender, RoutedEventArgs e)
@@ -77,9 +84,14 @@ public partial class ImageCarousel : UserControl, INotifyPropertyChanged
         if (SelectedImage == string.Empty)
             SelectedImage = Images.First();
         var index = Images.IndexOf(SelectedImage);
-        SelectedImage = 
-            index == Images.Count - 1
-                ? Images.First() 
-                : Images[index + 1];
+        if (index == Images.Count - 1)
+        {
+            Images.Reverse();
+            SelectedImage = Images.First();
+        }
+        else
+        {
+            SelectedImage = Images[index + 1];
+        }
     }
 }
