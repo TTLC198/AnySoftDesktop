@@ -187,7 +187,7 @@ public class MainWindowViewModel : Screen, INotifyPropertyChanged
         OpenSearchPage();
     }
 
-    private async void OpenSearchPage()
+    public async void OpenSearchPage()
     {
         var productRequestDto = new ProductRequestDto
         {

@@ -250,18 +250,75 @@ public class SingleProductTabViewModel : MultipleProductTabViewModel, INotifyPro
 
     public async void OnRemoveFromCartButtonClick(int id)
     {
-        var postProductsToCartRequest =
+        var removeProductsFromCartRequest =
             await WebApiService.DeleteCall($"api/cart?productId={id}", App.ApplicationUser?.JwtToken!);
         try
         {
-            if (postProductsToCartRequest.IsSuccessStatusCode)
+            if (removeProductsFromCartRequest.IsSuccessStatusCode)
             {
                 IsInCart = false;
             }
             else
             {
-                var msg = await postProductsToCartRequest.Content.ReadAsStringAsync();
-                throw new InvalidOperationException($"{postProductsToCartRequest.ReasonPhrase}\n{msg}");
+                var msg = await removeProductsFromCartRequest.Content.ReadAsStringAsync();
+                throw new InvalidOperationException($"{removeProductsFromCartRequest.ReasonPhrase}\n{msg}");
+            }
+        }
+        catch (Exception exception)
+        {
+            var messageBoxDialog = _viewModelFactory.CreateMessageBoxViewModel(
+                title: "Some error has occurred",
+                message: $@"{exception.Message}".Trim(),
+                okButtonText: "OK",
+                cancelButtonText: null
+            );
+            await _dialogManager.ShowDialogAsync(messageBoxDialog);
+        }
+    }
+    
+    public async void OnRemoveFromOrderButtonClick()
+    {
+        
+        if (!IsBought)
+            return;
+        try
+        {
+            var order = new OrderResponseDto();
+            var timeoutAfter = TimeSpan.FromMilliseconds(3000);
+            var getOrdersRequest = await WebApiService.GetCall("api/orders", App.ApplicationUser?.JwtToken!);
+            if (getOrdersRequest.IsSuccessStatusCode)
+            {
+                using (var cancellationTokenSource = new CancellationTokenSource(timeoutAfter))
+                {
+                    var responseStream =
+                        await getOrdersRequest.Content.ReadAsStreamAsync(cancellationTokenSource.Token);
+                    var orders = await JsonSerializer.DeserializeAsync<IEnumerable<OrderResponseDto>>(
+                        responseStream,
+                        CustomJsonSerializerOptions.Options, cancellationToken: cancellationTokenSource.Token);
+                    order = orders?
+                        .Where(o => o.Status == "Paid")
+                        .FirstOrDefault(p => p.PurchasedProductsIds.Any(pp => pp == Product.Id));
+                    if (order is null)
+                        return;
+                }
+            }
+            else
+            {
+                var msg = await getOrdersRequest.Content.ReadAsStringAsync();
+                throw new InvalidOperationException($"{getOrdersRequest.ReasonPhrase}\n{msg}");
+            }
+            
+            var removeProductsFromOrderRequest =
+                await WebApiService.DeleteCall($"api/orders/product/{order.Id}?productId={Product.Id}", App.ApplicationUser?.JwtToken!);
+            
+            if (removeProductsFromOrderRequest.IsSuccessStatusCode)
+            {
+                IsBought = false;
+            }
+            else
+            {
+                var msg = await removeProductsFromOrderRequest.Content.ReadAsStringAsync();
+                throw new InvalidOperationException($"{removeProductsFromOrderRequest.ReasonPhrase}\n{msg}");
             }
         }
         catch (Exception exception)
