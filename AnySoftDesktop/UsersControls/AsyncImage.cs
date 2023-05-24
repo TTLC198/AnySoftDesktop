@@ -39,23 +39,33 @@ public class AsyncImage : Image, INotifyPropertyChanged
 
     private async Task LoadImageAsync(string imagePath)
     {
-        var httpClient = new HttpClient();
-        var responseStream = await httpClient.GetStreamAsync(imagePath);
-        var bitmapImage = new BitmapImage();
-
-        using (var memoryStream = new MemoryStream())
+        try
         {
-            await responseStream.CopyToAsync(memoryStream);
-            memoryStream.Seek(0, SeekOrigin.Begin);
-            bitmapImage.BeginInit();
-            bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
-            bitmapImage.StreamSource = memoryStream;
-            bitmapImage.EndInit();
-            bitmapImage.Freeze();
-        }
+            var httpClient = new HttpClient();
+            var responseStream = await httpClient.GetStreamAsync(imagePath);
+            var bitmapImage = new BitmapImage();
 
-        Source = bitmapImage;
-        IsLoaded = true;
+            using (var memoryStream = new MemoryStream())
+            {
+                await responseStream.CopyToAsync(memoryStream);
+                memoryStream.Seek(0, SeekOrigin.Begin);
+                bitmapImage.BeginInit();
+                bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
+                bitmapImage.StreamSource = memoryStream;
+                bitmapImage.UriCachePolicy = new System.Net.Cache.RequestCachePolicy(System.Net.Cache.RequestCacheLevel.Revalidate);  
+                bitmapImage.EndInit();
+                bitmapImage.Freeze();
+            }
+
+            Source = bitmapImage;
+            IsLoaded = true;
+        }
+        catch
+        {
+            Source = null;
+            IsLoaded = false;
+        }
+        
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;
