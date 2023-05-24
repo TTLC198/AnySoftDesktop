@@ -57,7 +57,7 @@
                     <Grid
                         Margin="0, 15, 0, 0">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="2*" />
+                            <ColumnDefinition Width="1.5*" />
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
                         <Grid
@@ -108,7 +108,7 @@
                             <DockPanel
                                 Margin="10"
                                 HorizontalAlignment="Center"
-                                VerticalAlignment="Top"
+                                VerticalAlignment="Stretch"
                                 LastChildFill="False">
                                 <TextBlock
                                     DockPanel.Dock="Top"
