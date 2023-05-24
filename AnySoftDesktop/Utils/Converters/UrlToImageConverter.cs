@@ -1,7 +1,12 @@
 ﻿using System;
 using System.IO;
+using System.Net;
+using System.Net.Http;
+using System.Threading;
 using System.Windows.Data;
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Threading;
 
 namespace AnySoftDesktop.Utils.Converters;
 
@@ -11,11 +16,12 @@ public class UrlToImageConverter : IValueConverter
     
     public object? Convert(object? value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
     {
-        if (value is not (not null and string path)) return null;
+        var path = (value ?? "").ToString();
+        if (path is null)
+            return "";
         if (path.StartsWith('/'))
             path = path[1..];
-        var bi = new BitmapImage(new Uri($"{App.CdnUrl}{path}", UriKind.Absolute));
-        return bi;
+        return $"{App.CdnUrl}{path}";
     }
 
     public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
