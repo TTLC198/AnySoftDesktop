@@ -415,10 +415,45 @@
                                         Height="Auto" />
                                     <RowDefinition
                                         Height="Auto" />
+                                    <RowDefinition
+                                        Height="Auto" />
                                 </Grid.RowDefinitions>
-                                <!--Card number-->
+                                <!--Card owner name-->
                                 <TextBox
                                     Grid.Row="0"
+                                    MinWidth="210"
+                                    Margin="0, 6"
+                                    HorizontalAlignment="Stretch"
+                                    materialDesign:HintAssist.HelperText="Owner name"
+                                    FontSize="18"
+                                    IsReadOnly="{Binding IsEditComplete, Converter={x:Static converters:InverseBoolToBoolConverter.Instance}}"
+                                    materialDesign:ValidationAssist.Background="Transparent"
+                                    materialDesign:TextFieldAssist.CharacterCounterVisibility="Collapsed"
+                                    materialDesign:ValidationAssist.HorizontalAlignment="Right">
+                                    <materialDesign:HintAssist.Hint>
+                                        <StackPanel Orientation="Horizontal">
+                                            <materialDesign:PackIcon
+                                                Kind="CreditCard"
+                                                VerticalAlignment="Top" />
+                                            <TextBlock
+                                                Margin="4, 0"
+                                                Text="{Binding Number, Mode=OneTime}" />
+                                        </StackPanel>
+                                    </materialDesign:HintAssist.Hint>
+                                    <TextBox.Text>
+                                        <Binding
+                                            Path="CardName"
+                                            UpdateSourceTrigger="PropertyChanged">
+                                            <Binding.ValidationRules>
+                                                <validation:NotEmptyValidationRule
+                                                    ValidatesOnTargetUpdated="True" />
+                                            </Binding.ValidationRules>
+                                        </Binding>
+                                    </TextBox.Text>
+                                </TextBox>
+                                <!--Card number-->
+                                <TextBox
+                                    Grid.Row="1"
                                     MinWidth="210"
                                     Margin="0, 6"
                                     HorizontalAlignment="Stretch"
@@ -454,7 +489,7 @@
                                 </TextBox>
                                 <!--Card CVC & Expiration Data-->
                                 <DockPanel
-                                    Grid.Row="1"
+                                    Grid.Row="2"
                                     DockPanel.Dock="Top"
                                     Margin="0, 6"
                                     HorizontalAlignment="Stretch"
@@ -579,7 +614,7 @@
                                     </ContentControl>
                                 </DockPanel>
                                 <Grid
-                                    Grid.Row="2"
+                                    Grid.Row="3"
                                     DockPanel.Dock="Top"
                                     Margin="5, 25, 5, 5"
                                     HorizontalAlignment="Stretch">

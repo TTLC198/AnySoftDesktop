@@ -92,6 +92,7 @@ public class ProfileTabViewModel : SettingsTabViewModel, INotifyPropertyChanged
                     .Select(p => new CustomPayment()
                     {
                         Id = p.Id,
+                        CardName = p.CardName,
                         Number = p.Number,
                         Cvc = p.Cvc,
                         ExpirationDate =
@@ -157,7 +158,7 @@ public class ProfileTabViewModel : SettingsTabViewModel, INotifyPropertyChanged
 
     public async void AddPayment()
     {
-        PaymentMethods.Add(new CustomPayment() { Number = "", Cvc = "", IsEditComplete = true });
+        PaymentMethods.Add(new CustomPayment() { CardName = "", Number = "", Cvc = "", IsEditComplete = true });
     }
 
     public async void SavePayment(CustomPayment payment)
@@ -166,6 +167,7 @@ public class ProfileTabViewModel : SettingsTabViewModel, INotifyPropertyChanged
         {
             var paymentDto = new PaymentDto()
             {
+                CardName = payment.CardName,
                 Number = payment.Number,
                 ExpirationDate = new DateTime(payment.ExpirationDate!.Year, payment.ExpirationDate.Month, 1),
                 Cvc = payment.Cvc
@@ -204,6 +206,7 @@ public class ProfileTabViewModel : SettingsTabViewModel, INotifyPropertyChanged
                 {
                     Id = payment.Id.Value,
                     Number = payment.Number,
+                    CardName = payment.CardName,
                     ExpirationDate = new DateTime(payment.ExpirationDate!.Year, payment.ExpirationDate.Month, 1),
                     Cvc = payment.Cvc
                 };
@@ -226,6 +229,7 @@ public class ProfileTabViewModel : SettingsTabViewModel, INotifyPropertyChanged
                         throw new InvalidOperationException("Existed payment does not exist");
                     existedPayment.IsEditComplete = false;
                     existedPayment.Number = editedPayment.Number;
+                    existedPayment.CardName = editedPayment.CardName;
                     existedPayment.ExpirationDate = new CustomDate()
                         {Month = editedPayment.ExpirationDate.Month, Year = editedPayment.ExpirationDate.Year};
                     existedPayment.Cvc = editedPayment.Cvc;
