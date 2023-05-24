@@ -74,9 +74,10 @@
                         <Border.Background>
                             <VisualBrush>
                                 <VisualBrush.Visual>
-                                    <Image
-                                        Stretch="UniformToFill"
-                                        Source="{Binding Product.Images[0], Converter={x:Static converters:UrlToImageConverter.Instance}}"/>
+                                    <usersControls:AsyncImage
+                                        Panel.ZIndex="1"
+                                        ImagePath="{Binding {Binding Product.Images[0], Converter={x:Static converters:UrlToImageConverter.Instance}, IsAsync=True}}"
+                                        Stretch="Uniform"/>
                                 </VisualBrush.Visual>
                             </VisualBrush>
                         </Border.Background>
@@ -301,7 +302,7 @@
                                                                 Source="{Binding User.Image,
                                                                 TargetNullValue={StaticResource EmptyImage},
                                                                 FallbackValue={StaticResource EmptyImage},
-                                                                Converter={x:Static converters:UrlToImageConverter.Instance}}"/>
+                                                                Converter={x:Static converters:UrlToImageConverter.Instance}, IsAsync=True}"/>
                                                         </VisualBrush.Visual>
                                                     </VisualBrush>
                                                 </Ellipse.Fill>
