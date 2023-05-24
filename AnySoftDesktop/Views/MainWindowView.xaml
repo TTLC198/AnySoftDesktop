@@ -9,6 +9,7 @@
         xmlns:converters="clr-namespace:AnySoftDesktop.Utils.Converters"
         xmlns:s="https://github.com/canton7/Stylet"
         xmlns:tb="http://www.hardcodet.net/taskbar"
+        xmlns:usersControls="clr-namespace:AnySoftDesktop.UsersControls"
         Background="{DynamicResource MaterialDesignPaper}"
         FontFamily="{DynamicResource MaterialDesignFont}"
         Style="{DynamicResource MaterialDesignRoot}"
@@ -493,9 +494,11 @@
                                             <Ellipse.Fill>
                                                 <VisualBrush>
                                                     <VisualBrush.Visual>
-                                                        <Image
-                                                            Stretch="Uniform"
-                                                            Source="{Binding CurrentUser.Image, Converter={x:Static converters:UrlToImageConverter.Instance}}"/>
+                                                        <usersControls:AsyncImage
+                                                            Panel.ZIndex="1"
+                                                            ImagePath="{Binding CurrentUser.Image,
+                                                                Converter={x:Static converters:UrlToImageConverter.Instance}, IsAsync=True}"
+                                                            Stretch="UniformToFill"/>
                                                     </VisualBrush.Visual>
                                                 </VisualBrush>
                                             </Ellipse.Fill>
@@ -527,9 +530,11 @@
                                                         <Ellipse.Fill>
                                                             <VisualBrush>
                                                                 <VisualBrush.Visual>
-                                                                    <Image
-                                                                        Stretch="Uniform"
-                                                                        Source="{Binding CurrentUser.Image, Converter={x:Static converters:UrlToImageConverter.Instance}}"/>
+                                                                    <usersControls:AsyncImage
+                                                                        Panel.ZIndex="1"
+                                                                        ImagePath="{Binding CurrentUser.Image,
+                                                                Converter={x:Static converters:UrlToImageConverter.Instance}, IsAsync=True}"
+                                                                        Stretch="UniformToFill"/>
                                                                 </VisualBrush.Visual>
                                                             </VisualBrush>
                                                         </Ellipse.Fill>

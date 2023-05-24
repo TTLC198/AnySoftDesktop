@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:converters="clr-namespace:AnySoftDesktop.Utils.Converters"
+             xmlns:usersControls="clr-namespace:AnySoftDesktop.UsersControls"
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300"
              Background="Transparent">
@@ -57,12 +58,12 @@
                 <Style TargetType="{x:Type materialDesign:TransitionerSlide}">
                     <Setter Property="BackwardWipe">
                         <Setter.Value>
-                            <materialDesign:SlideWipe Direction="Right" Duration="0:0:0.3" />
+                            <materialDesign:SlideWipe Direction="Right" Duration="0:0:0.2" />
                         </Setter.Value>
                     </Setter>
                     <Setter Property="ForwardWipe">
                         <Setter.Value>
-                            <materialDesign:SlideWipe Direction="Left" Duration="0:0:0.3" />
+                            <materialDesign:SlideWipe Direction="Left" Duration="0:0:0.2" />
                         </Setter.Value>
                     </Setter>
                 </Style>
@@ -72,14 +73,26 @@
                     <Border
                         CornerRadius="15"
                         HorizontalAlignment="Stretch"
-                        VerticalAlignment="Stretch">
+                        VerticalAlignment="Stretch"
+                        Visibility="{Binding }">
                         <Border.Background>
                             <VisualBrush>
                                 <VisualBrush.Visual>
-                                    <Image
-                                        Source="{Binding .,
-                                        Converter={x:Static converters:UrlToImageConverter.Instance}}">
-                                    </Image>
+                                    <Grid>
+                                        <ProgressBar 
+                                            Panel.ZIndex="2"
+                                            HorizontalAlignment="Center"
+                                            VerticalContentAlignment="Center"
+                                            Visibility="{Binding IsLoaded, ElementName=SingleImage, Converter={x:Static converters:InverseBoolToBoolConverter.Instance}}"
+                                            Style="{StaticResource MaterialDesignCircularProgressBar}" 
+                                            IsIndeterminate="True" 
+                                            Width="66"/>
+                                        <usersControls:AsyncImage
+                                            Panel.ZIndex="1"
+                                            x:Name="SingleImage"
+                                            ImagePath="{Binding .,Converter={x:Static converters:UrlToImageConverter.Instance}, IsAsync=True}"
+                                            Stretch="UniformToFill"/>
+                                    </Grid>
                                 </VisualBrush.Visual>
                             </VisualBrush>
                         </Border.Background>

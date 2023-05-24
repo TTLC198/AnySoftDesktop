@@ -57,7 +57,7 @@
                     <Grid
                         Margin="0, 15, 0, 0">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="1.5*" />
+                            <ColumnDefinition Width="2*" />
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
                         <Grid
@@ -92,11 +92,22 @@
                                     </ItemsControl.ItemTemplate>
                                 </ItemsControl>
                             </StackPanel>
-                            <usersControls:ImageCarousel
-                                Grid.Column="0"
-                                MinHeight="250"
-                                Images="{Binding Images}"
-                                SelectedImage="{Binding Images[0]}" />
+                            <Border
+                                CornerRadius="15"
+                                HorizontalAlignment="Stretch"
+                                VerticalAlignment="Stretch"
+                                MinHeight="250">
+                                <Border.Background>
+                                    <VisualBrush>
+                                        <VisualBrush.Visual>
+                                            <usersControls:AsyncImage
+                                                Grid.Column="0"
+                                                ImagePath="{Binding Images[0],Converter={x:Static converters:UrlToImageConverter.Instance}, IsAsync=True}"
+                                                Stretch="UniformToFill"/>
+                                        </VisualBrush.Visual>
+                                    </VisualBrush>
+                                </Border.Background>
+                            </Border>
                         </Grid>
                         <Border
                             Grid.Column="1"

@@ -9,6 +9,7 @@
              xmlns:converters="clr-namespace:AnySoftDesktop.Utils.Converters"
              xmlns:validation="clr-namespace:AnySoftDesktop.Utils.Validation"
              xmlns:models="clr-namespace:AnySoftDesktop.Models"
+             xmlns:usersControls="clr-namespace:AnySoftDesktop.UsersControls"
              Background="{DynamicResource MaterialDesignPaper}"
              FontFamily="{DynamicResource MaterialDesignFont}"
              TextElement.Foreground="{StaticResource PrimaryHueMidBrush}"
@@ -112,9 +113,11 @@
                                             <Ellipse.Fill>
                                                 <VisualBrush>
                                                     <VisualBrush.Visual>
-                                                        <Image
-                                                            Stretch="Uniform"
-                                                            Source="{Binding ApplicationUser.Image, Converter={x:Static converters:UrlToImageConverter.Instance}}" />
+                                                        <usersControls:AsyncImage
+                                                            Panel.ZIndex="1"
+                                                            ImagePath="{Binding ApplicationUser.Image,
+                                                                Converter={x:Static converters:UrlToImageConverter.Instance}, IsAsync=True}"
+                                                            Stretch="UniformToFill" />
                                                     </VisualBrush.Visual>
                                                 </VisualBrush>
                                             </Ellipse.Fill>
@@ -146,9 +149,11 @@
                                                         <Ellipse.Fill>
                                                             <VisualBrush>
                                                                 <VisualBrush.Visual>
-                                                                    <Image
-                                                                        Stretch="Uniform"
-                                                                        Source="{Binding ApplicationUser.Image, Converter={x:Static converters:UrlToImageConverter.Instance}}" />
+                                                                    <usersControls:AsyncImage
+                                                                        Panel.ZIndex="1"
+                                                                        ImagePath="{Binding ApplicationUser.Image,
+                                                                Converter={x:Static converters:UrlToImageConverter.Instance}, IsAsync=True}"
+                                                                        Stretch="UniformToFill" />
                                                                 </VisualBrush.Visual>
                                                             </VisualBrush>
                                                         </Ellipse.Fill>
@@ -293,21 +298,21 @@
                     IsReadOnly="True"
                     IsHitTestVisible="True">
                     <DataGrid.Columns>
-                        <DataGridTextColumn 
+                        <DataGridTextColumn
                             Header="Id"
                             Binding="{Binding Id}"
                             IsReadOnly="True"
-                            Width="0.2*"/>
-                        <DataGridTextColumn 
+                            Width="0.2*" />
+                        <DataGridTextColumn
                             Header="Status"
                             Binding="{Binding Status}"
                             IsReadOnly="True"
-                            Width="*"/>
-                        <DataGridTextColumn 
-                            Header="Date" 
-                            Binding="{Binding Ts}" 
+                            Width="*" />
+                        <DataGridTextColumn
+                            Header="Date"
+                            Binding="{Binding Ts}"
                             IsReadOnly="True"
-                            Width="*"/>
+                            Width="*" />
                         <DataGridTemplateColumn
                             Header="Options"
                             Width="*">

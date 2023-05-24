@@ -220,21 +220,24 @@ public class MainWindowViewModel : Screen, INotifyPropertyChanged
 
                 if (ActiveTab is not null)
                     ActiveTab.IsSelected = false;
-                if (Tabs.FirstOrDefault(t => t.GetType() == typeof(MultipleProductTabViewModel)) is
-                    MultipleProductTabViewModel tab)
+                var tab = Tabs.FirstOrDefault(t => t.GetType() == typeof(MultipleProductTabViewModel));
+                if (tab is not null and MultipleProductTabViewModel multipleProductTabViewModel)
                 {
-                    tab.Products = new ObservableCollection<ProductResponseDto>(products!);
+                    multipleProductTabViewModel.Products = new ObservableCollection<ProductResponseDto>(products!);
                 }
                 else
                 {
                     tab = new MultipleProductTabViewModel(products!, _viewModelFactory, _dialogManager);
 
-                    var baseTab = Tabs.First(t => t != tab && tab.GetType().IsSubclassOf(t.GetType()));
-                    Tabs.Insert(Tabs.IndexOf(baseTab), tab);
-                    Tabs.Remove(baseTab);
-
+                    var baseTab = Tabs.FirstOrDefault(t => t != tab && tab.GetType().IsSubclassOf(t.GetType()));
+                    if (baseTab != null)
+                    {
+                        Tabs.Insert(Tabs.IndexOf(baseTab), tab);
+                        Tabs.Remove(baseTab);
+                        tab.BaseTab = baseTab;
+                    }
+                    
                     tab.PreviousTab = ActiveTab;
-                    tab.BaseTab = baseTab;
                     ActiveTab = tab;
                     tab.OnTabSelected(EventArgs.Empty);
                     tab.IsSelected = true;
@@ -282,12 +285,15 @@ public class MainWindowViewModel : Screen, INotifyPropertyChanged
                 {
                     tab = new ShoppingCartTabViewModel(products!, _viewModelFactory, _dialogManager);
 
-                    var baseTab = Tabs.First(t => t != tab && tab.GetType().IsSubclassOf(t.GetType()));
-                    Tabs.Insert(Tabs.IndexOf(baseTab), tab);
-                    Tabs.Remove(baseTab);
-
+                    var baseTab = Tabs.FirstOrDefault(t => t != tab && tab.GetType().IsSubclassOf(t.GetType()));
+                    if (baseTab != null)
+                    {
+                        Tabs.Insert(Tabs.IndexOf(baseTab), tab);
+                        Tabs.Remove(baseTab);
+                        tab.BaseTab = baseTab;
+                    }
+                    
                     tab.PreviousTab = ActiveTab;
-                    tab.BaseTab = baseTab;
                     ActiveTab = tab;
                     tab.OnTabSelected(EventArgs.Empty);
                     tab.IsSelected = true;
@@ -435,12 +441,16 @@ public class MainWindowViewModel : Screen, INotifyPropertyChanged
                     var tab = Tabs.FirstOrDefault(t => t.GetType() == typeof(LibraryTabViewModel));
                     if (tab is null)
                         return;
-                    var baseTab = Tabs.First(t => t != tab && tab.GetType().IsSubclassOf(t.GetType()));
-                    Tabs.Insert(Tabs.IndexOf(baseTab), tab);
-                    Tabs.Remove(baseTab);
 
+                    var baseTab = Tabs.FirstOrDefault(t => t != tab && tab.GetType().IsSubclassOf(t.GetType()));
+                    if (baseTab != null)
+                    {
+                        Tabs.Insert(Tabs.IndexOf(baseTab), tab);
+                        Tabs.Remove(baseTab);
+                        tab.BaseTab = baseTab;
+                    }
+                    
                     tab.PreviousTab = ActiveTab;
-                    tab.BaseTab = baseTab;
                     ActiveTab = tab;
                     tab.OnTabSelected(EventArgs.Empty);
                     tab.IsSelected = true;
