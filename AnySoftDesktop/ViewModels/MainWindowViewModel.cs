@@ -273,10 +273,10 @@ public class MainWindowViewModel : Screen, INotifyPropertyChanged
 
                 if (ActiveTab is not null)
                     ActiveTab.IsSelected = false;
-
-                if (Tabs.FirstOrDefault(t => t.GetType() == typeof(ShoppingCartTabViewModel)) is not null and ShoppingCartTabViewModel tab)
+                var tab = Tabs.FirstOrDefault(t => t.GetType() == typeof(ShoppingCartTabViewModel));
+                if (tab is not null and ShoppingCartTabViewModel shoppingCartTabViewModel)
                 {
-                    tab.Products = new ObservableCollection<ProductResponseDto>(products!);
+                    shoppingCartTabViewModel.Products = new ObservableCollection<ProductResponseDto>(products!);
                 }
                 else
                 {
@@ -365,13 +365,9 @@ public class MainWindowViewModel : Screen, INotifyPropertyChanged
                     using var cancellationTokenSource = new CancellationTokenSource(timeoutAfter);
                     var responseStream =
                         await postImageRequest.Content.ReadAsStreamAsync(cancellationTokenSource.Token);
-                    var image = await JsonSerializer.DeserializeAsync<Image>(responseStream,
+                    var newImagePath = await JsonSerializer.DeserializeAsync<string>(responseStream,
                         CustomJsonSerializerOptions.Options, cancellationToken: cancellationTokenSource.Token);
-                    CurrentUser.Image = HttpUtility.UrlPathEncode("/resources/image/" + string.Join(@"/",
-                        image!.ImagePath
-                            .Split('\\')
-                            .SkipWhile(s => s != "wwwroot")
-                            .Skip(1)));
+                    CurrentUser.Image = newImagePath;
                     Refresh();
                 }
             }

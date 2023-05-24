@@ -10,6 +10,7 @@ public class CustomPayment : INotifyPropertyChanged
     public int UserId { get; set; }
     public string? Number { get; set; }
     public CustomDate ExpirationDate { get; set; } = new CustomDate();
+    public string? CardName { get; set; }
     public string? Cvc { get; set; }
     public bool IsActive { get; set; }
     private bool _isEditComplete;

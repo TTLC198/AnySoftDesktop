@@ -202,12 +202,9 @@ public class LoginViewModel : DialogScreen<ApplicationUser?>, INotifyPropertyCha
                             using var cancellationTokenSource = new CancellationTokenSource(timeoutAfter);
                             var responseStream =
                                 await postImageRequest.Content.ReadAsStreamAsync(cancellationTokenSource.Token);
-                            var image = await JsonSerializer.DeserializeAsync<Image>(responseStream,
+                            var imagePath = await JsonSerializer.DeserializeAsync<string>(responseStream,
                                 CustomJsonSerializerOptions.Options, cancellationToken: cancellationTokenSource.Token);
-                            user.Image = HttpUtility.UrlPathEncode("/resources/image/" + string.Join(@"/", image!.ImagePath
-                                .Split('\\')
-                                .SkipWhile(s => s != "wwwroot")
-                                .Skip(1)));
+                            user.Image = imagePath;
                             Close(new ApplicationUser
                             {
                                 Id = user.Id,

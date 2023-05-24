@@ -75,7 +75,7 @@
                             <VisualBrush>
                                 <VisualBrush.Visual>
                                     <Image
-                                        Stretch="Uniform"
+                                        Stretch="UniformToFill"
                                         Source="{Binding Product.Images[0], Converter={x:Static converters:UrlToImageConverter.Instance}}"/>
                                 </VisualBrush.Visual>
                             </VisualBrush>
