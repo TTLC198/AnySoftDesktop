@@ -7,10 +7,14 @@ using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using AnySoftBackend.Library.DataTransferObjects.Order;
+using AnySoftBackend.Library.DataTransferObjects.Product;
+using AnySoftBackend.Library.DataTransferObjects.Review;
+using AnySoftBackend.Library.DataTransferObjects.ShoppingCart;
+using AnySoftBackend.Library.DataTransferObjects.User;
 using AnySoftDesktop.Services;
 using AnySoftDesktop.Utils;
 using AnySoftDesktop.ViewModels.Framework;
-using RPM_Project_Backend.Domain;
 
 namespace AnySoftDesktop.ViewModels.Tabs;
 
@@ -56,7 +60,7 @@ public class SingleProductTabViewModel : MultipleProductTabViewModel, INotifyPro
         }
     }
 
-    public Review? NewReview { get; set; } = new();
+    public ReviewCreateDto? NewReview { get; set; } = new();
 
     private bool _isReviewAdded;
 
@@ -349,7 +353,7 @@ public class SingleProductTabViewModel : MultipleProductTabViewModel, INotifyPro
             }
         if (IsReviewAdded)
         {
-            var reviewDto = new ReviewDto()
+            var reviewDto = new ReviewCreateDto()
             {
                 Grade = NewReview!.Grade,
                 ProductId = Product.Id,
@@ -363,7 +367,7 @@ public class SingleProductTabViewModel : MultipleProductTabViewModel, INotifyPro
                     IsReviewAdded = false;
 
                     await UpdateProduct();
-                    NewReview = new Review();
+                    NewReview = new ReviewCreateDto();
                 }
                 else
                 {
@@ -404,7 +408,7 @@ public class SingleProductTabViewModel : MultipleProductTabViewModel, INotifyPro
                     IsReviewModified = false;
                     
                     await UpdateProduct();
-                    NewReview = new Review();
+                    NewReview = new ReviewCreateDto();
                 }
                 else
                 {

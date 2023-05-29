@@ -15,8 +15,9 @@ public class AsyncImage : Image, INotifyPropertyChanged
 {
     public static readonly DependencyProperty ImagePathProperty =
         DependencyProperty.Register(
-            nameof(ImagePath), typeof(string), typeof(AsyncImage),
-            new PropertyMetadata(async (o, e) =>
+            nameof(ImagePath), 
+            typeof(string), 
+            typeof(AsyncImage), new PropertyMetadata(async (o, e) =>
                 await ((AsyncImage)o).LoadImageAsync((string)e.NewValue)));
 
     public string ImagePath

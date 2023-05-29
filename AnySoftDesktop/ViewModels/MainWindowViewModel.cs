@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
-using System.IdentityModel.Tokens.Jwt;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
@@ -12,14 +10,19 @@ using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Threading;
 using System.Web;
+using AnySoftBackend.Domain;
+using AnySoftBackend.Library.DataTransferObjects.Genre;
+using AnySoftBackend.Library.DataTransferObjects.Order;
+using AnySoftBackend.Library.DataTransferObjects.Product;
+using AnySoftBackend.Library.DataTransferObjects.Property;
+using AnySoftBackend.Library.DataTransferObjects.User;
 using AnySoftDesktop.Models;
 using AnySoftDesktop.Services;
 using AnySoftDesktop.Utils;
 using AnySoftDesktop.ViewModels.Framework;
 using AnySoftDesktop.ViewModels.Tabs;
-using RPM_Project_Backend.Domain;
-using RPM_Project_Backend.Models;
 using Stylet;
+using User = Microsoft.VisualBasic.ApplicationServices.User;
 
 namespace AnySoftDesktop.ViewModels;
 

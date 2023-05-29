@@ -2,8 +2,8 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using AnySoftBackend.Library.DataTransferObjects.Product;
 using AnySoftDesktop.ViewModels.Framework;
-using RPM_Project_Backend.Domain;
 
 namespace AnySoftDesktop.ViewModels.Tabs;
 
