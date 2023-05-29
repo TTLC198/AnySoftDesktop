@@ -1,16 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
+﻿using System.Collections.Generic;
 using System.ComponentModel;
-using System.Text.Json;
-using System.Threading;
-using AnySoftDesktop.Models;
-using AnySoftDesktop.Services;
-using AnySoftDesktop.Utils;
+using AnySoftBackend.Domain;
 using AnySoftDesktop.ViewModels.Framework;
-using AnySoftDesktop.ViewModels.Tabs;
-using RPM_Project_Backend.Domain;
-using Stylet;
 
 namespace AnySoftDesktop.ViewModels;
 

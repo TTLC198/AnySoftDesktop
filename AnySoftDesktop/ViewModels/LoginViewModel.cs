@@ -11,12 +11,12 @@ using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Threading;
 using System.Web;
+using AnySoftBackend.Library.DataTransferObjects.User;
+using AnySoftBackend.Library.Misc;
 using AnySoftDesktop.Models;
 using AnySoftDesktop.Services;
 using AnySoftDesktop.Utils;
 using AnySoftDesktop.ViewModels.Framework;
-using RPM_Project_Backend.Domain;
-using RPM_Project_Backend.Models;
 
 namespace AnySoftDesktop.ViewModels;
 
@@ -33,7 +33,7 @@ public class LoginViewModel : DialogScreen<ApplicationUser?>, INotifyPropertyCha
 
     public bool IsRegisterView { get; set; }
 
-    public UserDto UserCredentials { get; set; } = new UserDto();
+    public UserCreateDto UserCredentials { get; set; } = new UserCreateDto();
     
     private string _userImagePath;
 

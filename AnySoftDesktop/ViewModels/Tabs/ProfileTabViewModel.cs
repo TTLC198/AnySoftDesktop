@@ -7,11 +7,13 @@ using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using AnySoftBackend.Domain;
+using AnySoftBackend.Library.DataTransferObjects.Order;
+using AnySoftBackend.Library.DataTransferObjects.Payment;
 using AnySoftDesktop.Models;
 using AnySoftDesktop.Services;
 using AnySoftDesktop.Utils;
 using AnySoftDesktop.ViewModels.Framework;
-using RPM_Project_Backend.Domain;
 
 namespace AnySoftDesktop.ViewModels.Tabs;
 
@@ -165,7 +167,7 @@ public class ProfileTabViewModel : SettingsTabViewModel, INotifyPropertyChanged
     {
         try
         {
-            var paymentDto = new PaymentDto()
+            var paymentDto = new PaymentCreateDto()
             {
                 CardName = payment.CardName,
                 Number = payment.Number,
