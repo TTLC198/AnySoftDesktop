@@ -166,7 +166,7 @@
                                         BasedOn="{StaticResource MaterialDesignOutlinedButton}">
                                         <Setter
                                             Property="Content"
-                                            Value="Add to Cart" />
+                                            Value="Add to cart" />
                                         <Setter
                                             Property="Foreground"
                                             Value="{StaticResource PrimaryHueMidBrush}" />
@@ -243,7 +243,8 @@
                     Foreground="{DynamicResource PrimaryHueDarkBrush}"
                     Text="Images" />
                 <usersControls:ImageCarousel
-                    MinHeight="350"
+                    MinHeight="400"
+                    VerticalAlignment="Stretch"
                     Images="{Binding Product.Images}"
                     SelectedImage="{Binding Product.Images[1]}" />
             </StackPanel>

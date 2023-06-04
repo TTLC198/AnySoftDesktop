@@ -339,43 +339,6 @@
                         </DataGridTemplateColumn>
                     </DataGrid.Columns>
                 </DataGrid>
-                <!--<ItemsControl
-                    Padding="15"
-                    Margin="15, 0"
-                    HorizontalAlignment="Center"
-                    HorizontalContentAlignment="Stretch"
-                    ItemsSource="{Binding PaymentMethods}">
-                    <ItemsControl.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <StackPanel
-                                Orientation="Vertical"
-                                HorizontalAlignment="Stretch"
-                                VerticalAlignment="Stretch" />
-                        </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition
-                                        Width="*"/>
-                                    <ColumnDefinition
-                                        Width="*"/>
-                                    <ColumnDefinition
-                                        Width="*"/>
-                                    <ColumnDefinition
-                                        Width="*"/>
-                                </Grid.ColumnDefinitions>
-                                <TextBlock
-                                    Grid.Column="0"
-                                    FontSize="14"
-                                    TextWrapping="Wrap"
-                                    Foreground="{DynamicResource PrimaryHueDarkBrush}"
-                                    Text="{Binding Id}"/>
-                            </Grid>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>-->
             </Border>
         </StackPanel>
         <StackPanel
@@ -442,7 +405,7 @@
                                                 VerticalAlignment="Top" />
                                             <TextBlock
                                                 Margin="4, 0"
-                                                Text="{Binding Number, Mode=OneTime}" />
+                                                Text="{Binding CardName, Mode=OneTime}" />
                                         </StackPanel>
                                     </materialDesign:HintAssist.Hint>
                                     <TextBox.Text>
