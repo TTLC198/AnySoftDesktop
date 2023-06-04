@@ -113,10 +113,9 @@ public class SingleProductTabViewModel : MultipleProductTabViewModel, INotifyPro
 
     private async Task UpdateProduct()
     {
-        var getProductsRequest = await WebApiService.GetCall($"api/products/{_productId}");
-
         try
         {
+            var getProductsRequest = await WebApiService.GetCall($"api/products/{_productId}");
             if (getProductsRequest.IsSuccessStatusCode)
             {
                 var timeoutAfter = TimeSpan.FromMilliseconds(3000);
@@ -193,9 +192,9 @@ public class SingleProductTabViewModel : MultipleProductTabViewModel, INotifyPro
             if (IsBought)
                 return;
             if (IsInCart)
-                OnRemoveFromCartButtonClick(id);
+                await OnRemoveFromCartButtonClick(id);
             else
-                OnAddToCartButtonClick(id);
+                await OnAddToCartButtonClick(id);
         }
         catch (Exception exception)
         {
@@ -209,7 +208,7 @@ public class SingleProductTabViewModel : MultipleProductTabViewModel, INotifyPro
         }
     }
 
-    public async void OnAddToCartButtonClick(int id)
+    private async Task OnAddToCartButtonClick(int id)
     {
         var jsonObject = new
         {
@@ -252,7 +251,7 @@ public class SingleProductTabViewModel : MultipleProductTabViewModel, INotifyPro
         }
     }
 
-    public async void OnRemoveFromCartButtonClick(int id)
+    private async Task OnRemoveFromCartButtonClick(int id)
     {
         var removeProductsFromCartRequest =
             await WebApiService.DeleteCall($"api/cart?productId={id}", App.ApplicationUser?.JwtToken!);
