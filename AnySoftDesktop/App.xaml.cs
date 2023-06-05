@@ -21,10 +21,6 @@ namespace AnySoftDesktop
         public static string Name { get; } = Assembly.GetName().Name!;
 
         public static Version Version { get; } = Assembly.GetName().Version!;
-        
-        public static string CdnUrl { get; } = "https://localhost:5001/";
-        
-        public static string ApiUrl { get; } = "https://localhost:5001/";
 
         public static ApplicationUser? ApplicationUser { get; set; } = new ApplicationUser();
 
