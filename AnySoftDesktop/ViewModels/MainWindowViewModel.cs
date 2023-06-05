@@ -59,6 +59,8 @@ public class MainWindowViewModel : Screen, INotifyPropertyChanged
     public MainWindowViewModel(List<TabBaseViewModel> tabs, IViewModelFactory viewModelFactory,
         DialogManager dialogManager)
     {
+        VersionManager.Instance.ApiUrl = "http://localhost:5000/";
+        VersionManager.Instance.CdnUrl = "http://localhost:5000/";
         _viewModelFactory = viewModelFactory;
         _dialogManager = dialogManager;
         Tabs = new BindableCollection<TabBaseViewModel>(tabs
