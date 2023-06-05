@@ -268,7 +268,7 @@
                         <ItemsControl
                             HorizontalAlignment="Stretch"
                             HorizontalContentAlignment="Stretch"
-                            ItemsSource="{Binding Product.Reviews}">
+                            ItemsSource="{Binding Reviews}">
                             <ItemsControl.ItemsPanel>
                                 <ItemsPanelTemplate>
                                     <StackPanel
@@ -325,7 +325,7 @@
                                                     Text="{Binding Ts, StringFormat='Posted {0:D}'}" />
                                                 <materialDesign:RatingBar
                                                     FontSize="12"
-                                                    IsReadOnly="{Binding DataContext.IsReviewModified, Converter={x:Static converters:InverseBoolToBoolConverter.Instance}, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=UserControl}}"
+                                                    IsReadOnly="{Binding IsModified, Converter={x:Static converters:InverseBoolToBoolConverter.Instance}}"
                                                     VerticalAlignment="Center"
                                                     Foreground="{DynamicResource PrimaryHueDarkBrush}"
                                                     Value="{Binding Grade, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
@@ -360,7 +360,7 @@
                                                             </Setter>
                                                             <Style.Triggers>
                                                                 <DataTrigger
-                                                                    Binding="{Binding DataContext.IsReviewModified, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=UserControl}}"
+                                                                    Binding="{Binding IsModified}"
                                                                     Value="True">
                                                                     <Setter
                                                                         Property="Content">
@@ -400,7 +400,7 @@
                                             Margin="5, 7"
                                             FontSize="14"
                                             TextWrapping="Wrap"
-                                            IsReadOnly="{Binding DataContext.IsReviewModified, Converter={x:Static converters:InverseBoolToBoolConverter.Instance}, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=UserControl}}"
+                                            IsReadOnly="{Binding IsModified, Converter={x:Static converters:InverseBoolToBoolConverter.Instance}}"
                                             IsReadOnlyCaretVisible="False"
                                             Foreground="{DynamicResource PrimaryHueDarkBrush}"
                                             BorderThickness="0"
@@ -418,7 +418,7 @@
                                                         Value="0" />
                                                     <Style.Triggers>
                                                         <DataTrigger
-                                                            Binding="{Binding DataContext.IsReviewModified, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=UserControl}}"
+                                                            Binding="{Binding IsModified}"
                                                             Value="True">
                                                             <Setter
                                                                 Property="materialDesign:TextFieldAssist.UnderlineBrush"

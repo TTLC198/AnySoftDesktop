@@ -87,18 +87,6 @@ public class SingleProductTabViewModel : MultipleProductTabViewModel, INotifyPro
         }
     }
 
-    private bool _isReviewModified;
-
-    public bool IsReviewModified
-    {
-        get => _isReviewModified;
-        set
-        {
-            _isReviewModified = value;
-            OnPropertyChanged();
-        }
-    }
-
     private bool _isOwnReviewExists;
 
     public bool IsOwnReviewExists
@@ -414,9 +402,9 @@ public class SingleProductTabViewModel : MultipleProductTabViewModel, INotifyPro
             IsReviewAdded = !IsReviewAdded;
     }
 
-    public async void OnReviewEditButtonClick(ReviewResponseDto reviewResponseDto)
+    public async void OnReviewEditButtonClick(CustomReview reviewResponseDto)
     {
-        if (IsReviewModified)
+        if (reviewResponseDto.IsModified)
         {
             var reviewEditDto = new ReviewEditDto
             {
@@ -430,7 +418,7 @@ public class SingleProductTabViewModel : MultipleProductTabViewModel, INotifyPro
                     await WebApiService.PutCall("api/reviews", reviewEditDto, App.ApplicationUser?.JwtToken!);
                 if (putReviewRequest.IsSuccessStatusCode)
                 {
-                    IsReviewModified = false;
+                    reviewResponseDto.IsModified = false;
 
                     await UpdateProduct();
                     NewReview = new ReviewCreateDto();
@@ -454,7 +442,7 @@ public class SingleProductTabViewModel : MultipleProductTabViewModel, INotifyPro
         }
         else
         {
-            IsReviewModified = true;
+            reviewResponseDto.IsModified = true;
         }
     }
 
