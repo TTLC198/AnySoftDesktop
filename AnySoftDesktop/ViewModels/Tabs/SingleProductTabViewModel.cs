@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
@@ -15,6 +15,7 @@ using AnySoftBackend.Library.DataTransferObjects.User;
 using AnySoftDesktop.Services;
 using AnySoftDesktop.Utils;
 using AnySoftDesktop.ViewModels.Framework;
+using AnySoftMobile.Models;
 
 namespace AnySoftDesktop.ViewModels.Tabs;
 
@@ -60,6 +61,18 @@ public class SingleProductTabViewModel : MultipleProductTabViewModel, INotifyPro
         }
     }
 
+    private ObservableCollection<CustomReview> _reviews;
+
+    public ObservableCollection<CustomReview> Reviews
+    {
+        get => _reviews;
+        set
+        {
+            _reviews = value;
+            OnPropertyChanged();
+        }
+    }
+
     public ReviewCreateDto? NewReview { get; set; } = new();
 
     private bool _isReviewAdded;
@@ -73,7 +86,7 @@ public class SingleProductTabViewModel : MultipleProductTabViewModel, INotifyPro
             OnPropertyChanged();
         }
     }
-    
+
     private bool _isReviewModified;
 
     public bool IsReviewModified
@@ -85,7 +98,7 @@ public class SingleProductTabViewModel : MultipleProductTabViewModel, INotifyPro
             OnPropertyChanged();
         }
     }
-    
+
     private bool _isOwnReviewExists;
 
     public bool IsOwnReviewExists
@@ -128,11 +141,20 @@ public class SingleProductTabViewModel : MultipleProductTabViewModel, INotifyPro
                         CustomJsonSerializerOptions.Options, cancellationToken: cancellationTokenSource.Token);
                     if (product is null)
                         throw new InvalidOperationException("Product is null");
-                    product.Reviews?
-                        .Where(r => (r.User ?? new UserResponseDto()).Id == App.ApplicationUser?.Id)
-                        .ToList()
-                        .ForEach(r => r.IsOwn = true);
-                    IsOwnReviewExists = product.Reviews?.Any(r => r.IsOwn) ?? false;
+                    Reviews = new ObservableCollection<CustomReview>(product.Reviews
+                        .Select(r => new CustomReview()
+                        {
+                            Id = r.Id,
+                            Grade = r.Grade,
+                            ProductId = r.ProductId,
+                            Text = r.Text,
+                            Ts = r.Ts,
+                            IsModified = false,
+                            IsOwn = (r.User ?? new UserResponseDto()).Id ==
+                                    App.ApplicationUser?.Id,
+                            User = r.User
+                        }));
+                    IsOwnReviewExists = Reviews?.Any(r => r.IsOwn) ?? false;
                     Product = product;
                 }
 
@@ -218,7 +240,8 @@ public class SingleProductTabViewModel : MultipleProductTabViewModel, INotifyPro
                 id
             }
         };
-        var postProductsToCartRequest = await WebApiService.PostCall("api/cart", jsonObject, App.ApplicationUser?.JwtToken!);
+        var postProductsToCartRequest =
+            await WebApiService.PostCall("api/cart", jsonObject, App.ApplicationUser?.JwtToken!);
         try
         {
             if (postProductsToCartRequest.IsSuccessStatusCode)
@@ -279,10 +302,9 @@ public class SingleProductTabViewModel : MultipleProductTabViewModel, INotifyPro
             await _dialogManager.ShowDialogAsync(messageBoxDialog);
         }
     }
-    
+
     public async void OnRemoveFromOrderButtonClick()
     {
-        
         if (!IsBought)
             return;
         try
@@ -311,10 +333,11 @@ public class SingleProductTabViewModel : MultipleProductTabViewModel, INotifyPro
                 var msg = await getOrdersRequest.Content.ReadAsStringAsync();
                 throw new InvalidOperationException($"{getOrdersRequest.ReasonPhrase}\n{msg}");
             }
-            
+
             var removeProductsFromOrderRequest =
-                await WebApiService.DeleteCall($"api/orders/product/{order.Id}?productId={Product.Id}", App.ApplicationUser?.JwtToken!);
-            
+                await WebApiService.DeleteCall($"api/orders/product/{order.Id}?productId={Product.Id}",
+                    App.ApplicationUser?.JwtToken!);
+
             if (removeProductsFromOrderRequest.IsSuccessStatusCode)
             {
                 IsBought = false;
@@ -339,8 +362,8 @@ public class SingleProductTabViewModel : MultipleProductTabViewModel, INotifyPro
 
     public async void OnReviewAddButtonClick()
     {
-        if (Product.Reviews is not null)
-            if (Product.Reviews.Any(r => r.IsOwn))
+        if (Reviews is not null)
+            if (Reviews.Any(r => r.IsOwn))
             {
                 var messageBoxDialog = _viewModelFactory.CreateMessageBoxViewModel(
                     title: "Some error has occurred",
@@ -351,6 +374,7 @@ public class SingleProductTabViewModel : MultipleProductTabViewModel, INotifyPro
                 await _dialogManager.ShowDialogAsync(messageBoxDialog);
                 return;
             }
+
         if (IsReviewAdded)
         {
             var reviewDto = new ReviewCreateDto()
@@ -359,7 +383,8 @@ public class SingleProductTabViewModel : MultipleProductTabViewModel, INotifyPro
                 ProductId = Product.Id,
                 Text = NewReview.Text
             };
-            var postReviewRequest = await WebApiService.PostCall("api/reviews", reviewDto, App.ApplicationUser?.JwtToken!);
+            var postReviewRequest =
+                await WebApiService.PostCall("api/reviews", reviewDto, App.ApplicationUser?.JwtToken!);
             try
             {
                 if (postReviewRequest.IsSuccessStatusCode)
@@ -389,7 +414,7 @@ public class SingleProductTabViewModel : MultipleProductTabViewModel, INotifyPro
         else
             IsReviewAdded = !IsReviewAdded;
     }
-    
+
     public async void OnReviewEditButtonClick(ReviewResponseDto reviewResponseDto)
     {
         if (IsReviewModified)
@@ -400,13 +425,14 @@ public class SingleProductTabViewModel : MultipleProductTabViewModel, INotifyPro
                 Grade = reviewResponseDto.Grade,
                 Text = reviewResponseDto.Text
             };
-            var putReviewRequest = await WebApiService.PutCall("api/reviews", reviewEditDto, App.ApplicationUser?.JwtToken!);
+            var putReviewRequest =
+                await WebApiService.PutCall("api/reviews", reviewEditDto, App.ApplicationUser?.JwtToken!);
             try
             {
                 if (putReviewRequest.IsSuccessStatusCode)
                 {
                     IsReviewModified = false;
-                    
+
                     await UpdateProduct();
                     NewReview = new ReviewCreateDto();
                 }
@@ -432,7 +458,7 @@ public class SingleProductTabViewModel : MultipleProductTabViewModel, INotifyPro
             IsReviewModified = true;
         }
     }
-    
+
     public async void OnReviewRemoveButtonClick(int id)
     {
         var deleteReviewRequest =

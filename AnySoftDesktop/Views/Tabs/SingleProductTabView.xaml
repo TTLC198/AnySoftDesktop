@@ -262,7 +262,7 @@
                     BorderThickness="0"
                     Background="{DynamicResource SearchBarColorBrush}"
                     Padding="15"
-                    Visibility="{Binding Product.Reviews, Converter={x:Static converters:EmptyToVisibilityConverter.Instance}}">
+                    Visibility="{Binding Reviews, Converter={x:Static converters:EmptyToVisibilityConverter.Instance}}">
                     <StackPanel
                         Orientation="Vertical">
                         <ItemsControl
