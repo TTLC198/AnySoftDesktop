@@ -126,10 +126,9 @@ public class SingleProductTabViewModel : MultipleProductTabViewModel, INotifyPro
 
     private async Task UpdateProduct()
     {
-        var getProductsRequest = await WebApiService.GetCall($"api/products/{_productId}");
-
         try
         {
+            var getProductsRequest = await WebApiService.GetCall($"api/products/{_productId}");
             if (getProductsRequest.IsSuccessStatusCode)
             {
                 var timeoutAfter = TimeSpan.FromMilliseconds(3000);
@@ -240,10 +239,10 @@ public class SingleProductTabViewModel : MultipleProductTabViewModel, INotifyPro
                 id
             }
         };
-        var postProductsToCartRequest =
-            await WebApiService.PostCall("api/cart", jsonObject, App.ApplicationUser?.JwtToken!);
         try
         {
+            var postProductsToCartRequest =
+                await WebApiService.PostCall("api/cart", jsonObject, App.ApplicationUser?.JwtToken!);
             if (postProductsToCartRequest.IsSuccessStatusCode)
             {
                 var timeoutAfter = TimeSpan.FromMilliseconds(3000);
@@ -277,10 +276,10 @@ public class SingleProductTabViewModel : MultipleProductTabViewModel, INotifyPro
 
     public async void OnRemoveFromCartButtonClick(int id)
     {
-        var removeProductsFromCartRequest =
-            await WebApiService.DeleteCall($"api/cart?productId={id}", App.ApplicationUser?.JwtToken!);
         try
         {
+            var removeProductsFromCartRequest =
+                await WebApiService.DeleteCall($"api/cart?productId={id}", App.ApplicationUser?.JwtToken!);
             if (removeProductsFromCartRequest.IsSuccessStatusCode)
             {
                 IsInCart = false;
@@ -425,10 +424,10 @@ public class SingleProductTabViewModel : MultipleProductTabViewModel, INotifyPro
                 Grade = reviewResponseDto.Grade,
                 Text = reviewResponseDto.Text
             };
-            var putReviewRequest =
-                await WebApiService.PutCall("api/reviews", reviewEditDto, App.ApplicationUser?.JwtToken!);
             try
             {
+                var putReviewRequest =
+                    await WebApiService.PutCall("api/reviews", reviewEditDto, App.ApplicationUser?.JwtToken!);
                 if (putReviewRequest.IsSuccessStatusCode)
                 {
                     IsReviewModified = false;
@@ -461,10 +460,10 @@ public class SingleProductTabViewModel : MultipleProductTabViewModel, INotifyPro
 
     public async void OnReviewRemoveButtonClick(int id)
     {
-        var deleteReviewRequest =
-            await WebApiService.DeleteCall($"api/reviews/{id}", App.ApplicationUser?.JwtToken!);
         try
         {
+            var deleteReviewRequest =
+                await WebApiService.DeleteCall($"api/reviews/{id}", App.ApplicationUser?.JwtToken!);
             if (deleteReviewRequest.IsSuccessStatusCode)
             {
                 await UpdateProduct();
