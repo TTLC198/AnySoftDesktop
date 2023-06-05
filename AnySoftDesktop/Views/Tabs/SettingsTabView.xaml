@@ -7,6 +7,7 @@
              xmlns:s="https://github.com/canton7/Stylet"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:converters="clr-namespace:AnySoftDesktop.Utils.Converters"
+             xmlns:validation="clr-namespace:AnySoftDesktop.Utils.Validation"
              Background="{DynamicResource MaterialDesignPaper}"
              FontFamily="{DynamicResource MaterialDesignFont}"
              TextElement.Foreground="{StaticResource PrimaryHueMidBrush}"
@@ -31,6 +32,73 @@
         <TreeView
             Foreground="{StaticResource PrimaryHueMidBrush}"
             Grid.Row="1">
+            <TreeViewItem
+                Header="Application settings">
+                <TextBox
+                    HorizontalAlignment="Stretch"
+                    Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                    Margin="5"
+                    FontSize="18"
+                    materialDesign:ValidationAssist.Background="Transparent"
+                    materialDesign:TextFieldAssist.HasClearButton="True">
+                    <TextBox.Text>
+                        <Binding
+                            Path="ApiUrl"
+                            UpdateSourceTrigger="LostFocus"
+                            ValidatesOnExceptions="True" >
+                            <Binding.ValidationRules>
+                                <validation:NotEmptyValidationRule
+                                    ValidatesOnTargetUpdated="False"/>
+                            </Binding.ValidationRules>
+                        </Binding>
+                    </TextBox.Text>
+                    <materialDesign:ValidationAssist.HorizontalAlignment>
+                        Right
+                    </materialDesign:ValidationAssist.HorizontalAlignment>
+                    <materialDesign:HintAssist.Hint>
+                        <StackPanel Orientation="Horizontal">
+                            <materialDesign:PackIcon
+                                Kind="Api"
+                                VerticalAlignment="Center" />
+                            <TextBlock
+                                Margin="4, 0"
+                                Text="Api Url" />
+                        </StackPanel>
+                    </materialDesign:HintAssist.Hint>
+                </TextBox>
+                <TextBox
+                    HorizontalAlignment="Stretch"
+                    Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                    Margin="5"
+                    FontSize="18"
+                    materialDesign:ValidationAssist.Background="Transparent"
+                    materialDesign:TextFieldAssist.HasClearButton="True">
+                    <TextBox.Text>
+                        <Binding
+                            Path="CdnUrl"
+                            UpdateSourceTrigger="LostFocus"
+                            ValidatesOnExceptions="True" >
+                            <Binding.ValidationRules>
+                                <validation:NotEmptyValidationRule
+                                    ValidatesOnTargetUpdated="False"/>
+                            </Binding.ValidationRules>
+                        </Binding>
+                    </TextBox.Text>
+                    <materialDesign:ValidationAssist.HorizontalAlignment>
+                        Right
+                    </materialDesign:ValidationAssist.HorizontalAlignment>
+                    <materialDesign:HintAssist.Hint>
+                        <StackPanel Orientation="Horizontal">
+                            <materialDesign:PackIcon
+                                Kind="Api"
+                                VerticalAlignment="Center" />
+                            <TextBlock
+                                Margin="4, 0"
+                                Text="Cdn Url" />
+                        </StackPanel>
+                    </materialDesign:HintAssist.Hint>
+                </TextBox>
+            </TreeViewItem>
             <TreeViewItem
                 Header="Account settings"
                 IsEnabled="{Binding DataContext.IsAuthorized, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}"
